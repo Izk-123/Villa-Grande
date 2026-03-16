@@ -1,0 +1,16 @@
+{% extends "admin/villagrande/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Villa Grande CMS') }}{% endblock %}
+
+{% block branding %}
+<div class="sidebar-brand">
+    <svg class="sidebar-brand-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="4,7 20,33 36,7" fill="none" stroke="#C9A84C" stroke-width="2"/>
+        <polyline points="8,7 20,27 32,7" fill="none" stroke="#C9A84C" stroke-width="1"/>
+    </svg>
+    <span class="sidebar-brand-text">{{ site_header|default:_('Villa Grande CMS') }}</span>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

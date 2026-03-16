@@ -1,0 +1,101 @@
+{% extends "admin/villagrande/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
+<li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a></li>
+<li class="breadcrumb-item active">
+    {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}
+    {% else %}{{ original|truncatewords:"18" }}{% endif %}
+</li>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="fade-in">
+    <div class="admin-form-container">
+        <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>
+            {% csrf_token %}
+            
+            {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+            {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+            
+            {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+            
+            {% if errors %}
+                <div class="message message-error">
+                    {% if errors|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
+                </div>
+                {{ adminform.form.non_field_errors }}
+            {% endif %}
+            
+            {% block field_sets %}
+                {% for fieldset in adminform %}
+                    <div class="form-group">
+                        <fieldset class="module aligned {{ fieldset.classes }}">
+                            {% if fieldset.name %}<h5 class="card-title">{{ fieldset.name }}</h5>{% endif %}
+                            {% if fieldset.description %}
+                                <div class="description">{{ fieldset.description|safe }}</div>
+                            {% endif %}
+                            
+                            {% for line in fieldset %}
+                                <div class="form-row{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+                                    {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+                                    {% for field in line %}
+                                        <div{% if not line.fields|length_is:'1' %} class="fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}"{% elif field.is_checkbox %} class="checkbox-row"{% endif %}>
+                                            {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                                            {% if field.is_checkbox %}
+                                                <div class="form-check">
+                                                    {{ field.field }}{{ field.label_tag }}
+                                                </div>
+                                            {% else %}
+                                                {{ field.label_tag }}
+                                                {% if field.is_readonly %}
+                                                    <div class="readonly">{{ field.contents }}</div>
+                                                {% else %}
+                                                    {{ field.field }}
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if field.field.help_text %}
+                                                <div class="help"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
+                                                    <small>{{ field.field.help_text|safe }}</small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </fieldset>
+                    </div>
+                {% endfor %}
+            {% endblock %}
+            
+            {% block after_field_sets %}{% endblock %}
+            
+            {% block inline_field_sets %}
+                {% for inline_admin_formset in inline_admin_formsets %}
+                    {% include inline_admin_formset.opts.template %}
+                {% endfor %}
+            {% endblock %}
+            
+            {% block after_related_objects %}{% endblock %}
+            
+            {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+            
+            {% block admin_change_form_document_ready %}
+                <script id="django-admin-form-add-constants"
+                        src="{% static 'admin/js/change_form.js' %}"
+                        {% if adminform and add %}
+                            data-model-name="{{ opts.model_name }}"
+                        {% endif %}
+                        async>
+                </script>
+            {% endblock %}
+            
+            {% prepopulated_fields_js %}
+        </form>
+    </div>
+</div>
+{% endblock %}

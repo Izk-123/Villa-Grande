@@ -1,0 +1,35 @@
+{% extends 'lodge/base.html' %}
+{% load static %}
+
+{% block title %}About Us - Villa Grande{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background: linear-gradient(rgba(10,35,66,0.7), rgba(10,35,66,0.7)), url('{% static 'img/about-header.jpg' %}') center/cover; min-height: 300px; display: flex; align-items: center;">
+    <div class="container text-center text-white">
+        <h1 class="display-4">About Villa Grande</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item"><a href="{% url 'lodge:home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">About</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="about-content py-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <img src="{% static 'img/about-1.jpg' %}" alt="Villa Grande" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="section-heading">A Legacy of <em>Luxury</em></h2>
+                <div class="divider-gold"></div>
+                <p>Founded in 2010, Villa Grande Lodge has been a beacon of luxury and hospitality in the heart of Malawi. Our commitment to excellence has made us the preferred destination for discerning travelers from around the globe.</p>
+                <p>We believe that every stay should be a story worth telling. From our meticulously designed rooms to our world-class amenities, every detail is crafted to provide an unforgettable experience.</p>
+                <p>Our team of dedicated professionals is passionate about creating moments of joy and relaxation for our guests. Whether you're here for a romantic getaway, a family vacation, or a corporate retreat, we ensure that your time with us is nothing short of extraordinary.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

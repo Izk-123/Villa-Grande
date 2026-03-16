@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Villa Grande Lodge — Luxury Accommodation</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" content="Villa Grande Lodge — Experience luxury accommodation with world-class amenities.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- ======= LOADING SCREEN ======= -->
+    <div id="vg-loader">
+        <div class="loader-logo-wrap">
+            <!-- Animated VG Monogram SVG -->
+            <div class="vg-monogram">
+                <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <!-- V shape -->
+                    <polyline class="vg-path" points="15,20 60,90 105,20" fill="none" stroke="#C9A84C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Inner V line -->
+                    <polyline class="vg-path" points="27,20 60,72 93,20" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation-delay:0.3s"/>
+                    <!-- G arc -->
+                    <path class="vg-path" d="M 95,50 A 35,35 0 1,0 60,90 L 60,70 L 78,70" fill="none" stroke="#C9A84C" stroke-width="5" stroke-linecap="round" style="animation-delay:0.6s"/>
+                    <!-- G inner arc -->
+                    <path class="vg-path" d="M 88,52 A 26,26 0 1,0 62,88" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" style="animation-delay:0.9s"/>
+                </svg>
+            </div>
+            <div class="loader-brand-name">Villa Grande</div>
+            <div class="loader-tagline">Luxury Lodge Experience</div>
+            <div class="loader-bar-track">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= TOP BAR ======= -->
+    <div class="top-bar d-none d-lg-block">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-4">
+                    <p class="mb-0 d-flex align-items-center gap-2">
+                        <i class="fas fa-envelope" style="color:var(--gold); font-size:0.75rem;"></i>
+                        <a href="mailto:reservations@villagrande.co.mw">reservations@villagrande.co.mw</a>
+                    </p>
+                    <p class="mb-0 d-flex align-items-center gap-2">
+                        <i class="fas fa-phone-alt" style="color:var(--gold); font-size:0.75rem;"></i>
+                        <a href="tel:+265888000000">+265 888 000 000</a>
+                    </p>
+                </div>
+                <div class="social-links d-flex gap-2">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= NAVBAR ======= -->
+    <nav class="navbar-vg navbar navbar-expand-lg navbar-dark" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <!-- SVG Logo inline -->
+                <svg class="brand-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Villa Grande Logo">
+                    <polyline points="8,14 40,66 72,14" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="16,14 40,54 64,14" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 68,38 A 28,28 0 1,0 40,66 L 40,54 L 54,54" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M 62,40 A 20,20 0 1,0 42,62" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <div class="brand-text">
+                    <span>Villa Grande</span>
+                    <span>Luxury Lodge</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="service.html">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="room.html">Rooms</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Pages</a>
+                        <div class="dropdown-menu">
+                            <a href="booking.html" class="dropdown-item">Booking</a>
+                            <a href="about.html" class="dropdown-item">About Us</a>
+                            <a href="service.html" class="dropdown-item">Services</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-book" href="booking.html">Reserve Now</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ======= HERO SECTION ======= -->
+    <section class="hero-section">
+        <div class="hero-slide hero-slide-1 active" id="heroSlide1"></div>
+        <div class="hero-slide hero-slide-2" id="heroSlide2"></div>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-xl-7">
+                        <div class="hero-eyebrow">
+                            <span>Luxury Living</span>
+                        </div>
+                        <h1 class="hero-title">
+                            Experience <em>Refined</em><br>Comfort at Its Finest
+                        </h1>
+                        <p class="hero-subtitle">
+                            Nestled in the heart of Malawi, Villa Grande Lodge offers an unparalleled retreat where timeless elegance meets warm, personalised hospitality.
+                        </p>
+                        <div class="hero-cta-group">
+                            <a href="room.html" class="btn-vg-primary">
+                                Explore Rooms <i class="fas fa-arrow-right fa-sm"></i>
+                            </a>
+                            <a href="booking.html" class="btn-vg-outline">
+                                Book a Stay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-scroll">
+            <div class="scroll-mouse"></div>
+            <span>Scroll</span>
+        </div>
+
+        <div class="hero-dots">
+            <button class="hero-dot active" aria-label="Go to slide 1"></button>
+            <button class="hero-dot" aria-label="Go to slide 2"></button>
+        </div>
+    </section>
+
+    <!-- ======= BOOKING BAR ======= -->
+    <div class="booking-bar reveal">
+        <div class="container-fluid px-0">
+            <form class="booking-bar-inner" id="bookingForm">
+                <div class="booking-field">
+                    <label for="checkin"><i class="fas fa-calendar-check me-1"></i> Check In</label>
+                    <input type="date" id="checkin" name="checkin">
+                </div>
+                <div class="booking-field">
+                    <label for="checkout"><i class="fas fa-calendar-times me-1"></i> Check Out</label>
+                    <input type="date" id="checkout" name="checkout">
+                </div>
+                <div class="booking-field">
+                    <label for="adults"><i class="fas fa-user me-1"></i> Adults</label>
+                    <select id="adults" name="adults">
+                        <option value="">Select</option>
+                        <option>1 Adult</option>
+                        <option>2 Adults</option>
+                        <option>3 Adults</option>
+                        <option>4+ Adults</option>
+                    </select>
+                </div>
+                <div class="booking-field">
+                    <label for="children"><i class="fas fa-child me-1"></i> Children</label>
+                    <select id="children" name="children">
+                        <option value="">Select</option>
+                        <option>No Children</option>
+                        <option>1 Child</option>
+                        <option>2 Children</option>
+                        <option>3+ Children</option>
+                    </select>
+                </div>
+                <button type="submit" class="booking-submit" form="bookingForm" onclick="event.preventDefault(); window.location='booking.html'">
+                    <i class="fas fa-search"></i> Check Availability
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======= ABOUT SECTION ======= -->
+    <section class="about-section">
+        <div class="container">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6 reveal-left">
+                    <div class="about-img-grid">
+                        <img class="img-main" src="img/about-1.jpg" alt="Villa Grande Lodge interior with elegant furnishings" loading="lazy">
+                        <img class="img-accent" src="img/about-2.jpg" alt="Luxurious bathroom detail at Villa Grande" loading="lazy">
+                        <div class="experience-badge">
+                            <span>15+</span>
+                            <span>Years of<br>Excellence</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 reveal-right">
+                    <div class="section-tag left">About Villa Grande</div>
+                    <h2 class="section-heading">
+                        Where Every Detail<br>Tells a Story of <em>Luxury</em>
+                    </h2>
+                    <div class="divider-gold"></div>
+                    <p style="font-size:0.92rem; line-height:1.9; margin-bottom:24px;">
+                        Villa Grande Lodge is Malawi's premier destination for discerning travellers seeking an extraordinary blend of natural beauty, world-class comfort, and heartfelt African hospitality. Each room is a sanctuary, every meal a celebration, and every moment an unforgettable memory.
+                    </p>
+                    <p style="font-size:0.92rem; line-height:1.9; margin-bottom:36px; color:var(--body-text);">
+                        From our sun-drenched terraces overlooking manicured gardens to our intimate dining rooms and state-of-the-art spa, we craft experiences that linger long after you depart.
+                    </p>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-4 reveal delay-1">
+                            <div class="stat-card">
+                                <span class="stat-number" data-target="48">0</span>
+                                <span class="stat-label">Rooms</span>
+                            </div>
+                        </div>
+                        <div class="col-4 reveal delay-2">
+                            <div class="stat-card">
+                                <span class="stat-number" data-target="120">0</span>
+                                <span class="stat-label">Staff</span>
+                            </div>
+                        </div>
+                        <div class="col-4 reveal delay-3">
+                            <div class="stat-card">
+                                <span class="stat-number" data-target="4800">0</span>
+                                <span class="stat-label">Guests Hosted</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="about.html" class="btn-vg-primary">
+                        Discover Our Story <i class="fas fa-arrow-right fa-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= ROOMS SECTION ======= -->
+    <section class="rooms-section">
+        <div class="container">
+            <div class="text-center reveal mb-5">
+                <div class="section-tag">Our Accommodations</div>
+                <h2 class="section-heading">Curated Rooms &amp; <em>Suites</em></h2>
+                <p style="max-width:520px; margin:16px auto 0; font-size:0.9rem;">
+                    Each space is thoughtfully designed to deliver an exceptional stay, combining bespoke furnishings with modern comfort.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 reveal delay-1">
+                    <div class="room-card">
+                        <div class="room-card-image">
+                            <img src="img/room-1.jpg" alt="Junior Suite bedroom with king bed and garden view" loading="lazy">
+                            <div class="room-price-badge">From <span>$120</span> /night</div>
+                        </div>
+                        <div class="room-card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--navy);">Junior Suite</h4>
+                                <div class="room-stars" aria-label="5 stars">★★★★★</div>
+                            </div>
+                            <div class="room-amenities">
+                                <span class="room-amenity"><i class="fas fa-bed" aria-hidden="true"></i> King Bed</span>
+                                <span class="room-amenity"><i class="fas fa-bath" aria-hidden="true"></i> En Suite</span>
+                                <span class="room-amenity"><i class="fas fa-wifi" aria-hidden="true"></i> Wi-Fi</span>
+                                <span class="room-amenity"><i class="fas fa-snowflake" aria-hidden="true"></i> AC</span>
+                            </div>
+                            <p style="font-size:0.83rem; line-height:1.75; color:var(--body-text);">A refined haven with plush king-size bed, private balcony, and views of the lodge gardens. Perfect for couples seeking tranquil getaway.</p>
+                        </div>
+                        <div class="room-card-footer">
+                            <a href="room.html" class="btn-vg-outline" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">View Details</a>
+                            <a href="booking.html" class="btn-vg-primary" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 reveal delay-2">
+                    <div class="room-card">
+                        <div class="room-card-image">
+                            <img src="img/room-2.jpg" alt="Executive Suite living area with panoramic views" loading="lazy">
+                            <div class="room-price-badge">From <span>$185</span> /night</div>
+                        </div>
+                        <div class="room-card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--navy);">Executive Suite</h4>
+                                <div class="room-stars" aria-label="5 stars">★★★★★</div>
+                            </div>
+                            <div class="room-amenities">
+                                <span class="room-amenity"><i class="fas fa-bed" aria-hidden="true"></i> 2 Beds</span>
+                                <span class="room-amenity"><i class="fas fa-bath" aria-hidden="true"></i> 2 Baths</span>
+                                <span class="room-amenity"><i class="fas fa-wifi" aria-hidden="true"></i> Wi-Fi</span>
+                                <span class="room-amenity"><i class="fas fa-tv" aria-hidden="true"></i> Smart TV</span>
+                            </div>
+                            <p style="font-size:0.83rem; line-height:1.75; color:var(--body-text);">Spacious living and sleeping areas with panoramic views, a private lounge, and premium butler service included. The pinnacle of lodge luxury.</p>
+                        </div>
+                        <div class="room-card-footer">
+                            <a href="room.html" class="btn-vg-outline" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">View Details</a>
+                            <a href="booking.html" class="btn-vg-primary" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 reveal delay-3">
+                    <div class="room-card">
+                        <div class="room-card-image">
+                            <img src="img/room-3.jpg" alt="Presidential Suite with private plunge pool" loading="lazy">
+                            <div class="room-price-badge">From <span>$260</span> /night</div>
+                        </div>
+                        <div class="room-card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--navy);">Presidential Suite</h4>
+                                <div class="room-stars" aria-label="5 stars">★★★★★</div>
+                            </div>
+                            <div class="room-amenities">
+                                <span class="room-amenity"><i class="fas fa-bed" aria-hidden="true"></i> 3 Beds</span>
+                                <span class="room-amenity"><i class="fas fa-bath" aria-hidden="true"></i> 3 Baths</span>
+                                <span class="room-amenity"><i class="fas fa-swimming-pool" aria-hidden="true"></i> Plunge Pool</span>
+                                <span class="room-amenity"><i class="fas fa-concierge-bell" aria-hidden="true"></i> Butler</span>
+                            </div>
+                            <p style="font-size:0.83rem; line-height:1.75; color:var(--body-text);">Our most exclusive offering — a private residence with a plunge pool, personal butler, gourmet kitchen, and bespoke concierge services.</p>
+                        </div>
+                        <div class="room-card-footer">
+                            <a href="room.html" class="btn-vg-outline" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">View Details</a>
+                            <a href="booking.html" class="btn-vg-primary" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5 reveal">
+                <a href="room.html" class="btn-vg-primary">
+                    View All Rooms &amp; Suites <i class="fas fa-arrow-right fa-sm"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= SERVICES SECTION ======= -->
+    <section class="services-section">
+        <div class="container">
+            <div class="text-center reveal mb-5">
+                <div class="section-tag" style="color:var(--gold);">What We Offer</div>
+                <h2 class="section-heading" style="color:var(--white);">World-Class <em>Services</em></h2>
+                <p style="max-width:500px; margin:16px auto 0; font-size:0.88rem; color:rgba(255,255,255,0.75);">
+                    Every detail of your stay is curated to exceed expectations — from arrival to departure.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 reveal delay-1">
+                    <div class="service-card">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-hotel"></i>
+                        </div>
+                        <h5>Premium Rooms</h5>
+                        <p>Thoughtfully designed rooms and suites with bespoke furnishings, premium linens, and panoramic views of our beautiful lodge grounds.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 reveal delay-2">
+                    <div class="service-card">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h5>Fine Dining</h5>
+                        <p>Exceptional cuisine crafted from locally sourced ingredients. Our chefs blend international techniques with authentic Malawian flavours.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 reveal delay-3">
+                    <div class="service-card">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <h5>Spa &amp; Wellness</h5>
+                        <p>Indulge in rejuvenating treatments at our award-winning spa. From deep-tissue massages to holistic therapies tailored to you.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 reveal delay-1">
+                    <div class="service-card">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-swimming-pool"></i>
+                        </div>
+                        <h5>Sports &amp; Pool</h5>
+                        <p>Olympic-sized pool, tennis courts, and a fully equipped fitness centre. Stay active in style with panoramic outdoor facilities.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 reveal delay-2">
+                    <div class="service-card">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-glass-cheers"></i>
+                        </div>
+                        <h5>Events &amp; Celebrations</h5>
+                        <p>Host unforgettable weddings, corporate events, and private celebrations in our elegant event spaces with personalised planning.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 reveal delay-3">
+                    <div class="service-card">
+                        <div class="service-icon-wrap">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <h5>Concierge</h5>
+                        <p>Our dedicated concierge team is available around the clock to arrange excursions, transport, reservations, and any special request.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= EXPERIENCE / VIDEO SECTION ======= -->
+    <div class="experience-section">
+        <div class="experience-text">
+            <div class="section-tag left" style="color:var(--gold);">Our Experience</div>
+            <h2 class="section-heading" style="color:var(--white); margin-bottom:20px;">
+                A World of <em>Luxury</em><br>Awaits You
+            </h2>
+            <div class="divider-gold"></div>
+            <p style="font-size:0.9rem; line-height:1.85; color:rgba(255,255,255,0.75); margin-bottom:24px;">
+                From the moment you arrive, Villa Grande envelops you in an atmosphere of quiet grandeur. Our dedicated team crafts each stay as a personal journey — whether a romantic escape, family retreat, or corporate visit.
+            </p>
+            <p style="font-size:0.9rem; line-height:1.85; color:rgba(255,255,255,0.75); margin-bottom:40px;">
+                Surrounded by the natural splendour of Malawi, every sunrise brings new possibilities, every evening invites reflection over a masterfully prepared dinner.
+            </p>
+            <div class="d-flex gap-3 flex-wrap">
+                <a href="room.html" class="btn-vg-primary">Our Rooms</a>
+                <a href="booking.html" class="btn-vg-outline">Book a Stay</a>
+            </div>
+        </div>
+        <div class="experience-visual">
+            <div class="play-btn-wrap">
+                <button class="btn-play-vg" data-bs-toggle="modal" data-bs-target="#videoModal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" aria-label="Play video">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark border-0">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="ratio ratio-16x9">
+                        <iframe id="videoFrame" src="" allowfullscreen allow="autoplay" title="Villa Grande Lodge Video"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= TESTIMONIALS ======= -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="text-center reveal mb-5">
+                <div class="section-tag">Guest Reviews</div>
+                <h2 class="section-heading">Words From Our <em>Guests</em></h2>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4 reveal delay-1">
+                    <div class="testimonial-card">
+                        <div class="t-stars" aria-label="5 stars">★★★★★</div>
+                        <div class="testimonial-quote">"</div>
+                        <p class="testimonial-text">
+                            An absolutely remarkable stay. The attention to detail, the warmth of the staff, and the breathtaking surroundings made this the most memorable holiday of our lives. Villa Grande is in a class of its own.
+                        </p>
+                        <div class="testimonial-author d-flex align-items-center gap-3">
+                            <img src="img/testimonial-1.jpg" alt="Sarah M." loading="lazy">
+                            <div>
+                                <h6>Sarah &amp; James M.</h6>
+                                <small>Cape Town, South Africa</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal delay-2">
+                    <div class="testimonial-card">
+                        <div class="t-stars" aria-label="5 stars">★★★★★</div>
+                        <div class="testimonial-quote">"</div>
+                        <p class="testimonial-text">
+                            We hosted our corporate retreat at Villa Grande and it exceeded every expectation. The facilities, cuisine, and professional service created an environment that inspired our entire team. We will return.
+                        </p>
+                        <div class="testimonial-author d-flex align-items-center gap-3">
+                            <img src="img/testimonial-2.jpg" alt="David K." loading="lazy">
+                            <div>
+                                <h6>David K.</h6>
+                                <small>CEO, Nairobi</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal delay-3">
+                    <div class="testimonial-card">
+                        <div class="t-stars" aria-label="5 stars">★★★★★</div>
+                        <div class="testimonial-quote">"</div>
+                        <p class="testimonial-text">
+                            From the animated loading screen to checking in at the most elegant lodge in Malawi, the Villa Grande experience is flawless. The Presidential Suite was pure heaven. Our anniversary was unforgettable.
+                        </p>
+                        <div class="testimonial-author d-flex align-items-center gap-3">
+                            <img src="img/testimonial-3.jpg" alt="Amara L." loading="lazy">
+                            <div>
+                                <h6>Amara &amp; Theo L.</h6>
+                                <small>Lusaka, Zambia</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= NEWSLETTER ======= -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6 reveal-left">
+                    <div class="section-tag left" style="color:var(--gold);">Stay Connected</div>
+                    <h2 class="section-heading" style="color:var(--white);">Subscribe for <em>Exclusive</em><br>Offers &amp; Updates</h2>
+                </div>
+                <div class="col-lg-6 reveal-right">
+                    <form class="newsletter-input-wrap" onsubmit="event.preventDefault(); alert('Subscribed! (Demo)');">
+                        <input type="email" placeholder="Enter your email address" required aria-label="Email address">
+                        <button type="submit">Subscribe</button>
+                    </form>
+                    <p style="font-size:0.75rem; color:rgba(255,255,255,0.35); margin-top:10px;">
+                        No spam. Unsubscribe at any time. <a href="#" style="color:var(--gold); text-decoration:none;">Privacy Policy</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= FOOTER ======= -->
+    <footer class="footer-vg">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand">
+                        <h3>Villa Grande</h3>
+                        <div class="tagline">Luxury Lodge</div>
+                        <p>A sanctuary of refined elegance nestled in the natural beauty of Malawi — where every stay becomes a treasured memory.</p>
+                    </div>
+                    <div class="footer-socials">
+                        <a href="#" class="footer-social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer-social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer-social-btn" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="footer-social-btn" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-social-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-heading">Navigate</div>
+                    <a href="index.html" class="footer-link">Home</a>
+                    <a href="about.html" class="footer-link">About Us</a>
+                    <a href="room.html" class="footer-link">Our Rooms</a>
+                    <a href="service.html" class="footer-link">Services</a>
+                    <a href="booking.html" class="footer-link">Reservations</a>
+                    <a href="contact.html" class="footer-link">Contact</a>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-heading">Services</div>
+                    <a href="#" class="footer-link">Fine Dining</a>
+                    <a href="#" class="footer-link">Spa &amp; Wellness</a>
+                    <a href="#" class="footer-link">Events &amp; Weddings</a>
+                    <a href="#" class="footer-link">Fitness &amp; Pool</a>
+                    <a href="#" class="footer-link">Concierge</a>
+                    <a href="#" class="footer-link">Airport Transfer</a>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-heading">Get In Touch</div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-map-marker-alt mt-1" aria-hidden="true"></i>
+                        <span>Kamuzu Procession Road, Blantyre, Malawi</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                        <span>+265 888 000 000</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <span>reservations@villagrande.co.mw</span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                        <span>+265 999 000 000 (WhatsApp)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom d-flex justify-content-between flex-wrap gap-3">
+                <span>© 2026 <a href="#">Villa Grande Lodge</a>. All rights reserved.</span>
+                <span>
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="#" class="me-3">Terms &amp; Conditions</a>
+                    <a href="#">Support</a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <a href="#" class="back-to-top-vg" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>

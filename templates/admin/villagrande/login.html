@@ -1,0 +1,80 @@
+{% extends "admin/villagrande/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Login' %} | Villa Grande CMS{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-logo">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="8,14 40,66 72,14" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="16,14 40,54 64,14" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 68,38 A 28,28 0 1,0 40,66 L 40,54 L 54,54" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 62,40 A 20,20 0 1,0 42,62" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h2>Villa Grande CMS</h2>
+            <p>{% translate 'Administration Panel' %}</p>
+        </div>
+        
+        {% if form.errors and not form.non_field_errors %}
+            <div class="message message-error">
+                {% if form.errors.items|length == 1 %}
+                    {% translate "Please correct the error below." %}
+                {% else %}
+                    {% translate "Please correct the errors below." %}
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <div class="message message-error">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username" class="form-label">{% translate 'Username' %}</label>
+                <input type="text" name="username" id="id_username" class="form-control-admin" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password" class="form-label">{% translate 'Password' %}</label>
+                <input type="password" name="password" id="id_password" class="form-control-admin" required>
+            </div>
+            
+            {% url 'admin_password_reset' as password_reset_url %}
+            {% if password_reset_url %}
+                <div class="password-reset-link">
+                    <a href="{{ password_reset_url }}" style="color: var(--gold);">{% translate 'Forgotten your password or username?' %}</a>
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> {% translate 'Sign In' %}
+            </button>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+        
+        <div class="login-footer">
+            <p>© {% now "Y" %} Villa Grande Lodge. {% translate 'All rights reserved.' %}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('id_username').focus();
+    
+    // Add loading state to form submission
+    document.getElementById('login-form').addEventListener('submit', function() {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% translate "Signing in..." %}';
+        submitBtn.disabled = true;
+    });
+</script>
+{% endblock %}

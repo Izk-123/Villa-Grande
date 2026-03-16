@@ -1,0 +1,36 @@
+{% extends "admin/villagrande/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Server Error' %} | Villa Grande CMS{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card" style="text-align: center;">
+        <div class="login-logo">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="8,14 40,66 72,14" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="16,14 40,54 64,14" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 68,38 A 28,28 0 1,0 40,66 L 40,54 L 54,54" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 62,40 A 20,20 0 1,0 42,62" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h2>{% translate '500' %}</h2>
+            <p>{% translate 'Server Error' %}</p>
+        </div>
+        
+        <div class="my-5">
+            <i class="fas fa-exclamation-triangle" style="font-size: 5rem; color: #dc3545;"></i>
+            <p class="mt-4" style="font-size: 1.2rem;">{% translate 'Something went wrong. Please try again later.' %}</p>
+        </div>
+        
+        <div class="submit-row" style="justify-content: center;">
+            <a href="{% url 'admin:index' %}" class="btn-admin btn-admin-primary">
+                <i class="fas fa-home"></i> {% translate 'Go to Dashboard' %}
+            </a>
+        </div>
+        
+        <div class="login-footer mt-5">
+            <p>© {% now "Y" %} Villa Grande Lodge</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
