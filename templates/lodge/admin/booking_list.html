@@ -1,0 +1,46 @@
+{% extends 'lodge/base.html' %}
+
+{% block title %}Manage Bookings - Villa Grande{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2 class="mb-4">All Bookings</h2>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Room</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>#{{ booking.id }}</td>
+                <td>{{ booking.customer.name }}<br><small>{{ booking.customer.phone }}</small></td>
+                <td>{{ booking.room.room_number }} ({{ booking.room.get_room_type_display }})</td>
+                <td>{{ booking.check_in }}</td>
+                <td>{{ booking.check_out }}</td>
+                <td>
+                    <span class="badge bg-{% if booking.status == 'CONFIRMED' %}success{% elif booking.status == 'PENDING' %}warning{% else %}danger{% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'lodge:admin_booking_update' booking.pk %}" class="btn btn-sm btn-warning">Update Status</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No bookings found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

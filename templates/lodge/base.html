@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Villa Grande Lodge — Experience luxury accommodation with world-class amenities.">
+    <title>{% block title %}Villa Grande Lodge{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Loader -->
+    <div id="vg-loader">
+        <div class="loader-logo-wrap">
+            <div class="vg-monogram">
+                <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <polyline class="vg-path" points="15,20 60,90 105,20" fill="none" stroke="#C9A84C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline class="vg-path" points="27,20 60,72 93,20" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation-delay:0.3s"/>
+                    <path class="vg-path" d="M 95,50 A 35,35 0 1,0 60,90 L 60,70 L 78,70" fill="none" stroke="#C9A84C" stroke-width="5" stroke-linecap="round" style="animation-delay:0.6s"/>
+                    <path class="vg-path" d="M 88,52 A 26,26 0 1,0 62,88" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" style="animation-delay:0.9s"/>
+                </svg>
+            </div>
+            <div class="loader-brand-name">Villa Grande</div>
+            <div class="loader-tagline">Luxury Lodge Experience</div>
+            <div class="loader-bar-track">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'lodge/partials/topbar.html' %}
+    {% include 'lodge/partials/navbar.html' %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'lodge/partials/footer.html' %}
+
+    <!-- Back to Top -->
+    <a href="#" class="back-to-top-vg" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

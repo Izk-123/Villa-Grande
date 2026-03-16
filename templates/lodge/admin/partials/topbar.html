@@ -1,0 +1,60 @@
+{% load static %}
+<div class="admin-topbar">
+    <div class="topbar-left">
+        <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title">{{ title|default:"Dashboard" }}</h1>
+    </div>
+    
+    <div class="topbar-right">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
+        <!-- Notifications -->
+        <div class="dropdown">
+            <button class="notification-btn" data-bs-toggle="dropdown">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end" style="width: 300px;">
+                <div class="dropdown-header">Notifications</div>
+                <div class="dropdown-item">
+                    <small class="text-gold">New booking #1234</small>
+                </div>
+                <div class="dropdown-item">
+                    <small class="text-gold">Room 101 needs maintenance</small>
+                </div>
+                <div class="dropdown-item">
+                    <small class="text-gold">5 pending bookings</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Profile -->
+        <div class="dropdown">
+            <div class="admin-profile" data-bs-toggle="dropdown">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name">{{ request.user.username }}</div>
+                    <div class="profile-role">Administrator</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'cms:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

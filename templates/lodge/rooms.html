@@ -1,0 +1,54 @@
+{% extends 'lodge/base.html' %}
+{% load static %}
+
+{% block title %}Our Rooms - Villa Grande{% endblock %}
+
+{% block content %}
+<section class="rooms-section">
+    <div class="container">
+        <div class="text-center reveal mb-5">
+            <div class="section-tag">Our Accommodations</div>
+            <h2 class="section-heading">Curated Rooms &amp; <em>Suites</em></h2>
+            <p style="max-width:520px; margin:16px auto 0; font-size:0.9rem;">
+                Each space is thoughtfully designed to deliver an exceptional stay, combining bespoke furnishings with modern comfort.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            {% for room in rooms %}
+            <div class="col-lg-4 col-md-6 reveal delay-{{ forloop.counter|default:1 }}">
+                <div class="room-card">
+                    <div class="room-card-image">
+                        {% if room.image %}
+                            <img src="{{ room.image.url }}" alt="{{ room.room_number }}" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'img/default-room.jpg' %}" alt="Default room image" loading="lazy">
+                        {% endif %}
+                        <div class="room-price-badge">From <span>${{ room.price_per_night }}</span> /night</div>
+                    </div>
+                    <div class="room-card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--navy);">{{ room.get_room_type_display }} - {{ room.room_number }}</h4>
+                            <div class="room-stars" aria-label="5 stars">★★★★★</div>
+                        </div>
+                        <div class="room-amenities">
+                            <span class="room-amenity"><i class="fas fa-bed" aria-hidden="true"></i> King Bed</span>
+                            <span class="room-amenity"><i class="fas fa-bath" aria-hidden="true"></i> En Suite</span>
+                            <span class="room-amenity"><i class="fas fa-wifi" aria-hidden="true"></i> Wi-Fi</span>
+                            <span class="room-amenity"><i class="fas fa-snowflake" aria-hidden="true"></i> AC</span>
+                        </div>
+                        <p style="font-size:0.83rem; line-height:1.75; color:var(--body-text);">{{ room.description|truncatewords:20 }}</p>
+                    </div>
+                    <div class="room-card-footer">
+                        <a href="{% url 'lodge:room_detail' room.pk %}" class="btn-vg-outline" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">View Details</a>
+                        <a href="{% url 'lodge:booking' %}?room={{ room.pk }}" class="btn-vg-primary" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">Book Now</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No rooms available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

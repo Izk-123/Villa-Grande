@@ -1,0 +1,70 @@
+{% load static %}
+<footer class="footer-vg">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-brand">
+                    <h3>Villa Grande</h3>
+                    <div class="tagline">Luxury Lodge</div>
+                    <p>A sanctuary of refined elegance nestled in the natural beauty of Malawi — where every stay becomes a treasured memory.</p>
+                </div>
+                <div class="footer-socials">
+                    <a href="#" class="footer-social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="footer-social-btn" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="footer-social-btn" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <div class="footer-heading">Navigate</div>
+                <a href="{% url 'lodge:home' %}" class="footer-link">Home</a>
+                <a href="{% url 'lodge:about' %}" class="footer-link">About Us</a>
+                <a href="{% url 'lodge:rooms' %}" class="footer-link">Our Rooms</a>
+                <a href="{% url 'lodge:services' %}" class="footer-link">Services</a>
+                <a href="{% url 'lodge:booking' %}" class="footer-link">Reservations</a>
+                <a href="{% url 'lodge:contact' %}" class="footer-link">Contact</a>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <div class="footer-heading">Services</div>
+                <a href="#" class="footer-link">Fine Dining</a>
+                <a href="#" class="footer-link">Spa &amp; Wellness</a>
+                <a href="#" class="footer-link">Events &amp; Weddings</a>
+                <a href="#" class="footer-link">Fitness &amp; Pool</a>
+                <a href="#" class="footer-link">Concierge</a>
+                <a href="#" class="footer-link">Airport Transfer</a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-heading">Get In Touch</div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt mt-1" aria-hidden="true"></i>
+                    <span>Kamuzu Procession Road, Blantyre, Malawi</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                    <span>+265 888 000 000</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    <span>reservations@villagrande.co.mw</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    <span>+265 999 000 000 (WhatsApp)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom d-flex justify-content-between flex-wrap gap-3">
+            <span>© 2026 <a href="{% url 'lodge:home' %}">Villa Grande Lodge</a>. All rights reserved.</span>
+            <span>
+                <a href="#" class="me-3">Privacy Policy</a>
+                <a href="#" class="me-3">Terms &amp; Conditions</a>
+                <a href="#">Support</a>
+            </span>
+        </div>
+    </div>
+</footer>

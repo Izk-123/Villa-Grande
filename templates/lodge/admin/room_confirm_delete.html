@@ -1,0 +1,19 @@
+{% extends 'lodge/base.html' %}
+
+{% block title %}Delete Room - Villa Grande{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <h2>Delete Room</h2>
+            <p>Are you sure you want to delete room "{{ object.room_number }}"?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, delete</button>
+                <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

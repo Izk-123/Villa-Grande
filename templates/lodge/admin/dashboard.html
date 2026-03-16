@@ -1,0 +1,260 @@
+{% extends 'lodge/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Villa Grande CMS{% endblock %}
+
+{% block content %}
+<!-- Admin Wrapper -->
+<div class="admin-wrapper">
+    <!-- Sidebar -->
+    {% include 'lodge/admin/partials/sidebar.html' %}
+    
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Top Bar -->
+        {% include 'lodge/admin/partials/topbar.html' with title="Dashboard" %}
+        
+        <!-- Content Area -->
+        <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in">
+                        <div class="stat-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="stat-value">{{ total_rooms }}</div>
+                        <div class="stat-label">Total Rooms</div>
+                        <div style="margin-top: 15px; font-size: 0.8rem;">
+                            <span style="color: var(--gold);">{{ active_rooms }} active</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in" style="animation-delay: 0.1s;">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-value">{{ total_bookings|default:"0" }}</div>
+                        <div class="stat-label">Total Bookings</div>
+                        <div style="margin-top: 15px; font-size: 0.8rem;">
+                            <span style="color: var(--gold);">{{ confirmed_bookings }} confirmed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in" style="animation-delay: 0.2s;">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-value">{{ total_customers|default:"0" }}</div>
+                        <div class="stat-label">Total Guests</div>
+                        <div style="margin-top: 15px; font-size: 0.8rem;">
+                            <span style="color: var(--gold);">{{ new_customers|default:"0" }} this month</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in" style="animation-delay: 0.3s;">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-value">${{ revenue|default:"0" }}</div>
+                        <div class="stat-label">Monthly Revenue</div>
+                        <div style="margin-top: 15px; font-size: 0.8rem;">
+                            <span style="color: var(--gold);">↑ 12% vs last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-6">
+                    <div class="admin-card slide-in">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Booking Trends</h5>
+                            <select class="form-select" style="width: auto; background: transparent; border: 1px solid var(--border);">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 90 days</option>
+                            </select>
+                        </div>
+                        <div style="height: 300px;">
+                            <canvas id="bookingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-6">
+                    <div class="admin-card slide-in" style="animation-delay: 0.1s;">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Room Occupancy</h5>
+                            <span class="badge" style="background: var(--gold); color: var(--navy);">{{ occupancy_rate|default:"78" }}%</span>
+                        </div>
+                        <div style="height: 300px;">
+                            <canvas id="occupancyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Bookings -->
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="admin-card">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Recent Bookings</h5>
+                            <a href="{% url 'lodge:admin_booking_list' %}" class="btn-admin btn-admin-outline" style="padding: 5px 15px;">
+                                View All <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Guest</th>
+                                        <th>Room</th>
+                                        <th>Check In</th>
+                                        <th>Check Out</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in recent_bookings %}
+                                    <tr>
+                                        <td>#{{ booking.id }}</td>
+                                        <td>{{ booking.customer.name }}</td>
+                                        <td>{{ booking.room.room_number }}</td>
+                                        <td>{{ booking.check_in|date:"M d, Y" }}</td>
+                                        <td>{{ booking.check_out|date:"M d, Y" }}</td>
+                                        <td>
+                                            <span class="status-badge 
+                                                {% if booking.status == 'CONFIRMED' %}badge-confirmed
+                                                {% elif booking.status == 'PENDING' %}badge-pending
+                                                {% else %}badge-cancelled{% endif %}">
+                                                {{ booking.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'lodge:admin_booking_update' booking.pk %}" class="btn-admin btn-admin-outline" style="padding: 3px 10px;">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">No recent bookings</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row g-4 mt-2">
+                <div class="col-md-3">
+                    <a href="{% url 'lodge:admin_room_create' %}" class="admin-card text-center" style="display: block; text-decoration: none;">
+                        <i class="fas fa-plus-circle" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                        <h6>Add New Room</h6>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#" class="admin-card text-center" style="display: block; text-decoration: none;">
+                        <i class="fas fa-file-pdf" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                        <h6>Generate Report</h6>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="#" class="admin-card text-center" style="display: block; text-decoration: none;">
+                        <i class="fas fa-cog" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                        <h6>Settings</h6>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'lodge:admin_customer_list' %}" class="admin-card text-center" style="display: block; text-decoration: none;">
+                        <i class="fas fa-users" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                        <h6>View Customers</h6>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Booking Trends Chart
+        const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+        new Chart(bookingCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Bookings',
+                    data: [12, 19, 15, 17, 24, 30, 28],
+                    borderColor: '#C9A84C',
+                    backgroundColor: 'rgba(201,168,76,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(201,168,76,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Occupancy Chart
+        const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+        new Chart(occupancyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Occupied', 'Available', 'Maintenance'],
+                datasets: [{
+                    data: [65, 25, 10],
+                    backgroundColor: ['#C9A84C', '#0A2342', '#dc3545'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    });
+</script>
+{% endblock %}

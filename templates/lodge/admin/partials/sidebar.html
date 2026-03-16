@@ -1,0 +1,71 @@
+{% load static %}
+<div class="admin-sidebar">
+    <div class="sidebar-header">
+        <a href="{% url 'cms:dashboard' %}" class="sidebar-brand">
+            <svg class="sidebar-brand-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="4,7 20,33 36,7" fill="none" stroke="#C9A84C" stroke-width="2"/>
+                <polyline points="8,7 20,27 32,7" fill="none" stroke="#C9A84C" stroke-width="1"/>
+            </svg>
+            <span class="sidebar-brand-text">Villa Grande CMS</span>
+        </a>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+    
+    <div class="sidebar-menu">
+        <div class="menu-section">
+            <div class="menu-section-title">Main</div>
+            <a href="{% url 'cms:dashboard' %}" class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">Management</div>
+            <a href="{% url 'cms:room_list' %}" class="menu-item {% if 'room' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-door-open"></i>
+                <span>Rooms</span>
+                {% if total_rooms %}
+                <span class="menu-badge">{{ total_rooms }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'cms:booking_list' %}" class="menu-item {% if 'booking' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-calendar-check"></i>
+                <span>Bookings</span>
+                {% if pending_bookings %}
+                <span class="menu-badge">{{ pending_bookings }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'cms:customer_list' %}" class="menu-item {% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>Customers</span>
+            </a>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">Reports</div>
+            <a href="#" class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-file-pdf"></i>
+                <span>Reports</span>
+            </a>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">System</div>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'cms:logout' %}" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+</div>
