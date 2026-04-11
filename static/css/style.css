@@ -1278,3 +1278,145 @@ textarea:focus-visible {
     outline: 2px solid var(--gold);
     outline-offset: 2px;
 }
+
+/* Quick Booking Bar Enhancement */
+.quick-booking-bar {
+    background: white;
+    border-radius: 60px;
+    padding: 6px;
+    box-shadow: 0 15px 40px rgba(10,35,66,0.15);
+    margin-top: -40px;
+    position: relative;
+    z-index: 100;
+    animation: barFloat 1s ease-out;
+}
+
+@keyframes barFloat {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quick-booking-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quick-field {
+    flex: 1;
+    padding: 12px 20px;
+    border-right: 1px solid rgba(10,35,66,0.1);
+    transition: all 0.3s ease;
+}
+
+.quick-field:last-of-type {
+    border-right: none;
+}
+
+.quick-field:hover {
+    background: var(--cream);
+    border-radius: 40px;
+}
+
+.quick-field label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+}
+
+.quick-field input,
+.quick-field select {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    color: var(--navy);
+    width: 100%;
+    cursor: pointer;
+}
+
+.quick-submit-btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: var(--navy);
+    border: none;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.quick-submit-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.quick-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201,168,76,0.3);
+}
+
+.quick-submit-btn i {
+    font-size: 1rem;
+}
+
+@media (max-width: 991px) {
+    .quick-booking-bar {
+        border-radius: 30px;
+        margin-top: -20px;
+    }
+    
+    .quick-booking-form {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .quick-field {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(10,35,66,0.1);
+        padding: 15px 0;
+    }
+    
+    .quick-field:last-of-type {
+        border-bottom: none;
+    }
+    
+    .quick-submit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

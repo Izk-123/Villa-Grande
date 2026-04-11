@@ -1,0 +1,685 @@
+/* ============================================================
+   MODERN BOOKING FORM STYLES
+   Villa Grande Lodge - Navy (#0A2342), Gold (#C9A84C), Cream (#F5F0E8)
+   ============================================================ */
+
+/* Form Container with Animated Background */
+.modern-booking-container {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, var(--cream) 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(10,35,66,0.12);
+    animation: containerFloat 0.8s ease-out;
+}
+
+@keyframes containerFloat {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modern-booking-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+    animation: gradientShift 3s infinite linear;
+    background-size: 200% 100%;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Form Steps Indicator */
+.form-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding: 20px 30px;
+    background: rgba(10,35,66,0.02);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.step-item {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.step-item.active {
+    opacity: 1;
+}
+
+.step-item.completed {
+    opacity: 0.8;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    color: var(--navy);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.step-item.active .step-icon {
+    background: var(--gold);
+    color: var(--navy);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(201,168,76,0.3);
+}
+
+.step-item.completed .step-icon {
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+.step-item.completed .step-icon i {
+    color: var(--navy);
+}
+
+.step-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+}
+
+.step-item::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transform: scaleX(0);
+    transition: transform 0.5s ease;
+    z-index: 1;
+}
+
+.step-item.active::after,
+.step-item.completed::after {
+    transform: scaleX(1);
+}
+
+/* Form Sections with Entrance Animations */
+.form-section {
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+    animation: sectionSlide 0.5s ease-out forwards;
+    opacity: 0;
+    transform-origin: top;
+}
+
+.form-section:nth-child(1) { animation-delay: 0.1s; }
+.form-section:nth-child(2) { animation-delay: 0.2s; }
+.form-section:nth-child(3) { animation-delay: 0.3s; }
+.form-section:nth-child(4) { animation-delay: 0.4s; }
+.form-section:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes sectionSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: var(--navy);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gold);
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: var(--gold);
+    animation: titleExpand 0.6s ease-out;
+}
+
+@keyframes titleExpand {
+    from { width: 0; }
+    to { width: 50px; }
+}
+
+/* Modern Input Fields */
+.modern-input,
+.modern-date-input,
+.modern-number-input,
+.modern-select,
+.modern-textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid rgba(10,35,66,0.1);
+    border-radius: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-input:focus,
+.modern-date-input:focus,
+.modern-number-input:focus,
+.modern-select:focus,
+.modern-textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(201,168,76,0.1);
+    transform: translateY(-2px);
+}
+
+.modern-input:hover,
+.modern-date-input:hover,
+.modern-number-input:hover,
+.modern-select:hover,
+.modern-textarea:hover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.02);
+}
+
+/* Input with Icon */
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.input-icon-wrapper .modern-input,
+.input-icon-wrapper .modern-date-input,
+.input-icon-wrapper .modern-number-input,
+.input-icon-wrapper .modern-select {
+    padding-left: 45px;
+}
+
+.input-icon-wrapper:focus-within i {
+    color: var(--navy);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Animated Floating Labels */
+.floating-label-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.floating-label-group input,
+.floating-label-group select,
+.floating-label-group textarea {
+    height: 60px;
+    padding-top: 20px;
+}
+
+.floating-label-group label {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(10,35,66,0.5);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 0%, white 20%);
+    padding: 0 5px;
+}
+
+.floating-label-group.focused label,
+.floating-label-group.has-value label {
+    top: 0;
+    font-size: 0.7rem;
+    color: var(--gold);
+    background: white;
+}
+
+/* Modern Checkbox Group */
+.modern-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.modern-checkbox-group .checkbox-item {
+    position: relative;
+    min-width: 150px;
+}
+
+.modern-checkbox-group input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.modern-checkbox-group label {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px 8px 40px;
+    background: white;
+    border: 1px solid rgba(10,35,66,0.1);
+    border-radius: 25px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.modern-checkbox-group label::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.modern-checkbox-group input[type="checkbox"]:checked + label {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(201,168,76,0.2);
+}
+
+.modern-checkbox-group input[type="checkbox"]:checked + label::before {
+    background: var(--navy);
+    border-color: var(--navy);
+}
+
+.modern-checkbox-group input[type="checkbox"]:focus + label {
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+}
+
+/* Modern Radio Group */
+.modern-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.modern-radio-group .radio-item {
+    position: relative;
+}
+
+.modern-radio-group input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.modern-radio-group label {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px 10px 45px;
+    background: white;
+    border: 1px solid rgba(10,35,66,0.1);
+    border-radius: 30px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.modern-radio-group label::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.modern-radio-group input[type="radio"]:checked + label {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+}
+
+.modern-radio-group input[type="radio"]:checked + label::before {
+    background: var(--navy);
+    border-color: var(--navy);
+}
+
+/* Price Calculator */
+.price-calculator {
+    background: linear-gradient(135deg, var(--navy) 0%, #1a3a5a 100%);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    margin-top: 20px;
+    animation: pricePulse 2s infinite;
+}
+
+@keyframes pricePulse {
+    0% { box-shadow: 0 5px 20px rgba(201,168,76,0.1); }
+    50% { box-shadow: 0 5px 30px rgba(201,168,76,0.3); }
+    100% { box-shadow: 0 5px 20px rgba(201,168,76,0.1); }
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.price-row.total {
+    border-bottom: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gold);
+}
+
+.price-label {
+    opacity: 0.8;
+}
+
+.price-value {
+    font-weight: 500;
+}
+
+/* Submit Button with Animation */
+.submit-btn-wrapper {
+    text-align: center;
+    margin-top: 30px;
+    position: relative;
+}
+
+.modern-submit-btn {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--navy);
+    border: none;
+    padding: 16px 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(201,168,76,0.2);
+}
+
+.modern-submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.modern-submit-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.modern-submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(201,168,76,0.3);
+}
+
+.modern-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Loading Spinner */
+.btn-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(10,35,66,0.3);
+    border-top-color: var(--navy);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Form Validation Styles */
+.modern-input.error,
+.modern-date-input.error,
+.modern-number-input.error,
+.modern-select.error,
+.modern-textarea.error {
+    border-color: #dc3545;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    padding-left: 15px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success Message Animation */
+.success-message {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    animation: successPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes successPop {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Room Cards in Selection */
+.room-card-option {
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.room-card-option:hover {
+    transform: translateX(10px);
+    border-color: var(--gold);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.room-card-option.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.02);
+}
+
+.room-card-option.selected::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1.2rem;
+}
+
+.room-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+/* Quick Booking Bar Enhancement */
+.quick-booking-bar {
+    background: white;
+    border-radius: 50px;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    animation: barGlow 2s infinite;
+}
+
+@keyframes barGlow {
+    0% { box-shadow: 0 10px 30px rgba(201,168,76,0.1); }
+    50% { box-shadow: 0 10px 40px rgba(201,168,76,0.2); }
+    100% { box-shadow: 0 10px 30px rgba(201,168,76,0.1); }
+}
+
+.quick-field {
+    flex: 1;
+    padding: 0 20px;
+    border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.quick-field:last-child {
+    border-right: none;
+}
+
+.quick-field label {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 2px;
+}
+
+.quick-field input,
+.quick-field select {
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    color: var(--navy);
+    background: transparent;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-steps {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .step-item {
+        flex: 0 0 calc(33.333% - 10px);
+    }
+    
+    .quick-booking-bar {
+        flex-direction: column;
+        border-radius: 20px;
+    }
+    
+    .quick-field {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 15px;
+    }
+    
+    .modern-checkbox-group .checkbox-item {
+        width: 100%;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .modern-booking-container::before,
+    .step-item::after,
+    .price-calculator {
+        background: none;
+        box-shadow: none;
+    }
+}
