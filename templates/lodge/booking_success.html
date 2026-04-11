@@ -1,7 +1,7 @@
 {% extends 'lodge/base.html' %}
 {% load static %}
 
-{% block title %}Booking Confirmed - Villa Grande{% endblock %}
+{% block title %}Booking Received - Villa Grande{% endblock %}
 
 {% block content %}
 <section class="success-section py-5">
@@ -13,18 +13,19 @@
                 </div>
                 <h2 class="section-heading mb-3">Thank You, <em>{{ booking.customer.name }}</em>!</h2>
                 <p class="lead">Your booking request has been received.</p>
-                <p>We will confirm your reservation shortly via WhatsApp.</p>
+                <p>We will confirm your reservation shortly via email.</p>
                 
                 <div class="booking-details mt-5 p-4 bg-light text-start">
                     <h4>Booking Summary</h4>
                     <div class="divider-gold"></div>
-                    <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+                    <p><strong>Booking ID:</strong> {{ booking.booking_reference }}</p>
                     <p><strong>Room:</strong> {{ booking.room.get_room_type_display }} - {{ booking.room.room_number }}</p>
                     <p><strong>Check In:</strong> {{ booking.check_in|date:"F j, Y" }}</p>
                     <p><strong>Check Out:</strong> {{ booking.check_out|date:"F j, Y" }}</p>
                     <p><strong>Guests:</strong> {{ booking.guests }}</p>
                     <p><strong>Total Nights:</strong> {{ booking.nights }}</p>
                     <p><strong>Status:</strong> <span class="badge bg-warning">{{ booking.get_status_display }}</span></p>
+                    <p class="mt-3 small">You can check your booking status anytime at <a href="{% url 'lodge:check_booking' %}">Check Booking</a> using your Booking ID.</p>
                 </div>
                 
                 <div class="mt-5">

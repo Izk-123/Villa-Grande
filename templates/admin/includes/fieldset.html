@@ -1,0 +1,31 @@
+<fieldset class="module aligned {{ fieldset.classes }}">
+    {% if fieldset.name %}<h5 class="card-title mt-3">{{ fieldset.name }}</h5>{% endif %}
+    {% if fieldset.description %}<div class="description mb-3">{{ fieldset.description|safe }}</div>{% endif %}
+    {% for line in fieldset %}
+        <div class="form-row row mb-3{% if line.fields|length == 1 and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+            {% for field in line %}
+                <div{% if not line.fields|length == 1 %} class="col-md-{{ line.fields|length|add:1 }} fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}"{% elif field.is_checkbox %} class="checkbox-row"{% endif %}>
+                    {% if not line.fields|length == 1 and not field.is_checkbox %}
+                        <label for="{{ field.id_for_label }}" class="col-form-label">{{ field.label_tag }}</label>
+                    {% endif %}
+                    {% if field.is_checkbox %}
+                        <div class="form-check">
+                            {{ field.field }}
+                            <label for="{{ field.id_for_label }}" class="form-check-label">{{ field.label_tag }}</label>
+                        </div>
+                    {% else %}
+                        <div class="{% if field.field.name %}field-{{ field.field.name }}{% endif %}">
+                            {% if field.is_readonly %}
+                                <div class="readonly p-2 bg-light rounded">{{ field.contents }}</div>
+                            {% else %}
+                                {{ field.field }}
+                            {% endif %}
+                            {% if field.field.help_text %}<div class="help text-muted small mt-1">{{ field.field.help_text|safe }}</div>{% endif %}
+                            {{ field.field.errors.as_ul }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</fieldset>

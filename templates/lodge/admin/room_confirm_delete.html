@@ -1,19 +1,63 @@
-{% extends 'lodge/base.html' %}
+{% extends "accounts/base.html" %}
+{% load static %}
 
-{% block title %}Delete Room - Villa Grande{% endblock %}
+{% block title %}Delete Room{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="pagetitle" data-aos="fade-up">
+    <h1>Delete Room</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lodge:admin_room_list' %}">Rooms</a></li>
+            <li class="breadcrumb-item active">Delete</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
     <div class="row justify-content-center">
-        <div class="col-lg-6 text-center">
-            <h2>Delete Room</h2>
-            <p>Are you sure you want to delete room "{{ object.room_number }}"?</p>
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Yes, delete</button>
-                <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary">Cancel</a>
-            </form>
+        <div class="col-lg-6">
+            <div class="card border-danger" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body text-center">
+                    <div class="mt-3 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    <h5 class="card-title text-danger">Confirm Deletion</h5>
+                    <p>Are you sure you want to delete the room <strong>"{{ object.room_number }}"</strong>?</p>
+                    <p class="text-warning small">⚠️ This action cannot be undone. All associated bookings will also be affected.</p>
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3 justify-content-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                                <i class="bi bi-trash me-2"></i>Yes, Delete
+                            </button>
+                            <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<style>
+    .card.border-danger {
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: var(--vg-glass-bg);
+        backdrop-filter: var(--vg-glass-blur);
+    }
+    .btn-danger {
+        background: linear-gradient(135deg, #EF4444, #DC2626);
+        border: none;
+        box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+    }
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239,68,68,0.4);
+    }
+</style>
 {% endblock %}

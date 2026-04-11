@@ -1,19 +1,114 @@
-{% extends 'lodge/base.html' %}
+{% extends "accounts/base.html" %}
+{% load static %}
 
-{% block title %}{% if object %}Edit Room{% else %}Add Room{% endif %} - Villa Grande{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Room{% else %}Add New Room{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="pagetitle" data-aos="fade-up">
+    <h1>{% if form.instance.pk %}Edit Room{% else %}Add New Room{% endif %}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lodge:admin_room_list' %}">Rooms</a></li>
+            <li class="breadcrumb-item active">{% if form.instance.pk %}Edit{% else %}Add{% endif %}</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h2 class="mb-4">{% if object %}Edit Room{% else %}Add New Room{% endif %}</h2>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary">Cancel</a>
-            </form>
+        <div class="col-lg-10">
+            <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body">
+                    <h5 class="card-title">Room Information</h5>
+
+                    <form method="post" enctype="multipart/form-data" class="row g-4 needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="col-md-6">
+                            <div class="form-floating mb-2">
+                                {{ field }}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {% if field.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ field.errors|join:", " }}
+                                </div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                <small class="text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% if form.instance.pk and form.instance.image %}
+                        <div class="col-12">
+                            <label class="form-label">Current Image</label>
+                            <div class="mt-2">
+                                <img src="{{ form.instance.image.url }}" alt="Room image" style="max-height: 150px; border-radius: var(--vg-border-radius-md);" class="img-thumbnail">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-save me-2"></i>{% if form.instance.pk %}Update Room{% else %}Create Room{% endif %}
+                            </button>
+                            <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<script>
+    // Bootstrap custom validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+
+<style>
+    .form-floating > input,
+    .form-floating > select,
+    .form-floating > textarea {
+        border-radius: var(--vg-border-radius-md);
+        background: var(--vg-glass-bg);
+        border: 1px solid var(--vg-glass-border);
+        color: var(--vg-dark);
+        transition: all var(--vg-transition-fast);
+    }
+    .form-floating > input:focus,
+    .form-floating > select:focus,
+    .form-floating > textarea:focus {
+        border-color: var(--vg-gold);
+        box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+        transform: translateY(-2px);
+    }
+    .form-floating > label {
+        color: var(--vg-dark);
+        opacity: 0.7;
+    }
+    body.dark-mode .form-floating > label {
+        color: #e0e0e0;
+    }
+    textarea {
+        min-height: 100px;
+    }
+</style>
 {% endblock %}

@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'lodge',
+    'users',
+    'accounts',
     
 ]
 
@@ -59,10 +61,12 @@ TEMPLATES = [
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': True,
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'lodge.context_processors.site_settings',
             ],
         },
     },
@@ -118,6 +122,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # or any folder name you prefer
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -125,8 +130,29 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 # Authentication URLs
-LOGIN_URL = '/cms/login/'
-LOGIN_REDIRECT_URL = '/cms/dashboard/'
-LOGOUT_REDIRECT_URL = '/cms/logout/'
+# LOGIN_URL = '/cms/login/'
+# LOGIN_REDIRECT_URL = '/cms/dashboard/'
+# LOGOUT_REDIRECT_URL = '/cms/logout/'
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/accounts/dashboard/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+AUTH_USER_MODEL = 'users.User'
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.villagrandemw.com'          # or 'smtp.villagrandemw.com'
+EMAIL_PORT = 587                               # Use 465 if using SSL
+EMAIL_USE_TLS = True                           # Set to False if using SSL
+# EMAIL_USE_SSL = True                         # Uncomment if using port 465
+EMAIL_HOST_USER = 'reservations@villagrandemw.com'
+EMAIL_HOST_PASSWORD = '=DE10yJcTy#-w[--'    # Replace with actual password
+DEFAULT_FROM_EMAIL = 'Villa Grande Lodge <reservations@villagrandemw.com>'
+
+# Twilio settings
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
+TWILIO_WHATSAPP_FROM = 'whatsapp:+14155238886'  # Twilio sandbox number
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

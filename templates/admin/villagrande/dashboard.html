@@ -20,8 +20,9 @@
                 <i class="fas fa-chevron-left"></i>
             </button>
         </div>
-        
+
         <div class="sidebar-menu">
+            <!-- Main -->
             <div class="menu-section">
                 <div class="menu-section-title">Main</div>
                 <a href="{% url 'admin:index' %}" class="menu-item active">
@@ -33,22 +34,19 @@
                     <span>Analytics</span>
                 </a>
             </div>
-            
+
+            <!-- Reservations -->
             <div class="menu-section">
-                <div class="menu-section-title">Management</div>
+                <div class="menu-section-title">Reservations</div>
                 <a href="{% url 'admin:lodge_room_changelist' %}" class="menu-item">
                     <i class="fas fa-door-open"></i>
                     <span>Rooms</span>
-                    {% if total_rooms %}
-                    <span class="menu-badge">{{ total_rooms }}</span>
-                    {% endif %}
+                    {% if total_rooms %}<span class="menu-badge">{{ total_rooms }}</span>{% endif %}
                 </a>
                 <a href="{% url 'admin:lodge_booking_changelist' %}" class="menu-item">
                     <i class="fas fa-calendar-check"></i>
                     <span>Bookings</span>
-                    {% if pending_bookings %}
-                    <span class="menu-badge">{{ pending_bookings }}</span>
-                    {% endif %}
+                    {% if pending_bookings %}<span class="menu-badge">{{ pending_bookings }}</span>{% endif %}
                 </a>
                 <a href="{% url 'admin:lodge_customer_changelist' %}" class="menu-item">
                     <i class="fas fa-users"></i>
@@ -56,16 +54,51 @@
                     <span class="menu-badge">{{ total_customers }}</span>
                 </a>
             </div>
-            
+
+            <!-- Content Management -->
+            <div class="menu-section">
+                <div class="menu-section-title">Content</div>
+                <a href="{% url 'admin:lodge_heroslide_changelist' %}" class="menu-item">
+                    <i class="fas fa-image"></i>
+                    <span>Hero Slides</span>
+                </a>
+                <a href="{% url 'admin:lodge_aboutsection_changelist' %}" class="menu-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Section</span>
+                </a>
+                <a href="{% url 'admin:lodge_service_changelist' %}" class="menu-item">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>Services</span>
+                </a>
+                <a href="{% url 'admin:lodge_experiencesection_changelist' %}" class="menu-item">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Experience</span>
+                </a>
+                <a href="{% url 'admin:lodge_testimonial_changelist' %}" class="menu-item">
+                    <i class="fas fa-star"></i>
+                    <span>Testimonials</span>
+                </a>
+                <a href="{% url 'admin:lodge_newslettersection_changelist' %}" class="menu-item">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>Newsletter</span>
+                    {% if newsletter_subscribers %}<span class="menu-badge">{{ newsletter_subscribers }}</span>{% endif %}
+                </a>
+            </div>
+
+            <!-- System -->
             <div class="menu-section">
                 <div class="menu-section-title">System</div>
-                <a href="{% url 'admin:auth_user_changelist' %}" class="menu-item">
+                <a href="#" class="menu-item">
                     <i class="fas fa-user-shield"></i>
                     <span>Users</span>
                 </a>
                 <a href="{% url 'admin:auth_group_changelist' %}" class="menu-item">
                     <i class="fas fa-users-cog"></i>
                     <span>Groups</span>
+                </a>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-globe"></i>
+                    <span>View Website</span>
                 </a>
                 <a href="{% url 'admin:logout' %}" class="menu-item">
                     <i class="fas fa-sign-out-alt"></i>
@@ -74,7 +107,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Main Content -->
     <div class="admin-main">
         <!-- Top Bar -->
@@ -85,9 +118,8 @@
                 </button>
                 <h1 class="page-title">Dashboard</h1>
             </div>
-            
+
             <div class="topbar-right">
-                <!-- Theme Toggle -->
                 <div class="theme-toggle">
                     <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
                         <i class="fas fa-sun"></i>
@@ -96,14 +128,13 @@
                         <i class="fas fa-moon"></i>
                     </button>
                 </div>
-                
-                <!-- Notifications -->
+
                 <div class="dropdown">
                     <button class="notification-btn" data-bs-toggle="dropdown">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">{{ pending_bookings }}</span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end" style="width: 300px;">
+                    <div class="dropdown-menu dropdown-menu-end" style="width:300px;">
                         <div class="dropdown-header">Notifications</div>
                         <div class="dropdown-item">
                             <small class="text-gold">{{ pending_bookings }} pending bookings</small>
@@ -111,15 +142,17 @@
                         <div class="dropdown-item">
                             <small class="text-gold">{{ confirmed_bookings }} confirmed today</small>
                         </div>
+                        {% if newsletter_subscribers %}
+                        <div class="dropdown-item">
+                            <small class="text-gold">{{ newsletter_subscribers }} newsletter subscribers</small>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                
-                <!-- Admin Profile -->
+
                 <div class="dropdown">
                     <div class="admin-profile" data-bs-toggle="dropdown">
-                        <div class="profile-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
+                        <div class="profile-avatar"><i class="fas fa-user"></i></div>
                         <div class="profile-info">
                             <div class="profile-name">{{ request.user.username }}</div>
                             <div class="profile-role">Administrator</div>
@@ -134,95 +167,134 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Content Area -->
         <div class="admin-content">
+
             <!-- Stats Cards -->
             <div class="row g-4 mb-4">
                 <div class="col-xl-3 col-md-6">
                     <div class="stat-card-admin fade-in">
-                        <div class="stat-icon">
-                            <i class="fas fa-door-open"></i>
-                        </div>
+                        <div class="stat-icon"><i class="fas fa-door-open"></i></div>
                         <div class="stat-value">{{ total_rooms }}</div>
                         <div class="stat-label">Total Rooms</div>
-                        <div style="margin-top: 15px; font-size: 0.8rem;">
-                            <span style="color: var(--gold);">{{ active_rooms }} active</span>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">{{ active_rooms }} active</span>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-xl-3 col-md-6">
-                    <div class="stat-card-admin fade-in" style="animation-delay: 0.1s;">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
+                    <div class="stat-card-admin fade-in" style="animation-delay:0.1s;">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                         <div class="stat-value">{{ total_bookings }}</div>
                         <div class="stat-label">Total Bookings</div>
-                        <div style="margin-top: 15px; font-size: 0.8rem;">
-                            <span style="color: var(--gold);">{{ confirmed_bookings }} confirmed</span>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">{{ confirmed_bookings }} confirmed</span>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-xl-3 col-md-6">
-                    <div class="stat-card-admin fade-in" style="animation-delay: 0.2s;">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
+                    <div class="stat-card-admin fade-in" style="animation-delay:0.2s;">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
                         <div class="stat-value">{{ total_customers }}</div>
                         <div class="stat-label">Total Guests</div>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">{{ newsletter_subscribers }} subscribed</span>
+                        </div>
                     </div>
                 </div>
-                
                 <div class="col-xl-3 col-md-6">
-                    <div class="stat-card-admin fade-in" style="animation-delay: 0.3s;">
-                        <div class="stat-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="stat-value">${{ monthly_revenue|floatformat:0 }}</div>
+                    <div class="stat-card-admin fade-in" style="animation-delay:0.3s;">
+                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-value">MWK {{ monthly_revenue|floatformat:0 }}</div>
                         <div class="stat-label">Monthly Revenue</div>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">{{ pending_bookings }} pending</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Charts Row -->
             <div class="row g-4 mb-4">
                 <div class="col-xl-8">
                     <div class="admin-card slide-in">
                         <div class="card-header-custom">
                             <h5 class="card-title">Booking Trends</h5>
-                            <span class="badge" style="background: var(--gold); color: var(--navy);">Last 7 days</span>
+                            <span class="badge" style="background:var(--gold); color:var(--navy);">Last 7 days</span>
                         </div>
-                        <div style="height: 300px;">
+                        <div style="height:300px;">
                             <canvas id="bookingTrendsChart"></canvas>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-xl-4">
-                    <div class="admin-card slide-in" style="animation-delay: 0.1s;">
+                    <div class="admin-card slide-in" style="animation-delay:0.1s;">
                         <div class="card-header-custom">
                             <h5 class="card-title">Room Types</h5>
                         </div>
-                        <div style="height: 300px;">
+                        <div style="height:300px;">
                             <canvas id="roomTypesChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Content Overview Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-4 col-md-6">
+                    <div class="admin-card slide-in">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Content Status</h5>
+                            <a href="{% url 'admin:lodge_heroslide_changelist' %}" class="btn-admin btn-admin-outline" style="padding:5px 12px; font-size:0.75rem;">Manage</a>
+                        </div>
+                        <ul style="list-style:none; padding:0; margin:0;">
+                            <li style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-image me-2" style="color:var(--gold);"></i> Hero Slides</span>
+                                <a href="{% url 'admin:lodge_heroslide_changelist' %}" class="badge" style="background:var(--gold); color:var(--navy); text-decoration:none;">Edit</a>
+                            </li>
+                            <li style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-info-circle me-2" style="color:var(--gold);"></i> About Section</span>
+                                <a href="{% url 'admin:lodge_aboutsection_changelist' %}" class="badge" style="background:var(--gold); color:var(--navy); text-decoration:none;">Edit</a>
+                            </li>
+                            <li style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-concierge-bell me-2" style="color:var(--gold);"></i> Services</span>
+                                <a href="{% url 'admin:lodge_service_changelist' %}" class="badge" style="background:var(--gold); color:var(--navy); text-decoration:none;">Edit</a>
+                            </li>
+                            <li style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-star me-2" style="color:var(--gold);"></i> Testimonials</span>
+                                <a href="{% url 'admin:lodge_testimonial_changelist' %}" class="badge" style="background:var(--gold); color:var(--navy); text-decoration:none;">Edit</a>
+                            </li>
+                            <li style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+                                <span style="font-size:0.85rem;"><i class="fas fa-play-circle me-2" style="color:var(--gold);"></i> Experience</span>
+                                <a href="{% url 'admin:lodge_experiencesection_changelist' %}" class="badge" style="background:var(--gold); color:var(--navy); text-decoration:none;">Edit</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xl-8 col-md-6">
+                    <div class="admin-card slide-in" style="animation-delay:0.1s;">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Booking Status Breakdown</h5>
+                        </div>
+                        <div style="height:240px;">
+                            <canvas id="bookingStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent Bookings -->
             <div class="row g-4">
                 <div class="col-12">
                     <div class="admin-card">
                         <div class="card-header-custom">
                             <h5 class="card-title">Recent Bookings</h5>
-                            <a href="{% url 'admin:lodge_booking_changelist' %}" class="btn-admin btn-admin-outline" style="padding: 5px 15px;">
+                            <a href="{% url 'admin:lodge_booking_changelist' %}" class="btn-admin btn-admin-outline" style="padding:5px 15px;">
                                 View All <i class="fas fa-arrow-right ms-2"></i>
                             </a>
                         </div>
-                        
                         <div class="admin-table-container">
                             <table class="admin-table">
                                 <thead>
@@ -245,7 +317,7 @@
                                         <td>{{ booking.check_in|date:"M d, Y" }}</td>
                                         <td>{{ booking.check_out|date:"M d, Y" }}</td>
                                         <td>
-                                            <span class="status-badge 
+                                            <span class="status-badge
                                                 {% if booking.status == 'CONFIRMED' %}badge-confirmed
                                                 {% elif booking.status == 'PENDING' %}badge-pending
                                                 {% else %}badge-cancelled{% endif %}">
@@ -253,7 +325,7 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="{% url 'admin:lodge_booking_change' booking.pk %}" class="btn-admin btn-admin-outline" style="padding: 3px 10px;">
+                                            <a href="{% url 'admin:lodge_booking_change' booking.pk %}" class="btn-admin btn-admin-outline" style="padding:3px 10px;">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
@@ -269,102 +341,116 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Quick Actions -->
             <div class="row g-4 mt-2">
                 <div class="col-md-3">
-                    <a href="{% url 'admin:lodge_room_add' %}" class="admin-card text-center" style="display: block; text-decoration: none;">
-                        <i class="fas fa-plus-circle" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                    <a href="{% url 'admin:lodge_room_add' %}" class="admin-card text-center" style="display:block; text-decoration:none;">
+                        <i class="fas fa-plus-circle" style="font-size:2rem; color:var(--gold); margin-bottom:10px;"></i>
                         <h6>Add New Room</h6>
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a href="{% url 'admin:lodge_booking_add' %}" class="admin-card text-center" style="display: block; text-decoration: none;">
-                        <i class="fas fa-calendar-plus" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                    <a href="{% url 'admin:lodge_booking_add' %}" class="admin-card text-center" style="display:block; text-decoration:none;">
+                        <i class="fas fa-calendar-plus" style="font-size:2rem; color:var(--gold); margin-bottom:10px;"></i>
                         <h6>Create Booking</h6>
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a href="#" class="admin-card text-center" style="display: block; text-decoration: none;">
-                        <i class="fas fa-file-pdf" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
-                        <h6>Generate Report</h6>
+                    <a href="{% url 'admin:lodge_heroslide_add' %}" class="admin-card text-center" style="display:block; text-decoration:none;">
+                        <i class="fas fa-images" style="font-size:2rem; color:var(--gold); margin-bottom:10px;"></i>
+                        <h6>Add Hero Slide</h6>
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a href="#" class="admin-card text-center" style="display: block; text-decoration: none;">
-                        <i class="fas fa-cog" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
-                        <h6>Settings</h6>
+                    <a href="{% url 'admin:lodge_testimonial_add' %}" class="admin-card text-center" style="display:block; text-decoration:none;">
+                        <i class="fas fa-star" style="font-size:2rem; color:var(--gold); margin-bottom:10px;"></i>
+                        <h6>Add Testimonial</h6>
                     </a>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Booking Trends Chart
-        const bookingCtx = document.getElementById('bookingTrendsChart').getContext('2d');
-        new Chart(bookingCtx, {
-            type: 'line',
-            data: {
-                labels: {{ booking_trend_labels|safe }},
-                datasets: [{
-                    label: 'Bookings',
-                    data: {{ booking_trends }},
-                    borderColor: '#C9A84C',
-                    backgroundColor: 'rgba(201,168,76,0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(201,168,76,0.1)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Booking Trends Chart
+    const bookingCtx = document.getElementById('bookingTrendsChart').getContext('2d');
+    new Chart(bookingCtx, {
+        type: 'line',
+        data: {
+            labels: {{ booking_trend_labels|safe }},
+            datasets: [{
+                label: 'Bookings',
+                data: {{ booking_trends }},
+                borderColor: '#C9A84C',
+                backgroundColor: 'rgba(201,168,76,0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#C9A84C',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(201,168,76,0.1)' } },
+                x: { grid: { display: false } }
             }
-        });
-        
-        // Room Types Chart
-        const roomCtx = document.getElementById('roomTypesChart').getContext('2d');
-        new Chart(roomCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ room_type_labels|safe }},
-                datasets: [{
-                    data: {{ room_type_counts }},
-                    backgroundColor: ['#C9A84C', '#0A2342', '#102F5A', '#A8873A'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                },
-                cutout: '70%'
-            }
-        });
+        }
     });
+
+    // Room Types Chart
+    const roomCtx = document.getElementById('roomTypesChart').getContext('2d');
+    new Chart(roomCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ room_type_labels|safe }},
+            datasets: [{
+                data: {{ room_type_counts }},
+                backgroundColor: ['#C9A84C', '#0A2342', '#102F5A', '#A8873A'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            cutout: '70%'
+        }
+    });
+
+    // Booking Status Chart
+    const statusCtx = document.getElementById('bookingStatusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Pending', 'Confirmed', 'Cancelled'],
+            datasets: [{
+                label: 'Bookings',
+                data: [{{ pending_bookings }}, {{ confirmed_bookings }}, {{ cancelled_bookings }}],
+                backgroundColor: ['rgba(201,168,76,0.7)', 'rgba(10,35,66,0.8)', 'rgba(168,135,58,0.5)'],
+                borderColor: ['#C9A84C', '#0A2342', '#A8873A'],
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(201,168,76,0.1)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+});
 </script>
 {% endblock %}

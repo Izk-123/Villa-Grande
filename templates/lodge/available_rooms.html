@@ -1,0 +1,49 @@
+{% extends 'lodge/base.html' %}
+{% load static %}
+
+{% block title %}Available Rooms - Villa Grande{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background: linear-gradient(rgba(10,35,66,0.7), rgba(10,35,66,0.7)), url('{% static 'img/rooms-header.jpg' %}') center/cover;">
+    <div class="container text-center text-white py-5">
+        <h1 class="display-4">Available Rooms</h1>
+        <p class="lead">Showing rooms for {{ check_in|date:"d M Y" }} – {{ check_out|date:"d M Y" }} | {{ guests }} Guest{{ guests|pluralize }}</p>
+    </div>
+</section>
+
+<section class="rooms-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            {% for room in rooms %}
+            <div class="col-lg-4 col-md-6">
+                <div class="room-card">
+                    <div class="room-card-img">
+                        {% if room.image %}
+                        <img src="{{ room.image.url }}" alt="{{ room.room_number }}" loading="lazy">
+                        {% else %}
+                        <img src="{% static 'img/room-placeholder.jpg' %}" alt="Room" loading="lazy">
+                        {% endif %}
+                        <div class="room-badge">{{ room.get_room_type_display }}</div>
+                    </div>
+                    <div class="room-card-body">
+                        <h5 class="room-title">Room {{ room.room_number }}</h5>
+                        <p class="room-desc">{{ room.description|truncatechars:100 }}</p>
+                        <div class="room-footer">
+                            <span class="room-price">
+                                <strong>MWK {{ room.price_per_night }}</strong> / night
+                            </span>
+                            <a href="{% url 'lodge:booking' %}?room={{ room.id }}&check_in={{ check_in|date:'Y-m-d' }}&check_out={{ check_out|date:'Y-m-d' }}&guests={{ guests }}" class="btn-vg-sm">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h4>No rooms available for the selected dates.</h4>
+                <p>Try different dates or <a href="{% url 'lodge:home' %}">search again</a>.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

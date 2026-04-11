@@ -1,0 +1,58 @@
+{% extends 'lodge/base.html' %}
+{% load static %}
+
+{% block title %}Check Your Booking – Villa Grande Lodge{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background: var(--navy); padding: 80px 0 40px;">
+    <div class="container text-center">
+        <h1 style="color: var(--gold); font-size: 2.5rem;">Check Your Booking</h1>
+        <p style="color: white;">Enter your Booking ID to see the current status</p>
+    </div>
+</section>
+
+<section class="booking-status-section" style="padding: 60px 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <form method="post" class="booking-status-form card p-4 shadow">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_booking_reference" class="form-label">Booking ID</label>
+                        {{ form.booking_reference }}
+                        {% if form.booking_reference.errors %}
+                            <div class="text-danger small">{{ form.booking_reference.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn-vg-primary w-100">Check Status</button>
+                </form>
+
+                {% if booking %}
+                <div class="booking-result card mt-5 p-4">
+                    <h3 class="mb-3">Booking Details</h3>
+                    <table class="table table-borderless">
+                        <tr><th>Booking ID</th><td>{{ booking.booking_reference }}</td></tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                {% if booking.status == 'CONFIRMED' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                {% elif booking.status == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr><th>Room</th><td>{{ booking.room.room_number }} – {{ booking.room.get_room_type_display }}</td></tr>
+                        <tr><th>Check‑in</th><td>{{ booking.check_in }}</td></tr>
+                        <tr><th>Check‑out</th><td>{{ booking.check_out }}</td></tr>
+                        <tr><th>Guests</th><td>{{ booking.guests }}</td></tr>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

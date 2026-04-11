@@ -1,22 +1,30 @@
 {% load static %}
-<div class="top-bar d-none d-lg-block">
+<div class="top-bar d-none d-lg-block" aria-label="Contact and social links">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-4">
                 <p class="mb-0 d-flex align-items-center gap-2">
-                    <i class="fas fa-envelope" style="color:var(--gold); font-size:0.75rem;"></i>
-                    <a href="mailto:reservations@villagrande.co.mw">reservations@villagrande.co.mw</a>
+                    <i class="fas fa-envelope" aria-hidden="true" style="color:var(--gold); font-size:0.75rem;"></i>
+                    <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
                 </p>
                 <p class="mb-0 d-flex align-items-center gap-2">
-                    <i class="fas fa-phone-alt" style="color:var(--gold); font-size:0.75rem;"></i>
-                    <a href="tel:+265888000000">+265 888 000 000</a>
+                    <i class="fas fa-phone-alt" aria-hidden="true" style="color:var(--gold); font-size:0.75rem;"></i>
+                    <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
                 </p>
             </div>
             <div class="social-links d-flex gap-2">
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                {% if site_settings.facebook_url %}
+                <a href="{{ site_settings.facebook_url }}" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                {% endif %}
+                {% if site_settings.instagram_url %}
+                <a href="{{ site_settings.instagram_url }}" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                {% endif %}
+                {% if site_settings.whatsapp %}
+                <a href="https://wa.me/{{ site_settings.whatsapp|cut:'+' }}" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                {% endif %}
+                {% if site_settings.twitter_url %}
+                <a href="{{ site_settings.twitter_url }}" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                {% endif %}
             </div>
         </div>
     </div>

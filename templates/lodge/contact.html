@@ -4,7 +4,8 @@
 {% block title %}Contact Us - Villa Grande{% endblock %}
 
 {% block content %}
-<section class="page-header" style="background: linear-gradient(rgba(10,35,66,0.7), rgba(10,35,66,0.7)), url('{% static 'img/contact-header.jpg' %}') center/cover; min-height: 300px; display: flex; align-items: center;">
+<section class="page-header"
+    style="background: linear-gradient(rgba(10,35,66,0.7), rgba(10,35,66,0.7)), url('{% static 'img/contact-header.jpg' %}') center/cover; min-height: 300px; display: flex; align-items: center;">
     <div class="container text-center text-white">
         <h1 class="display-4">Contact Us</h1>
         <nav aria-label="breadcrumb">
@@ -22,34 +23,70 @@
             <div class="col-lg-6">
                 <h2 class="section-heading">Get in <em>Touch</em></h2>
                 <div class="divider-gold"></div>
-                <p class="mb-4">Have a question or special request? We'd love to hear from you. Fill out the form and our team will get back to you within 24 hours.</p>
-                
+                <p class="mb-4">Have a question or special request? We'd love to hear from you. Fill out the form and
+                    our team will get back to you within 24 hours.</p>
+
                 <div class="contact-info">
+                    {% if site_settings.address %}
                     <div class="d-flex mb-3">
                         <i class="fas fa-map-marker-alt text-gold me-3" style="font-size: 1.5rem;"></i>
-                        <div>Kamuzu Procession Road, Blantyre, Malawi</div>
+                        <div>{{ site_settings.address }}</div>
                     </div>
+                    {% endif %}
+
+                    {% if site_settings.phone %}
                     <div class="d-flex mb-3">
                         <i class="fas fa-phone-alt text-gold me-3" style="font-size: 1.5rem;"></i>
-                        <div>+265 888 000 000</div>
+                        <div>{{ site_settings.phone }}</div>
                     </div>
+                    {% endif %}
+
+                    {% if site_settings.whatsapp %}
+                    <div class="d-flex mb-3">
+                        <i class="fab fa-whatsapp text-gold me-3" style="font-size: 1.5rem;"></i>
+                        <div>{{ site_settings.whatsapp }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if site_settings.email %}
                     <div class="d-flex mb-3">
                         <i class="fas fa-envelope text-gold me-3" style="font-size: 1.5rem;"></i>
-                        <div>reservations@villagrande.co.mw</div>
+                        <div>{{ site_settings.email }}</div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+
             <div class="col-lg-6">
+                {% if messages %}
+                <div class="alert alert-success">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <form method="post" class="contact-form">
                     {% csrf_token %}
+                    {{ form.non_field_errors }}
                     <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Your Name" required>
+                        {{ form.name.label_tag }}
+                        {{ form.name }}
+                        {{ form.name.errors }}
                     </div>
                     <div class="mb-3">
-                        <input type="email" class="form-control" placeholder="Your Email" required>
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {{ form.email.errors }}
                     </div>
                     <div class="mb-3">
-                        <textarea class="form-control" rows="5" placeholder="Your Message" required></textarea>
+                        {{ form.phone.label_tag }}
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.message.label_tag }}
+                        {{ form.message }}
+                        {{ form.message.errors }}
                     </div>
                     <button type="submit" class="btn-vg-primary">Send Message</button>
                 </form>

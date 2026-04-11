@@ -1,0 +1,74 @@
+{% load i18n %}
+<div class="admin-sidebar" id="vgSidebar">
+    <div class="sidebar-header">
+        <a href="{% url 'admin:index' %}" class="sidebar-brand">
+            <svg class="sidebar-brand-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="4,7 20,33 36,7" fill="none" stroke="#C9A84C" stroke-width="2"/>
+                <polyline points="8,7 20,27 32,7" fill="none" stroke="#C9A84C" stroke-width="1"/>
+            </svg>
+            <span class="sidebar-brand-text">Villa Grande CMS</span>
+        </a>
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+    <div class="sidebar-menu">
+        <div class="menu-section">
+            <div class="menu-section-title">Main</div>
+            <a href="{% url 'admin:index' %}" class="menu-item">
+                <i class="fas fa-home"></i><span>Dashboard</span>
+            </a>
+            <a href="{% url 'admin:analytics' %}" class="menu-item">
+                <i class="fas fa-chart-line"></i><span>Analytics</span>
+            </a>
+        </div>
+        <div class="menu-section">
+            <div class="menu-section-title">Reservations</div>
+            <a href="{% url 'admin:lodge_room_changelist' %}" class="menu-item {% if opts.model_name == 'room' %}active{% endif %}">
+                <i class="fas fa-door-open"></i><span>Rooms</span>
+            </a>
+            <a href="{% url 'admin:lodge_booking_changelist' %}" class="menu-item {% if opts.model_name == 'booking' %}active{% endif %}">
+                <i class="fas fa-calendar-check"></i><span>Bookings</span>
+            </a>
+            <a href="{% url 'admin:lodge_customer_changelist' %}" class="menu-item {% if opts.model_name == 'customer' %}active{% endif %}">
+                <i class="fas fa-users"></i><span>Customers</span>
+            </a>
+        </div>
+        <div class="menu-section">
+            <div class="menu-section-title">Content</div>
+            <a href="{% url 'admin:lodge_heroslide_changelist' %}" class="menu-item {% if opts.model_name == 'heroslide' %}active{% endif %}">
+                <i class="fas fa-image"></i><span>Hero Slides</span>
+            </a>
+            <a href="{% url 'admin:lodge_aboutsection_changelist' %}" class="menu-item {% if opts.model_name == 'aboutsection' %}active{% endif %}">
+                <i class="fas fa-info-circle"></i><span>About Section</span>
+            </a>
+            <a href="{% url 'admin:lodge_service_changelist' %}" class="menu-item {% if opts.model_name == 'service' %}active{% endif %}">
+                <i class="fas fa-concierge-bell"></i><span>Services</span>
+            </a>
+            <a href="{% url 'admin:lodge_experiencesection_changelist' %}" class="menu-item {% if opts.model_name == 'experiencesection' %}active{% endif %}">
+                <i class="fas fa-play-circle"></i><span>Experience</span>
+            </a>
+            <a href="{% url 'admin:lodge_testimonial_changelist' %}" class="menu-item {% if opts.model_name == 'testimonial' %}active{% endif %}">
+                <i class="fas fa-star"></i><span>Testimonials</span>
+            </a>
+            <a href="{% url 'admin:lodge_newslettersection_changelist' %}" class="menu-item {% if opts.model_name == 'newslettersection' or opts.model_name == 'newslettersubscriber' %}active{% endif %}">
+                <i class="fas fa-envelope-open-text"></i><span>Newsletter</span>
+            </a>
+        </div>
+        <div class="menu-section">
+            <div class="menu-section-title">System</div>
+            <a href="{% url 'admin:auth_user_changelist' %}" class="menu-item {% if opts.model_name == 'user' %}active{% endif %}">
+                <i class="fas fa-user-shield"></i><span>Users</span>
+            </a>
+            <a href="{% url 'admin:auth_group_changelist' %}" class="menu-item {% if opts.model_name == 'group' %}active{% endif %}">
+                <i class="fas fa-users-cog"></i><span>Groups</span>
+            </a>
+            <a href="/" class="menu-item">
+                <i class="fas fa-globe"></i><span>View Website</span>
+            </a>
+            <a href="{% url 'admin:logout' %}" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </a>
+        </div>
+    </div>
+</div>

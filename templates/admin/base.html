@@ -1,0 +1,265 @@
+{% load static admin_sidebar %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta name="theme-color" content="#0A2342" id="theme-color-meta">
+  <meta name="description" content="Villa Grande Lodge Admin Dashboard">
+  <title>{% block title %}{% if title %}{{ title }} | {% endif %}Villa Grande Admin{% endblock %}</title>
+  
+  <!-- Google Fonts - Modern variable fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/x-icon" href="{% static 'img/VG_Blue.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/VG_Blue.png' %}">
+  
+  <!-- Vendor CSS -->
+  <link href="{% static 'admin/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'admin/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'admin/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'admin/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+  <link href="{% static 'admin/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+  <link href="{% static 'admin/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'admin/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+  
+  <!-- NiceAdmin Main CSS -->
+  <link href="{% static 'admin/css/style.css' %}" rel="stylesheet">
+  <!-- Custom Overrides (glassmorphic + animations) -->
+  <link href="{% static 'admin/css/custom_admin.css' %}" rel="stylesheet">
+  
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  
+  {% block extrahead %}{% endblock %}
+</head>
+
+<body>
+  <!-- Animated background (subtle moving gradient) -->
+  <div class="animated-bg"></div>
+
+  <!-- Header -->
+  <header id="header" class="header fixed-top d-flex align-items-center animate-header">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{% url 'admin:index' %}" class="logo d-flex align-items-center">
+        <img src="{% static 'img/VG_Blue.png' %}" alt="Villa Grande">
+        <span class="d-none d-lg-block">Villa Grande</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div>
+    <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="GET" action="{% url 'admin:index' %}">
+        <input type="text" name="q" placeholder="Search anything..." title="Enter search keyword">
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div>
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <!-- Live Clock Widget -->
+        <li class="nav-item d-none d-md-block">
+          <div class="nav-link clock-widget" id="liveClock">
+            <i class="bi bi-clock"></i>
+            <span id="currentTime">--:-- --</span>
+          </div>
+        </li>
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle" href="#"><i class="bi bi-search"></i></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-icon" id="fullscreenToggle" title="Fullscreen mode">
+            <i class="bi bi-arrows-fullscreen"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-icon dark-mode-toggle" id="darkModeToggle" title="Dark/Light mode">
+            <i class="bi bi-moon-stars"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'lodge:home' %}" target="_blank" title="View Site">
+            <i class="bi bi-globe"></i>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="javascript:void(0);" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">4</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              You have 4 new notifications
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li class="notification-item">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div><h4>Lorem Ipsum</h4><p>Quae dolorem earum veritatis oditseno</p><p>30 min. ago</p></div>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li class="dropdown-footer"><a href="#">Show all notifications</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{% static 'admin/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ request.user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ request.user.get_full_name|default:request.user.username }}</h6>
+              <span>{% if request.user.is_superuser %}Superuser{% else %}Staff{% endif %}</span>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item d-flex align-items-center" href="{% url 'admin:users_user_change' request.user.pk %}"><i class="bi bi-person"></i><span>My Profile</span></a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item d-flex align-items-center" style="background: none; border: none; width: 100%;">
+                  <i class="bi bi-box-arrow-right"></i><span>Sign Out</span>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar animate-sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/admin/' %}active{% endif %}" href="{% url 'admin:index' %}">
+          <i class="bi bi-grid"></i><span>Dashboard</span>
+        </a>
+      </li>
+      {% get_admin_app_list as app_list %}
+      {% for app in app_list %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#app-{{ app.app_label }}" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-{{ app.icon|default:'menu-button-wide' }}"></i><span>{{ app.name }}</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="app-{{ app.app_label }}" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          {% for model in app.models %}
+          <li><a href="{{ model.admin_url }}"><i class="bi bi-circle"></i><span>{{ model.name }}</span></a></li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="main" class="main animate-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+      <div class="toast-header">
+        <i class="bi bi-bell-fill me-2"></i>
+        <strong class="me-auto">Villa Grande</strong>
+        <small>Just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body" id="toastMessage">Notification message</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer" class="footer animate-footer">
+    <div class="copyright">&copy; Copyright <strong><span>Villa Grande Lodge</span></strong>. All Rights Reserved</div>
+    <div class="credits">Designed with <i class="bi bi-heart-fill text-danger animate-pulse"></i> by <a href="http://pritechmw.com/">Pritech</a></div>
+  </footer>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS -->
+  <script src="{% static 'admin/vendor/apexcharts/apexcharts.min.js' %}"></script>
+  <script src="{% static 'admin/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'admin/vendor/chart.js/chart.min.js' %}"></script>
+  <script src="{% static 'admin/vendor/echarts/echarts.min.js' %}"></script>
+  <script src="{% static 'admin/vendor/quill/quill.min.js' %}"></script>
+  <script src="{% static 'admin/vendor/simple-datatables/simple-datatables.js' %}"></script>
+  <script src="{% static 'admin/vendor/tinymce/tinymce.min.js' %}"></script>
+  <script src="{% static 'admin/vendor/php-email-form/validate.js' %}"></script>
+  
+  <!-- NiceAdmin Main JS -->
+  <script src="{% static 'admin/js/main.js' %}"></script>
+  <!-- Custom JS (includes dark mode, fullscreen, toasts, etc.) -->
+  <script src="{% static 'admin/js/custom_admin.js' %}"></script>
+  
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script> AOS.init({ duration: 800, once: true, offset: 100, easing: 'ease-out-quad' }); </script>
+  
+  <!-- Inline animations & clock -->
+  <script>
+    // Real-time clock
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const clockSpan = document.getElementById('currentTime');
+      if (clockSpan) clockSpan.textContent = timeString;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+  
+  <style>
+    /* Animated background */
+    .animated-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+      background: linear-gradient(135deg, rgba(10,35,66,0.03) 0%, rgba(201,168,76,0.02) 25%, rgba(10,35,66,0.03) 50%, rgba(201,168,76,0.02) 75%, rgba(10,35,66,0.03) 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    body.dark-mode .animated-bg { background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(201,168,76,0.05) 25%, rgba(0,0,0,0.2) 50%, rgba(201,168,76,0.05) 75%, rgba(0,0,0,0.2) 100%); }
+    
+    /* Entrance animations */
+    .animate-header { animation: slideDown 0.6s cubic-bezier(0.2,0.9,0.4,1.1) forwards; }
+    .animate-sidebar { animation: slideInLeft 0.5s cubic-bezier(0.2,0.9,0.4,1.1) forwards; }
+    .animate-main { animation: fadeInUp 0.6s ease-out forwards; }
+    .animate-footer { animation: fadeIn 0.8s ease-out forwards; }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-100%); } to { opacity:1; transform:translateY(0); } }
+    @keyframes slideInLeft { from { opacity:0; transform:translateX(-100%); } to { opacity:1; transform:translateX(0); } }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    
+    /* Micro-interactions */
+    .sidebar-nav .nav-link::after { content: ''; position: absolute; bottom:0; left:0; width:100%; height:2px; background: linear-gradient(90deg, transparent, var(--vg-gold), transparent); transform: scaleX(0); transition: transform 0.4s ease; }
+    .sidebar-nav .nav-link:hover::after { transform: scaleX(1); }
+    .header-nav .nav-icon { transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1); }
+    .header-nav .nav-icon:hover { transform: translateY(-2px) scale(1.1); color: var(--vg-gold); }
+    .logo { transition: transform 0.3s ease; }
+    .logo:hover { transform: scale(1.02); }
+    .search-form input:focus { box-shadow: 0 0 0 3px rgba(201,168,76,0.3); transform: scale(1.01); }
+    .back-to-top { transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1); }
+    .back-to-top:hover { transform: translateY(-5px); background: var(--vg-gold); }
+    .animate-pulse { animation: pulse 1.5s ease infinite; display: inline-block; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    .sidebar-nav .nav-item { animation: fadeInRight 0.4s ease forwards; opacity:0; }
+    .sidebar-nav .nav-item:nth-child(1) { animation-delay:0.05s; }
+    .sidebar-nav .nav-item:nth-child(2) { animation-delay:0.1s; }
+    .sidebar-nav .nav-item:nth-child(3) { animation-delay:0.15s; }
+    .sidebar-nav .nav-item:nth-child(4) { animation-delay:0.2s; }
+    .sidebar-nav .nav-item:nth-child(5) { animation-delay:0.25s; }
+    .sidebar-nav .nav-item:nth-child(6) { animation-delay:0.3s; }
+    @keyframes fadeInRight { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+    .dropdown-menu { animation: dropdownFadeIn 0.2s ease-out; transform-origin: top right; }
+    @keyframes dropdownFadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+    .toggle-sidebar-btn { transition: transform 0.2s ease; }
+    .toggle-sidebar-btn:hover { transform: rotate(90deg); }
+    
+    /* Reduce motion for accessibility */
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; } }
+  </style>
+  
+  {% block extrajs %}{% endblock %}
+</body>
+</html>

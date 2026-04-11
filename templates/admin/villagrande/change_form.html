@@ -1,101 +1,406 @@
-{% extends "admin/villagrande/base_site.html" %}
-{% load i18n static %}
+{% extends "admin/change_form.html" %}
+{% load i18n static admin_urls %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">{% endblock %}
+{# ─────────────────────────────────────────────────────────────────────────
+   Villa Grande themed Change Form.
+   Extends Django's own admin/change_form.html so all inline formsets,
+   prepopulated fields, date pickers and JS widgets keep working.
+   We override only the chrome and inject CSS.
+───────────────────────────────────────────────────────────────────────── #}
 
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a></li>
-<li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
-<li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a></li>
-<li class="breadcrumb-item active">
-    {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}
-    {% else %}{{ original|truncatewords:"18" }}{% endif %}
-</li>
+{% block title %}
+    {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}
+    {% else %}{% blocktrans with name=opts.verbose_name %}Edit {{ name }}{% endblocktrans %}{% endif %}
+    | Villa Grande CMS
 {% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content_title %}{% endblock %}
 
 {% block content %}
-<div id="content-main" class="fade-in">
-    <div class="admin-form-container">
-        <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>
-            {% csrf_token %}
-            
-            {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
-            {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
-            
-            {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
-            
-            {% if errors %}
-                <div class="message message-error">
-                    {% if errors|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
+<div class="admin-wrapper">
+
+    {% include "admin/villagrande/_sidebar.html" %}
+
+    <div class="admin-main">
+
+        {# ── Top bar ── #}
+        <div class="admin-topbar">
+            <div class="topbar-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button>
+                <nav class="vg-breadcrumb" aria-label="breadcrumb">
+                    <a href="{% url 'admin:index' %}"><i class="fas fa-home"></i></a>
+                    <span class="vg-bc-sep">/</span>
+                    <a href="{% url opts|admin_urlname:'changelist' %}" class="vg-bc-link">
+                        {{ opts.verbose_name_plural|capfirst }}
+                    </a>
+                    <span class="vg-bc-sep">/</span>
+                    <span class="vg-bc-current">
+                        {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}
+                        {% else %}{{ original|truncatechars:40 }}{% endif %}
+                    </span>
+                </nav>
+            </div>
+            <div class="topbar-right">
+                <div class="theme-toggle">
+                    <button class="theme-btn" data-theme="light" onclick="setTheme('light')"><i class="fas fa-sun"></i></button>
+                    <button class="theme-btn" data-theme="dark"  onclick="setTheme('dark')"><i class="fas fa-moon"></i></button>
                 </div>
-                {{ adminform.form.non_field_errors }}
-            {% endif %}
-            
-            {% block field_sets %}
-                {% for fieldset in adminform %}
-                    <div class="form-group">
-                        <fieldset class="module aligned {{ fieldset.classes }}">
-                            {% if fieldset.name %}<h5 class="card-title">{{ fieldset.name }}</h5>{% endif %}
-                            {% if fieldset.description %}
-                                <div class="description">{{ fieldset.description|safe }}</div>
-                            {% endif %}
-                            
-                            {% for line in fieldset %}
-                                <div class="form-row{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
-                                    {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
-                                    {% for field in line %}
-                                        <div{% if not line.fields|length_is:'1' %} class="fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}"{% elif field.is_checkbox %} class="checkbox-row"{% endif %}>
-                                            {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
-                                            {% if field.is_checkbox %}
-                                                <div class="form-check">
-                                                    {{ field.field }}{{ field.label_tag }}
-                                                </div>
-                                            {% else %}
-                                                {{ field.label_tag }}
-                                                {% if field.is_readonly %}
-                                                    <div class="readonly">{{ field.contents }}</div>
-                                                {% else %}
-                                                    {{ field.field }}
-                                                {% endif %}
-                                            {% endif %}
-                                            {% if field.field.help_text %}
-                                                <div class="help"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
-                                                    <small>{{ field.field.help_text|safe }}</small>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                        </fieldset>
+                <div class="dropdown">
+                    <div class="admin-profile" data-bs-toggle="dropdown">
+                        <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                        <div class="profile-info">
+                            <div class="profile-name">{{ request.user.username }}</div>
+                            <div class="profile-role">Administrator</div>
+                        </div>
                     </div>
-                {% endfor %}
-            {% endblock %}
-            
-            {% block after_field_sets %}{% endblock %}
-            
-            {% block inline_field_sets %}
-                {% for inline_admin_formset in inline_admin_formsets %}
-                    {% include inline_admin_formset.opts.template %}
-                {% endfor %}
-            {% endblock %}
-            
-            {% block after_related_objects %}{% endblock %}
-            
-            {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
-            
-            {% block admin_change_form_document_ready %}
-                <script id="django-admin-form-add-constants"
-                        src="{% static 'admin/js/change_form.js' %}"
-                        {% if adminform and add %}
-                            data-model-name="{{ opts.model_name }}"
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-content vg-cf-content">
+
+            {# ── Page heading ── #}
+            <div class="vg-cf-header">
+                <div>
+                    <h1 class="vg-cf-title">
+                        {% if add %}
+                            <i class="fas fa-plus-circle me-2" style="color:var(--gold);font-size:1rem;"></i>
+                            {% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}
+                        {% else %}
+                            <i class="fas fa-edit me-2" style="color:var(--gold);font-size:1rem;"></i>
+                            {% blocktrans with name=opts.verbose_name %}Edit {{ name }}{% endblocktrans %}
                         {% endif %}
-                        async>
-                </script>
-            {% endblock %}
-            
-            {% prepopulated_fields_js %}
-        </form>
+                    </h1>
+                    {% if not add %}<p class="vg-cf-subtitle">{{ original }}</p>{% endif %}
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                    <a href="{% url opts|admin_urlname:'changelist' %}" class="btn-admin btn-admin-outline">
+                        <i class="fas fa-arrow-left"></i>
+                        {% blocktrans with name=opts.verbose_name_plural %}Back to {{ name }}{% endblocktrans %}
+                    </a>
+                    {% if not add and has_delete_permission %}
+                    <a href="{% url opts|admin_urlname:'delete' original.pk %}" class="btn-admin btn-admin-danger">
+                        <i class="fas fa-trash"></i> {% trans "Delete" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# ── Django renders the full form here (fieldsets + inlines + submit row) ── #}
+            <div class="vg-cf-django-content">
+                {{ block.super }}
+            </div>
+
+        </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* ── Suppress default Django chrome ── */
+#header, #footer, .breadcrumbs,
+#content-main > h1, #content > h1,
+.object-tools { display: none !important; }
+
+#content { padding: 0 !important; background: transparent !important; }
+#content-main { padding: 0 !important; }
+
+/* ── Breadcrumb ── */
+.vg-breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.85rem; }
+.vg-breadcrumb a, .vg-bc-link { color:var(--gold); text-decoration:none; }
+.vg-bc-sep { color:var(--body-text); opacity:0.5; }
+.vg-bc-current { color:var(--body-text); }
+
+/* ── Page header ── */
+.vg-cf-header {
+    display:flex; align-items:flex-start; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; margin-bottom:28px;
+}
+.vg-cf-title {
+    font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600;
+    color:var(--navy); margin:0 0 4px;
+}
+[data-bs-theme="dark"] .vg-cf-title { color:var(--gold-light); }
+.vg-cf-subtitle { font-size:0.82rem; color:var(--body-text); margin:0; }
+
+/* ── Two-column form layout: fieldsets left, submit-row right ── */
+.vg-cf-django-content {
+    display:flex; gap:24px; align-items:flex-start;
+}
+/* Django wraps fieldsets in #content-main > .module */
+.vg-cf-django-content > * { flex:1; min-width:0; }
+
+/* Hoist submit-row out to a sticky right column */
+.submit-row {
+    order: 99;            /* push to end in flex */
+    flex: 0 0 260px;
+    width: 260px;
+    position: sticky;
+    top: 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ── Fieldset modules ── */
+.module {
+    background: var(--white) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    margin-bottom: 20px !important;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.module h2 {
+    background: linear-gradient(90deg, var(--navy), var(--navy-mid)) !important;
+    color: var(--gold) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    padding: 13px 20px !important;
+    border-bottom: 2px solid var(--gold) !important;
+    margin: 0 0 0 0 !important;
+    letter-spacing: 0.05em;
+}
+/* Fieldset description */
+.module .help { font-size:0.78rem; color:var(--body-text); padding:8px 20px 0; }
+
+/* ── Form rows ── */
+.form-row {
+    padding: 14px 20px !important;
+    border-bottom: 1px solid var(--border) !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.form-row:last-child { border-bottom: none !important; }
+.form-row .field-box { flex: 1; min-width: 220px; }
+
+/* Labels */
+.form-row label, .form-row > label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+}
+[data-bs-theme="dark"] .form-row label { color: var(--gold-light); }
+.required label::after, label.required::after { content: ' *'; color: var(--gold); }
+
+/* ── All input widgets ── */
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="url"],
+.form-row input[type="number"],
+.form-row input[type="password"],
+.form-row input[type="date"],
+.form-row input[type="datetime-local"],
+.form-row input[type="time"],
+.form-row input[type="file"],
+.form-row select,
+.form-row textarea,
+.vg-cf-django-content input[type="text"],
+.vg-cf-django-content input[type="email"],
+.vg-cf-django-content input[type="url"],
+.vg-cf-django-content input[type="number"],
+.vg-cf-django-content input[type="password"],
+.vg-cf-django-content input[type="date"],
+.vg-cf-django-content select,
+.vg-cf-django-content textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--white);
+    color: var(--body-text);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus,
+.vg-cf-django-content input:focus,
+.vg-cf-django-content select:focus,
+.vg-cf-django-content textarea:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+}
+.form-row textarea,
+.vg-cf-django-content textarea { min-height: 110px; resize: vertical; }
+.form-row input[type="checkbox"] { width:18px; height:18px; accent-color:var(--gold); cursor:pointer; }
+
+/* Error styling */
+.errornote {
+    background: #f8d7da; color: #721c24;
+    border: 1px solid #f5c6cb; border-left: 4px solid #dc3545;
+    border-radius: 6px; padding: 12px 16px;
+    font-size: 0.85rem; margin-bottom: 20px;
+}
+.errorlist {
+    list-style: none; padding: 0; margin: 5px 0 0;
+    display: flex; flex-direction: column; gap: 3px;
+}
+.errorlist li { font-size: 0.78rem; color: #dc3545; }
+.errors input, .errors select, .errors textarea {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220,53,69,0.1) !important;
+}
+
+/* Help text */
+.help, p.help {
+    font-size: 0.75rem; color: var(--body-text); opacity: 0.65;
+    margin: 5px 0 0; display: block;
+}
+
+/* Readonly fields */
+.readonly {
+    padding: 10px 14px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 0.88rem;
+    color: var(--body-text);
+    display: inline-block;
+    min-width: 120px;
+}
+
+/* ── Submit row (the sticky right panel) ── */
+.submit-row p { margin: 0; }
+.submit-row input[type="submit"],
+.submit-row button[type="submit"] {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 5px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: var(--transition);
+    margin-bottom: 2px;
+}
+.submit-row input[type="submit"]:hover,
+.submit-row button[type="submit"]:hover {
+    background: var(--gold-dark);
+    transform: translateY(-1px);
+}
+.submit-row .deletelink,
+.submit-row a.deletelink {
+    display: block;
+    text-align: center;
+    padding: 9px 14px;
+    border: 1px solid #dc3545;
+    border-radius: 5px;
+    color: #dc3545;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 6px;
+    transition: var(--transition);
+}
+.submit-row .deletelink:hover { background: #dc3545; color: #fff; }
+
+/* ── Inline admin groups ── */
+.inline-group {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.inline-group h2 {
+    background: var(--cream) !important;
+    color: var(--navy) !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 0.95rem !important;
+    padding: 12px 18px !important;
+    border-bottom: 1px solid var(--border) !important;
+    margin: 0 !important;
+}
+.inline-group table { width: 100%; border-collapse: collapse; }
+.inline-group table th {
+    background: var(--cream);
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--navy);
+    border-bottom: 2px solid var(--gold);
+    text-align: left;
+}
+.inline-group table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 0.84rem;
+}
+.inline-group table tr:last-child td { border-bottom: none; }
+.inline-group table input[type="text"],
+.inline-group table input[type="number"],
+.inline-group table select,
+.inline-group table textarea {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-family: 'Jost', sans-serif;
+    background: var(--white);
+    color: var(--body-text);
+    width: 100%;
+}
+.inline-group table input:focus,
+.inline-group table select:focus { border-color: var(--gold); outline: none; }
+.add-row a, .add-row td a {
+    display: inline-block;
+    padding: 7px 14px;
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    border: 1px dashed var(--gold);
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin: 10px;
+    transition: var(--transition);
+}
+.add-row a:hover { background: var(--gold); color: var(--navy); }
+
+/* ── Object history link in object-tools ── */
+.object-tools { display: none !important; } /* merged into our header */
+
+/* ── Date/time widgets ── */
+.datetime .vDateField, .datetime .vTimeField { width: auto !important; }
+.calendaricon, .clockicon { color: var(--gold) !important; }
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .vg-cf-django-content { flex-direction: column; }
+    .submit-row { order: -1; position: static; width: 100%; flex-direction: row; flex-wrap: wrap; }
+    .submit-row input[type="submit"], .submit-row button[type="submit"] { width: auto; flex: 1; }
+}
+@media (max-width: 575.98px) {
+    .form-row .field-box { min-width: 100%; }
+}
+</style>
+{% endblock extrastyle %}

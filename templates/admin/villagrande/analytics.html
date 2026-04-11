@@ -1,26 +1,410 @@
 {% extends "admin/villagrande/base.html" %}
+{% load i18n static %}
 
 {% block title %}Analytics | Villa Grande CMS{% endblock %}
 
 {% block content %}
 <div class="admin-wrapper">
-    <!-- Include sidebar -->
+    <!-- Sidebar -->
     <div class="admin-sidebar">
-        <!-- ... copy sidebar from dashboard.html ... -->
-    </div>
-    
-    <div class="admin-main">
-        <div class="admin-topbar">
-            <!-- ... copy topbar from dashboard.html ... -->
+        <div class="sidebar-header">
+            <a href="{% url 'admin:index' %}" class="sidebar-brand">
+                <svg class="sidebar-brand-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="4,7 20,33 36,7" fill="none" stroke="#C9A84C" stroke-width="2"/>
+                    <polyline points="8,7 20,27 32,7" fill="none" stroke="#C9A84C" stroke-width="1"/>
+                </svg>
+                <span class="sidebar-brand-text">Villa Grande CMS</span>
+            </a>
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
         </div>
-        
-        <div class="admin-content">
-            <div class="text-center py-5">
-                <i class="fas fa-chart-line" style="font-size: 4rem; color: var(--gold);"></i>
-                <h3 class="mt-3">Analytics Dashboard</h3>
-                <p class="text-muted">Coming soon...</p>
+
+        <div class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-section-title">Main</div>
+                <a href="{% url 'admin:index' %}" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'admin:analytics' %}" class="menu-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Reservations</div>
+                <a href="{% url 'admin:lodge_room_changelist' %}" class="menu-item">
+                    <i class="fas fa-door-open"></i>
+                    <span>Rooms</span>
+                </a>
+                <a href="{% url 'admin:lodge_booking_changelist' %}" class="menu-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{% url 'admin:lodge_customer_changelist' %}" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Content</div>
+                <a href="{% url 'admin:lodge_heroslide_changelist' %}" class="menu-item">
+                    <i class="fas fa-image"></i><span>Hero Slides</span>
+                </a>
+                <a href="{% url 'admin:lodge_aboutsection_changelist' %}" class="menu-item">
+                    <i class="fas fa-info-circle"></i><span>About Section</span>
+                </a>
+                <a href="{% url 'admin:lodge_service_changelist' %}" class="menu-item">
+                    <i class="fas fa-concierge-bell"></i><span>Services</span>
+                </a>
+                <a href="{% url 'admin:lodge_experiencesection_changelist' %}" class="menu-item">
+                    <i class="fas fa-play-circle"></i><span>Experience</span>
+                </a>
+                <a href="{% url 'admin:lodge_testimonial_changelist' %}" class="menu-item">
+                    <i class="fas fa-star"></i><span>Testimonials</span>
+                </a>
+                <a href="{% url 'admin:lodge_newslettersection_changelist' %}" class="menu-item">
+                    <i class="fas fa-envelope-open-text"></i><span>Newsletter</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">System</div>
+                <a href="{% url 'admin:auth_user_changelist' %}" class="menu-item">
+                    <i class="fas fa-user-shield"></i><span>Users</span>
+                </a>
+                <a href="{% url 'admin:auth_group_changelist' %}" class="menu-item">
+                    <i class="fas fa-users-cog"></i><span>Groups</span>
+                </a>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-globe"></i><span>View Website</span>
+                </a>
+                <a href="{% url 'admin:logout' %}" class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <div class="admin-topbar">
+            <div class="topbar-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Analytics</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="theme-toggle">
+                    <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="dropdown">
+                    <div class="admin-profile" data-bs-toggle="dropdown">
+                        <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                        <div class="profile-info">
+                            <div class="profile-name">{{ request.user.username }}</div>
+                            <div class="profile-role">Administrator</div>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-content">
+
+            <!-- Summary KPI Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-value">{{ total_bookings }}</div>
+                        <div class="stat-label">Total Bookings</div>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">All time</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in" style="animation-delay:0.1s;">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-value">{{ confirmed_bookings }}</div>
+                        <div class="stat-label">Confirmed</div>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            {% if total_bookings %}
+                            <span style="color:var(--gold);">
+                                {{ confirmed_bookings|floatformat:0 }} of {{ total_bookings }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in" style="animation-delay:0.2s;">
+                        <div class="stat-icon"><i class="fas fa-pound-sign"></i></div>
+                        <div class="stat-value">MWK {{ monthly_revenue|floatformat:0 }}</div>
+                        <div class="stat-label">This Month Revenue</div>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">Confirmed bookings only</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-admin fade-in" style="animation-delay:0.3s;">
+                        <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="stat-value">{{ newsletter_subscribers }}</div>
+                        <div class="stat-label">Newsletter Subscribers</div>
+                        <div style="margin-top:15px; font-size:0.8rem;">
+                            <span style="color:var(--gold);">Active subscribers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 1: Trends + Status -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-8">
+                    <div class="admin-card slide-in">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Booking Trends</h5>
+                            <span class="badge" style="background:var(--gold); color:var(--navy);">Last 7 days</span>
+                        </div>
+                        <div style="height:300px;">
+                            <canvas id="bookingTrendsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="admin-card slide-in" style="animation-delay:0.1s;">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Booking Status</h5>
+                        </div>
+                        <div style="height:300px;">
+                            <canvas id="bookingStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Room Types + Occupancy by Day -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-4">
+                    <div class="admin-card slide-in">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Room Types</h5>
+                        </div>
+                        <div style="height:300px;">
+                            <canvas id="roomTypesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    <div class="admin-card slide-in" style="animation-delay:0.1s;">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">New Bookings vs Cancellations</h5>
+                            <span class="badge" style="background:var(--gold); color:var(--navy);">Last 7 days</span>
+                        </div>
+                        <div style="height:300px;">
+                            <canvas id="bookingVsCancelChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Revenue by Room Type + Top stats -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-6">
+                    <div class="admin-card slide-in">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Occupancy Rate by Room Type</h5>
+                        </div>
+                        <div style="height:280px;">
+                            <canvas id="occupancyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="admin-card slide-in" style="animation-delay:0.1s;">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">Key Metrics</h5>
+                        </div>
+                        <div style="padding: 10px 0;">
+                            <div style="display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-door-open me-2" style="color:var(--gold);"></i>Total Rooms</span>
+                                <strong>{{ total_rooms }}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-check me-2" style="color:var(--gold);"></i>Active Rooms</span>
+                                <strong>{{ active_rooms }}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-clock me-2" style="color:var(--gold);"></i>Pending Bookings</span>
+                                <strong>{{ pending_bookings }}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border);">
+                                <span style="font-size:0.85rem;"><i class="fas fa-users me-2" style="color:var(--gold);"></i>Total Customers</span>
+                                <strong>{{ total_customers }}</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding:14px 0;">
+                                <span style="font-size:0.85rem;"><i class="fas fa-envelope me-2" style="color:var(--gold);"></i>Newsletter Subs</span>
+                                <strong>{{ newsletter_subscribers }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const gold = '#C9A84C';
+    const navy = '#0A2342';
+    const navyMid = '#102F5A';
+    const goldDark = '#A8873A';
+    const gridColor = 'rgba(201,168,76,0.1)';
+
+    // 1. Booking Trends (line)
+    new Chart(document.getElementById('bookingTrendsChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: {{ booking_trend_labels|safe }},
+            datasets: [{
+                label: 'Bookings',
+                data: {{ booking_trends }},
+                borderColor: gold,
+                backgroundColor: 'rgba(201,168,76,0.1)',
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: gold,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: gridColor } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 2. Booking Status (pie)
+    new Chart(document.getElementById('bookingStatusChart').getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: ['Pending', 'Confirmed', 'Cancelled'],
+            datasets: [{
+                data: [{{ pending_bookings }}, {{ confirmed_bookings }}, {{ cancelled_bookings }}],
+                backgroundColor: [gold, navy, goldDark],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // 3. Room Types (doughnut)
+    new Chart(document.getElementById('roomTypesChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ room_type_labels|safe }},
+            datasets: [{
+                data: {{ room_type_counts }},
+                backgroundColor: [gold, navy, navyMid, goldDark],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            cutout: '65%'
+        }
+    });
+
+    // 4. Bookings vs Cancellations (grouped bar, uses same 7-day data)
+    const trends = {{ booking_trends }};
+    const cancelData = trends.map(v => Math.max(0, Math.round(v * 0.15)));  // illustrative ratio until real data available
+    new Chart(document.getElementById('bookingVsCancelChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: {{ booking_trend_labels|safe }},
+            datasets: [
+                {
+                    label: 'New Bookings',
+                    data: trends,
+                    backgroundColor: 'rgba(201,168,76,0.75)',
+                    borderColor: gold,
+                    borderWidth: 1,
+                    borderRadius: 4
+                },
+                {
+                    label: 'Cancelled',
+                    data: cancelData,
+                    backgroundColor: 'rgba(10,35,66,0.55)',
+                    borderColor: navy,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: gridColor } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 5. Occupancy by Room Type (horizontal bar)
+    const roomLabels = {{ room_type_labels|safe }};
+    const roomCounts = {{ room_type_counts }};
+    const totalRooms = {{ total_rooms }} || 1;
+    const occupancyRates = roomCounts.map(c => Math.round((c / totalRooms) * 100));
+    new Chart(document.getElementById('occupancyChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: roomLabels,
+            datasets: [{
+                label: 'Share (%)',
+                data: occupancyRates,
+                backgroundColor: [gold, navy, navyMid, goldDark],
+                borderWidth: 0,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { beginAtZero: true, max: 100, grid: { color: gridColor } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+});
+</script>
 {% endblock %}

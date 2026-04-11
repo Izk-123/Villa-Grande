@@ -1,59 +1,155 @@
-{% extends "admin/villagrande/base_site.html" %}
-{% load i18n static %}
+{% extends "admin/delete_confirmation.html" %}
+{% load i18n admin_urls %}
 
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a></li>
-<li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
-<li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a></li>
-<li class="breadcrumb-item"><a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}">{{ object|truncatewords:"18" }}</a></li>
-<li class="breadcrumb-item active">{% translate 'Delete' %}</li>
+{% block title %}
+    {% blocktrans with name=opts.verbose_name %}Delete {{ name }}{% endblocktrans %} | Villa Grande CMS
 {% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+{% block content_title %}{% endblock %}
 
 {% block content %}
-<div id="content-main" class="fade-in">
-    <div class="admin-card" style="max-width: 600px; margin: 0 auto; text-align: center;">
-        {% if perms_lacking %}
-            <div class="message message-error">
-                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 20px;"></i>
-                <h3>{% blocktranslate with escaped_object=object %}Deleting the {{ object_name }} '{{ escaped_object }}' would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktranslate %}</h3>
+<div class="admin-wrapper">
+
+    {% include "admin/villagrande/_sidebar.html" %}
+
+    <div class="admin-main">
+
+        <div class="admin-topbar">
+            <div class="topbar-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button>
+                <nav class="vg-breadcrumb" aria-label="breadcrumb">
+                    <a href="{% url 'admin:index' %}"><i class="fas fa-home"></i></a>
+                    <span class="vg-bc-sep">/</span>
+                    <a href="{% url opts|admin_urlname:'changelist' %}" class="vg-bc-link">{{ opts.verbose_name_plural|capfirst }}</a>
+                    <span class="vg-bc-sep">/</span>
+                    <span class="vg-bc-current">{% trans "Delete" %}</span>
+                </nav>
             </div>
-            <ul style="text-align: left; margin: 20px 0;">
-                {% for obj in perms_lacking %}
-                    <li>{{ obj }}</li>
-                {% endfor %}
-            </ul>
-        {% elif protected %}
-            <div class="message message-error">
-                <i class="fas fa-shield-alt" style="font-size: 3rem; color: #dc3545; margin-bottom: 20px;"></i>
-                <h3>{% blocktranslate with escaped_object=object %}Deleting the {{ object_name }} '{{ escaped_object }}' would require deleting the following protected related objects:{% endblocktranslate %}</h3>
-            </div>
-            <ul style="text-align: left; margin: 20px 0;">
-                {% for obj in protected %}
-                    <li>{{ obj }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="message message-warning">
-                <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ffc107; margin-bottom: 20px;"></i>
-                <h3>{% blocktranslate with escaped_object=object %}Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"?{% endblocktranslate %}</h3>
-            </div>
-            
-            <p style="margin: 20px 0;">{% translate "All of the following related items will be deleted:" %}</p>
-            
-            <div style="background: var(--cream); padding: 20px; border-radius: 4px; margin: 20px 0; text-align: left;">
-                {% include "admin/includes/object_delete_summary.html" %}
-                <h4>{% translate "Objects" %}</h4>
-                <ul>{{ deleted_objects|unordered_list }}</ul>
-            </div>
-            
-            <form method="post">
-                {% csrf_token %}
-                <div class="submit-row">
-                    <input type="submit" value="{% translate 'Yes, I\'m sure' %}" class="btn-admin btn-admin-danger">
-                    <a href="{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}" class="btn-admin btn-admin-outline">{% translate "No, take me back" %}</a>
+            <div class="topbar-right">
+                <div class="theme-toggle">
+                    <button class="theme-btn" data-theme="light" onclick="setTheme('light')"><i class="fas fa-sun"></i></button>
+                    <button class="theme-btn" data-theme="dark"  onclick="setTheme('dark')"><i class="fas fa-moon"></i></button>
                 </div>
-            </form>
-        {% endif %}
+                <div class="dropdown">
+                    <div class="admin-profile" data-bs-toggle="dropdown">
+                        <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                        <div class="profile-info">
+                            <div class="profile-name">{{ request.user.username }}</div>
+                            <div class="profile-role">Administrator</div>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <div class="vg-del-card">
+                <div class="vg-del-icon-wrap">
+                    <div class="vg-del-icon"><i class="fas fa-trash-alt"></i></div>
+                </div>
+
+                <h2 class="vg-del-title">{% trans "Confirm Deletion" %}</h2>
+
+                <p class="vg-del-desc">
+                    {% blocktrans with name=opts.verbose_name %}
+                        Are you sure you want to delete the {{ name }}
+                    {% endblocktrans %}
+                    "<strong>{{ object_name }}</strong>"?
+                    {% trans "All of the following related items will be deleted:" %}
+                </p>
+
+                {# Django's own related-objects list #}
+                <div class="vg-del-related">
+                    {{ block.super }}
+                </div>
+
+                <div class="vg-del-actions">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+                        {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+                        <input type="hidden" name="post" value="yes">
+                        <button type="submit" class="btn-admin btn-admin-danger">
+                            <i class="fas fa-trash-alt"></i> {% trans "Yes, delete" %}
+                        </button>
+                    </form>
+                    <a href="{% url opts|admin_urlname:'changelist' %}" class="btn-admin btn-admin-outline">
+                        <i class="fas fa-arrow-left"></i> {% trans "No, take me back" %}
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+#header, #footer, .breadcrumbs, #content > h1 { display: none !important; }
+#content { padding: 0 !important; background: transparent !important; }
+
+.vg-breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.85rem; }
+.vg-breadcrumb a, .vg-bc-link { color:var(--gold); text-decoration:none; }
+.vg-bc-sep { color:var(--body-text); opacity:0.5; }
+.vg-bc-current { color:var(--body-text); }
+
+.vg-del-card {
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 44px 40px;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+.vg-del-icon-wrap { margin-bottom: 20px; }
+.vg-del-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(220,53,69,0.1);
+    color: #dc3545;
+    font-size: 1.8rem;
+}
+.vg-del-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.9rem; font-weight: 600;
+    color: var(--navy); margin: 0 0 12px;
+}
+[data-bs-theme="dark"] .vg-del-title { color: var(--gold-light); }
+.vg-del-desc { font-size: 0.9rem; color: var(--body-text); line-height: 1.7; margin-bottom: 20px; }
+
+/* Style Django's related-objects output */
+.vg-del-related { text-align: left; margin-bottom: 28px; }
+.vg-del-related ul {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px 12px 32px;
+    font-size: 0.84rem;
+    color: var(--body-text);
+    line-height: 1.9;
+    list-style: disc;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.vg-del-related ul li { margin: 0; }
+/* Hide Django's own form/buttons inside the super block — we render ours */
+.vg-del-related form, .vg-del-related [type="submit"],
+.vg-del-related .cancel-link { display: none !important; }
+
+.vg-del-actions {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+</style>
+{% endblock extrastyle %}

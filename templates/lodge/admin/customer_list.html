@@ -1,50 +1,100 @@
-{% extends 'lodge/base.html' %}
+{% extends "accounts/base.html" %}
+{% load static %}
 
-{% block title %}Customers - Villa Grande{% endblock %}
+{% block title %}Customer Management{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <h2 class="mb-4">Customers</h2>
-    
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Joined</th>
-                <th>Bookings</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer in customers %}
-            <tr>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>{{ customer.email|default:"—" }}</td>
-                <td>{{ customer.created_at|date:"M d, Y" }}</td>
-                <td>{{ customer.bookings.count }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="text-center">No customers found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    {% if is_paginated %}
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-            {% endif %}
-            <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-            {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-            {% endif %}
-        </ul>
+<div class="pagetitle" data-aos="fade-up">
+    <h1>Customer Management</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Customers</li>
+        </ol>
     </nav>
-    {% endif %}
 </div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body">
+                    <h5 class="card-title">Customers</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Registered</th>
+                                    <th>Bookings</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in customers %}
+                                <tr data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                                    <td>{{ customer.id }}</td>
+                                    <td>
+                                        <i class="bi bi-person-badge me-2 text-gold"></i>
+                                        {{ customer.name }}
+                                    </td>
+                                    <td>{{ customer.phone }}</td>
+                                    <td>{{ customer.email|default:"—" }}</td>
+                                    <td>{{ customer.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-info rounded-pill">{{ customer.bookings.count }}</span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">No customers found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                            {% endif %}
+                            {% for num in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-gold { color: var(--vg-gold); }
+    .badge.bg-info {
+        background: linear-gradient(135deg, #3B82F6, #2563EB) !important;
+    }
+    .table-hover tbody tr {
+        transition: all var(--vg-transition-fast);
+    }
+    .table-hover tbody tr:hover {
+        background: linear-gradient(90deg, rgba(201,168,76,0.05), transparent);
+        transform: scale(1.01);
+    }
+</style>
 {% endblock %}

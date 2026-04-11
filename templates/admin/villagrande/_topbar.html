@@ -1,0 +1,60 @@
+{% load i18n %}
+{# Reusable topbar. Pass `page_title` from the including template.      #}
+{# Usage: {% include "admin/villagrande/_topbar.html" with page_title="Rooms" %} #}
+
+<div class="admin-topbar">
+    <div class="topbar-left">
+        <button class="mobile-toggle" onclick="toggleMobileSidebar()" aria-label="Toggle menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        {# Breadcrumb trail #}
+        <nav aria-label="breadcrumb" style="display:flex; align-items:center; gap:8px;">
+            <a href="{% url 'admin:index' %}" style="color:var(--gold); text-decoration:none; font-size:0.85rem;">
+                <i class="fas fa-home"></i>
+            </a>
+            {% if opts %}
+            <span style="color:var(--body-text); font-size:0.85rem;">/</span>
+            <a href="{% url 'admin:'|add:opts.app_label|add:'_'|add:opts.model_name|add:'_changelist' %}"
+               style="color:var(--gold); text-decoration:none; font-size:0.85rem;">
+                {{ opts.verbose_name_plural|capfirst }}
+            </a>
+            {% if page_title and page_title != opts.verbose_name_plural|capfirst %}
+            <span style="color:var(--body-text); font-size:0.85rem;">/</span>
+            <span style="color:var(--body-text); font-size:0.85rem;">{{ page_title }}</span>
+            {% endif %}
+            {% else %}
+            <span style="color:var(--body-text); font-size:0.85rem;">/</span>
+            <span class="page-title" style="font-size:1rem;">{{ page_title }}</span>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="topbar-right">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <button class="theme-btn" data-theme="light" onclick="setTheme('light')" aria-label="Light mode">
+                <i class="fas fa-sun"></i>
+            </button>
+            <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')" aria-label="Dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- Admin Profile -->
+        <div class="dropdown">
+            <div class="admin-profile" data-bs-toggle="dropdown" role="button">
+                <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                <div class="profile-info">
+                    <div class="profile-name">{{ request.user.username }}</div>
+                    <div class="profile-role">{% trans "Administrator" %}</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-home me-2"></i>{% trans "Dashboard" %}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>{% trans "Logout" %}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

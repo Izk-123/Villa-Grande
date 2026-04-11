@@ -6,8 +6,19 @@
 {% block content %}
 <!-- ======= HERO SECTION ======= -->
 <section class="hero-section">
-    <div class="hero-slide hero-slide-1 active" id="heroSlide1"></div>
-    <div class="hero-slide hero-slide-2" id="heroSlide2"></div>
+
+    {# ── Background slides ── #}
+    {% if hero_slides %}
+        {% for slide in hero_slides %}
+        <div class="hero-slide hero-slide-{{ forloop.counter }} {% if forloop.first %}active{% endif %}"
+             id="heroSlide{{ forloop.counter }}"
+             style="background-image: url('{{ slide.image.url }}');"></div>
+        {% endfor %}
+    {% else %}
+        {# Fallback to static images #}
+        <div class="hero-slide hero-slide-1 active" id="heroSlide1"></div>
+        <div class="hero-slide hero-slide-2" id="heroSlide2"></div>
+    {% endif %}
 
     <div class="hero-overlay"></div>
 
@@ -15,23 +26,38 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-xl-7">
-                    <div class="hero-eyebrow">
-                        <span>Luxury Living</span>
-                    </div>
-                    <h1 class="hero-title">
-                        Experience <em>Refined</em><br>Comfort at Its Finest
-                    </h1>
-                    <p class="hero-subtitle">
-                        Nestled in the heart of Malawi, Villa Grande Lodge offers an unparalleled retreat where timeless elegance meets warm, personalised hospitality.
-                    </p>
-                    <div class="hero-cta-group">
-                        <a href="{% url 'lodge:rooms' %}" class="btn-vg-primary">
-                            Explore Rooms <i class="fas fa-arrow-right fa-sm"></i>
-                        </a>
-                        <a href="{% url 'lodge:booking' %}" class="btn-vg-outline">
-                            Book a Stay
-                        </a>
-                    </div>
+
+                    {% if hero_slides %}
+                        {% for slide in hero_slides %}
+                        <div class="hero-slide-content" data-slide="{{ forloop.counter0 }}"
+                             {% if not forloop.first %}style="display:none;"{% endif %}>
+                            <div class="hero-eyebrow"><span>Luxury Living</span></div>
+                            <h1 class="hero-title">{{ slide.title|safe }}</h1>
+                            <p class="hero-subtitle">{{ slide.subtitle }}</p>
+                            <div class="hero-cta-group">
+                                <a href="{% url slide.button_link %}" class="btn-vg-primary">
+                                    {{ slide.button_text }} <i class="fas fa-arrow-right fa-sm"></i>
+                                </a>
+                                <a href="{% url 'lodge:booking' %}" class="btn-vg-outline">Book a Stay</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        {# Fallback static content #}
+                        <div class="hero-eyebrow"><span>Luxury Living</span></div>
+                        <h1 class="hero-title">Experience <em>Refined</em><br>Comfort at Its Finest</h1>
+                        <p class="hero-subtitle">
+                            Nestled in the heart of Malawi, Villa Grande Lodge offers an unparalleled retreat
+                            where timeless elegance meets warm, personalised hospitality.
+                        </p>
+                        <div class="hero-cta-group">
+                            <a href="{% url 'lodge:rooms' %}" class="btn-vg-primary">
+                                Explore Rooms <i class="fas fa-arrow-right fa-sm"></i>
+                            </a>
+                            <a href="{% url 'lodge:booking' %}" class="btn-vg-outline">Book a Stay</a>
+                        </div>
+                    {% endif %}
+
                 </div>
             </div>
         </div>
@@ -43,18 +69,26 @@
     </div>
 
     <div class="hero-dots">
-        <button class="hero-dot active" aria-label="Go to slide 1"></button>
-        <button class="hero-dot" aria-label="Go to slide 2"></button>
+        {% if hero_slides %}
+            {% for slide in hero_slides %}
+            <button class="hero-dot {% if forloop.first %}active{% endif %}"
+                    aria-label="Go to slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        {% else %}
+            <button class="hero-dot active" aria-label="Go to slide 1"></button>
+            <button class="hero-dot" aria-label="Go to slide 2"></button>
+        {% endif %}
     </div>
+
 </section>
 
 <!-- ======= BOOKING BAR ======= -->
 <div class="booking-bar reveal">
     <div class="container-fluid px-0">
-        <form class="booking-bar-inner" id="bookingForm" method="get" action="{% url 'lodge:booking' %}">
+        <form class="booking-bar-inner" id="bookingForm" method="get" action="{% url 'lodge:available_rooms' %}">
             <div class="booking-field">
                 <label for="checkin"><i class="fas fa-calendar-check me-1"></i> Check In</label>
-                <input type="date" id="checkin" name="check_in">
+                <input type="date" id="checkin" name="check_in" min="{{ today }}">
             </div>
             <div class="booking-field">
                 <label for="checkout"><i class="fas fa-calendar-times me-1"></i> Check Out</label>
@@ -64,20 +98,14 @@
                 <label for="adults"><i class="fas fa-user me-1"></i> Adults</label>
                 <select id="adults" name="guests">
                     <option value="">Select</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option>
                 </select>
             </div>
             <div class="booking-field">
                 <label for="children"><i class="fas fa-child me-1"></i> Children</label>
                 <select id="children" name="children">
                     <option value="">Select</option>
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
+                    <option>0</option><option>1</option><option>2</option><option>3</option>
                 </select>
             </div>
             <button type="submit" class="booking-submit">
@@ -93,50 +121,55 @@
         <div class="row g-5 align-items-center">
             <div class="col-lg-6 reveal-left">
                 <div class="about-img-grid">
-                    <img class="img-main" src="{% static 'img/about-1.jpg' %}" alt="Villa Grande Lodge interior with elegant furnishings" loading="lazy">
-                    <img class="img-accent" src="{% static 'img/about-2.jpg' %}" alt="Luxurious bathroom detail at Villa Grande" loading="lazy">
+                    <img class="img-main"
+                         src="{% if about and about.image_main %}{{ about.image_main.url }}{% else %}{% static 'img/about-1.jpg' %}{% endif %}"
+                         alt="Villa Grande Lodge interior" loading="lazy">
+                    <img class="img-accent"
+                         src="{% if about and about.image_accent %}{{ about.image_accent.url }}{% else %}{% static 'img/about-2.jpg' %}{% endif %}"
+                         alt="Luxurious bathroom detail" loading="lazy">
                     <div class="experience-badge">
-                        <span>15+</span>
+                        <span>{{ about.years_of_excellence|default:"15" }}+</span>
                         <span>Years of<br>Excellence</span>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 reveal-right">
-                <div class="section-tag left">About Villa Grande</div>
+                <div class="section-tag left">{{ about.subtitle|default:"About Villa Grande" }}</div>
                 <h2 class="section-heading">
-                    Where Every Detail<br>Tells a Story of <em>Luxury</em>
+                    {% if about %}
+                        {{ about.title|safe }}
+                    {% else %}
+                        Where Every Detail<br>Tells a Story of <em>Luxury</em>
+                    {% endif %}
                 </h2>
                 <div class="divider-gold"></div>
                 <p style="font-size:0.92rem; line-height:1.9; margin-bottom:24px;">
-                    Villa Grande Lodge is Malawi's premier destination for discerning travellers seeking an extraordinary blend of natural beauty, world-class comfort, and heartfelt African hospitality. Each room is a sanctuary, every meal a celebration, and every moment an unforgettable memory.
-                </p>
-                <p style="font-size:0.92rem; line-height:1.9; margin-bottom:36px; color:var(--body-text);">
-                    From our sun-drenched terraces overlooking manicured gardens to our intimate dining rooms and state-of-the-art spa, we craft experiences that linger long after you depart.
+                    {% if about %}
+                        {{ about.description }}
+                    {% else %}
+                        Villa Grande Lodge is Malawi's premier destination for discerning travellers seeking an
+                        extraordinary blend of natural beauty, world-class comfort, and heartfelt African hospitality.
+                        Each room is a sanctuary, every meal a celebration, and every moment an unforgettable memory.
+                    {% endif %}
                 </p>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-4 reveal delay-1">
+                    {% for stat in statistics %}
+                    <div class="col-4 reveal delay-{{ forloop.counter }}">
                         <div class="stat-card">
-                            <span class="stat-number" data-target="48">0</span>
-                            <span class="stat-label">Rooms</span>
+                            <span class="stat-number" data-target="{{ stat.value }}">0</span>
+                            <span class="stat-label">{{ stat.label }}{{ stat.suffix }}</span>
                         </div>
                     </div>
-                    <div class="col-4 reveal delay-2">
-                        <div class="stat-card">
-                            <span class="stat-number" data-target="120">0</span>
-                            <span class="stat-label">Staff</span>
-                        </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-4">
+                        <p>No statistics available at the moment.</p>
                     </div>
-                    <div class="col-4 reveal delay-3">
-                        <div class="stat-card">
-                            <span class="stat-number" data-target="4800">0</span>
-                            <span class="stat-label">Guests Hosted</span>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
 
-                <a href="{% url 'lodge:about' %}" class="btn-vg-primary">
-                    Discover Our Story <i class="fas fa-arrow-right fa-sm"></i>
+                <a href="{% url about.button_link|default:'lodge:about' %}" class="btn-vg-primary">
+                    {{ about.button_text|default:"Discover Our Story" }} <i class="fas fa-arrow-right fa-sm"></i>
                 </a>
             </div>
         </div>
@@ -150,49 +183,45 @@
             <div class="section-tag">Our Accommodations</div>
             <h2 class="section-heading">Curated Rooms &amp; <em>Suites</em></h2>
             <p style="max-width:520px; margin:16px auto 0; font-size:0.9rem;">
-                Each space is thoughtfully designed to deliver an exceptional stay, combining bespoke furnishings with modern comfort.
+                Each space is thoughtfully designed to deliver an exceptional stay, combining bespoke furnishings
+                with modern comfort.
             </p>
         </div>
 
         <div class="row g-4">
-            {% for room in featured_rooms|slice:":3" %}
+            {% for room in featured_rooms %}
             <div class="col-lg-4 col-md-6 reveal delay-{{ forloop.counter }}">
                 <div class="room-card">
-                    <div class="room-card-image">
+                    <div class="room-card-img">
                         {% if room.image %}
-                            <img src="{{ room.image.url }}" alt="{{ room.room_number }}" loading="lazy">
+                        <img src="{{ room.image.url }}" alt="{{ room.room_number }} — {{ room.get_room_type_display }}" loading="lazy">
                         {% else %}
-                            <img src="{% static 'img/default-room.jpg' %}" alt="Default room image" loading="lazy">
+                        <img src="{% static 'img/room-placeholder.jpg' %}" alt="{{ room.room_number }}" loading="lazy">
                         {% endif %}
-                        <div class="room-price-badge">From <span>${{ room.price_per_night }}</span> /night</div>
+                        <div class="room-badge">{{ room.get_room_type_display }}</div>
                     </div>
                     <div class="room-card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--navy);">{{ room.get_room_type_display }}</h4>
-                            <div class="room-stars" aria-label="5 stars">★★★★★</div>
+                        <h5 class="room-title">Room {{ room.room_number }}</h5>
+                        <p class="room-desc">{{ room.description|truncatechars:100 }}</p>
+                        <div class="room-footer">
+                            <span class="room-price">
+                                <strong>MWK {{ room.price_per_night }}</strong> / night
+                            </span>
+                            <a href="{% url 'lodge:room_detail' room.pk %}" class="btn-vg-sm">View Room</a>
                         </div>
-                        <div class="room-amenities">
-                            <span class="room-amenity"><i class="fas fa-bed" aria-hidden="true"></i> King Bed</span>
-                            <span class="room-amenity"><i class="fas fa-bath" aria-hidden="true"></i> En Suite</span>
-                            <span class="room-amenity"><i class="fas fa-wifi" aria-hidden="true"></i> Wi-Fi</span>
-                            <span class="room-amenity"><i class="fas fa-snowflake" aria-hidden="true"></i> AC</span>
-                        </div>
-                        <p style="font-size:0.83rem; line-height:1.75; color:var(--body-text);">{{ room.description|truncatewords:20 }}</p>
-                    </div>
-                    <div class="room-card-footer">
-                        <a href="{% url 'lodge:room_detail' room.pk %}" class="btn-vg-outline" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">View Details</a>
-                        <a href="{% url 'lodge:booking' %}?room={{ room.pk }}" class="btn-vg-primary" style="flex:1; justify-content:center; font-size:0.7rem; padding:10px 20px;">Book Now</a>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <p class="text-center">No rooms available at the moment.</p>
+            <div class="col-12 text-center py-4">
+                <p>No rooms available at the moment.</p>
+            </div>
             {% endfor %}
         </div>
 
-        <div class="text-center mt-5 reveal">
+        <div class="text-center mt-5">
             <a href="{% url 'lodge:rooms' %}" class="btn-vg-primary">
-                View All Rooms &amp; Suites <i class="fas fa-arrow-right fa-sm"></i>
+                View All Rooms <i class="fas fa-arrow-right fa-sm"></i>
             </a>
         </div>
     </div>
@@ -204,71 +233,56 @@
         <div class="text-center reveal mb-5">
             <div class="section-tag" style="color:var(--gold);">What We Offer</div>
             <h2 class="section-heading" style="color:var(--white);">World-Class <em>Services</em></h2>
-            <p style="max-width:500px; margin:16px auto 0; font-size:0.88rem; color:rgba(255,255,255,0.75);">
-                Every detail of your stay is curated to exceed expectations — from arrival to departure.
-            </p>
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-4 col-md-6 reveal delay-1">
+            {% for service in services %}
+            <div class="col-lg-4 col-md-6 reveal delay-{{ forloop.counter }}">
                 <div class="service-card">
                     <div class="service-icon-wrap">
-                        <i class="fas fa-hotel"></i>
+                        <i class="fas {{ service.icon }}"></i>
                     </div>
-                    <h5>Premium Rooms</h5>
-                    <p>Thoughtfully designed rooms and suites with bespoke furnishings, premium linens, and panoramic views of our beautiful lodge grounds.</p>
+                    <h5>{{ service.title }}</h5>
+                    <p>{{ service.description }}</p>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 reveal delay-2">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <h5>Fine Dining</h5>
-                    <p>Exceptional cuisine crafted from locally sourced ingredients. Our chefs blend international techniques with authentic Malawian flavours.</p>
-                </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-white-50">No services available at the moment.</p>
             </div>
-            <div class="col-lg-4 col-md-6 reveal delay-3">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-spa"></i>
-                    </div>
-                    <h5>Spa &amp; Wellness</h5>
-                    <p>Indulge in rejuvenating treatments at our award-winning spa. From deep-tissue massages to holistic therapies tailored to you.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 reveal delay-1">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-swimming-pool"></i>
-                    </div>
-                    <h5>Sports &amp; Pool</h5>
-                    <p>Olympic-sized pool, tennis courts, and a fully equipped fitness centre. Stay active in style with panoramic outdoor facilities.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 reveal delay-2">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-glass-cheers"></i>
-                    </div>
-                    <h5>Events &amp; Celebrations</h5>
-                    <p>Host unforgettable weddings, corporate events, and private celebrations in our elegant event spaces with personalised planning.</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 reveal delay-3">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-concierge-bell"></i>
-                    </div>
-                    <h5>Concierge</h5>
-                    <p>Our dedicated concierge team is available around the clock to arrange excursions, transport, reservations, and any special request.</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
 
 <!-- ======= EXPERIENCE / VIDEO SECTION ======= -->
+{% if experience %}
+<div class="experience-section" style="background-image: url('{{ experience.background_image.url }}');">
+    <div class="experience-text">
+        <div class="section-tag left" style="color:var(--gold);">Our Experience</div>
+        <h2 class="section-heading" style="color:var(--white); margin-bottom:20px;">
+            {{ experience.title|safe }}
+        </h2>
+        <div class="divider-gold"></div>
+        <p style="font-size:0.9rem; line-height:1.85; color:rgba(255,255,255,0.75); margin-bottom:40px;">
+            {{ experience.description }}
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{% url experience.button_one_link %}" class="btn-vg-primary">{{ experience.button_one_text }}</a>
+            <a href="{% url experience.button_two_link %}" class="btn-vg-outline">{{ experience.button_two_text }}</a>
+        </div>
+    </div>
+    <div class="experience-visual">
+        <div class="play-btn-wrap">
+            <button class="btn-play-vg" data-bs-toggle="modal" data-bs-target="#videoModal"
+                    data-src="{{ experience.video_url }}" aria-label="Play video">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% else %}
+{# Fallback static experience section #}
 <div class="experience-section">
     <div class="experience-text">
         <div class="section-tag left" style="color:var(--gold);">Our Experience</div>
@@ -277,10 +291,12 @@
         </h2>
         <div class="divider-gold"></div>
         <p style="font-size:0.9rem; line-height:1.85; color:rgba(255,255,255,0.75); margin-bottom:24px;">
-            From the moment you arrive, Villa Grande envelops you in an atmosphere of quiet grandeur. Our dedicated team crafts each stay as a personal journey — whether a romantic escape, family retreat, or corporate visit.
+            From the moment you arrive, Villa Grande envelops you in an atmosphere of quiet grandeur. Our dedicated
+            team crafts each stay as a personal journey — whether a romantic escape, family retreat, or corporate visit.
         </p>
         <p style="font-size:0.9rem; line-height:1.85; color:rgba(255,255,255,0.75); margin-bottom:40px;">
-            Surrounded by the natural splendour of Malawi, every sunrise brings new possibilities, every evening invites reflection over a masterfully prepared dinner.
+            Surrounded by the natural splendour of Malawi, every sunrise brings new possibilities, every evening
+            invites reflection over a masterfully prepared dinner.
         </p>
         <div class="d-flex gap-3 flex-wrap">
             <a href="{% url 'lodge:rooms' %}" class="btn-vg-primary">Our Rooms</a>
@@ -289,12 +305,14 @@
     </div>
     <div class="experience-visual">
         <div class="play-btn-wrap">
-            <button class="btn-play-vg" data-bs-toggle="modal" data-bs-target="#videoModal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" aria-label="Play video">
+            <button class="btn-play-vg" data-bs-toggle="modal" data-bs-target="#videoModal"
+                    data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" aria-label="Play video">
                 <i class="fas fa-play"></i>
             </button>
         </div>
     </div>
 </div>
+{% endif %}
 
 <!-- Video Modal -->
 <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
@@ -321,54 +339,32 @@
         </div>
 
         <div class="row g-4">
-            <div class="col-md-4 reveal delay-1">
+            {% for testimonial in testimonials %}
+            <div class="col-md-4 reveal delay-{{ forloop.counter }}">
                 <div class="testimonial-card">
-                    <div class="t-stars" aria-label="5 stars">★★★★★</div>
+                    <div class="t-stars" aria-label="{{ testimonial.rating }} stars">
+                        {% for i in "12345"|make_list %}{% if forloop.counter <= testimonial.rating %}★{% else %}☆{% endif %}{% endfor %}
+                    </div>
                     <div class="testimonial-quote">"</div>
-                    <p class="testimonial-text">
-                        An absolutely remarkable stay. The attention to detail, the warmth of the staff, and the breathtaking surroundings made this the most memorable holiday of our lives. Villa Grande is in a class of its own.
-                    </p>
+                    <p class="testimonial-text">{{ testimonial.text }}</p>
                     <div class="testimonial-author d-flex align-items-center gap-3">
-                        <img src="{% static 'img/testimonial-1.jpg' %}" alt="Sarah M." loading="lazy">
+                        {% if testimonial.image %}
+                        <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" loading="lazy">
+                        {% else %}
+                        <img src="{% static 'img/default-avatar.jpg' %}" alt="{{ testimonial.name }}" loading="lazy">
+                        {% endif %}
                         <div>
-                            <h6>Sarah &amp; James M.</h6>
-                            <small>Cape Town, South Africa</small>
+                            <h6>{{ testimonial.name }}</h6>
+                            <small>{{ testimonial.location }}</small>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 reveal delay-2">
-                <div class="testimonial-card">
-                    <div class="t-stars" aria-label="5 stars">★★★★★</div>
-                    <div class="testimonial-quote">"</div>
-                    <p class="testimonial-text">
-                        We hosted our corporate retreat at Villa Grande and it exceeded every expectation. The facilities, cuisine, and professional service created an environment that inspired our entire team. We will return.
-                    </p>
-                    <div class="testimonial-author d-flex align-items-center gap-3">
-                        <img src="{% static 'img/testimonial-2.jpg' %}" alt="David K." loading="lazy">
-                        <div>
-                            <h6>David K.</h6>
-                            <small>CEO, Nairobi</small>
-                        </div>
-                    </div>
-                </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p>No testimonials available at the moment.</p>
             </div>
-            <div class="col-md-4 reveal delay-3">
-                <div class="testimonial-card">
-                    <div class="t-stars" aria-label="5 stars">★★★★★</div>
-                    <div class="testimonial-quote">"</div>
-                    <p class="testimonial-text">
-                        From the animated loading screen to checking in at the most elegant lodge in Malawi, the Villa Grande experience is flawless. The Presidential Suite was pure heaven. Our anniversary was unforgettable.
-                    </p>
-                    <div class="testimonial-author d-flex align-items-center gap-3">
-                        <img src="{% static 'img/testimonial-3.jpg' %}" alt="Amara L." loading="lazy">
-                        <div>
-                            <h6>Amara &amp; Theo L.</h6>
-                            <small>Lusaka, Zambia</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
@@ -379,18 +375,30 @@
         <div class="row align-items-center g-4">
             <div class="col-lg-6 reveal-left">
                 <div class="section-tag left" style="color:var(--gold);">Stay Connected</div>
+                {% if newsletter %}
+                <h2 class="section-heading" style="color:var(--white);">{{ newsletter.title|safe }}</h2>
+                {% if newsletter.subtitle %}
+                <p style="color:rgba(255,255,255,0.75);">{{ newsletter.subtitle }}</p>
+                {% endif %}
+                {% else %}
                 <h2 class="section-heading" style="color:var(--white);">Subscribe for <em>Exclusive</em><br>Offers &amp; Updates</h2>
+                {% endif %}
             </div>
             <div class="col-lg-6 reveal-right">
-                <form class="newsletter-input-wrap" onsubmit="event.preventDefault(); alert('Subscribed! (Demo)');">
-                    <input type="email" placeholder="Enter your email address" required aria-label="Email address">
-                    <button type="submit">Subscribe</button>
+                <form class="newsletter-input-wrap" method="post" action="{% url 'lodge:newsletter_subscribe' %}">
+                    {% csrf_token %}
+                    <input type="email" name="email"
+                           placeholder="{{ newsletter.placeholder_text|default:'Enter your email address' }}"
+                           required aria-label="Email address">
+                    <button type="submit">{{ newsletter.button_text|default:"Subscribe" }}</button>
                 </form>
                 <p style="font-size:0.75rem; color:rgba(255,255,255,0.35); margin-top:10px;">
-                    No spam. Unsubscribe at any time. <a href="#" style="color:var(--gold); text-decoration:none;">Privacy Policy</a>
+                    No spam. Unsubscribe at any time.
+                    <a href="{{ newsletter.privacy_link|default:'#' }}" style="color:var(--gold); text-decoration:none;">Privacy Policy</a>
                 </p>
             </div>
         </div>
     </div>
 </section>
+
 {% endblock %}

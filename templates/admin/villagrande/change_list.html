@@ -1,108 +1,407 @@
-{% extends "admin/villagrande/base_site.html" %}
-{% load i18n static admin_list %}
+{% extends "admin/change_list.html" %}
+{% load i18n static %}
 
-{% block extrastyle %}
-  {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
-  {% if cl.formset %}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
-  {% endif %}
-  {% if cl.formset or action_form %}
-    <script src="{% url 'admin:jsi18n' %}"></script>
-  {% endif %}
-  {{ media.css }}
-  {% if not actions_on_top and not actions_on_bottom %}
-    <style>
-      #changelist table thead th:first-child {width: inherit}
-    </style>
-  {% endif %}
-{% endblock %}
+{# ─────────────────────────────────────────────────────────────────────────
+   Villa Grande themed Change List.
+   Strategy: extend Django's own admin/change_list.html so all standard
+   machinery (actions, filters, pagination, sorting, search) keeps working.
+   We override only the wrapping chrome and inject our CSS.
+───────────────────────────────────────────────────────────────────────── #}
 
-{% block extrajs %}
-  {{ block.super }}
-  {{ media.js }}
-  <script src="{% static 'admin/js/filters.js' %}" defer></script>
-{% endblock %}
+{% block title %}{{ cl.opts.verbose_name_plural|capfirst }} | Villa Grande CMS{% endblock %}
 
-{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+{# Suppress the default Django header/breadcrumbs – our shell handles them #}
+{% block breadcrumbs %}{% endblock %}
+{% block object-tools %}{% endblock %}
 
-{% if not is_popup %}
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a></li>
-<li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ cl.opts.app_config.verbose_name }}</a></li>
-<li class="breadcrumb-item active">{{ cl.opts.verbose_name_plural|capfirst }}</li>
-{% endblock %}
-{% endif %}
+{% block content_title %}{% endblock %}
 
-{% block coltype %}{% endblock %}
-
+{# ── Inject our shell around Django's rendered content ── #}
 {% block content %}
-  <div id="content-main" class="fade-in">
-    {% block object-tools %}
-        <div class="admin-actions">
-            <ul class="object-tools">
-                {% block object-tools-items %}
-                  {% if has_add_permission %}
-                    <li>
-                      <a href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?_popup=1{% endif %}" class="btn-admin btn-admin-primary">
-                        <i class="fas fa-plus"></i> {% blocktranslate with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktranslate %}
-                      </a>
-                    </li>
-                  {% endif %}
-                {% endblock %}
-            </ul>
-        </div>
-    {% endblock %}
-    
-    {% if cl.formset and cl.formset.errors %}
-        <div class="message message-error">
-            {% if cl.formset.total_error_count == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
-        </div>
-        {{ cl.formset.non_form_errors }}
-    {% endif %}
-    
-    <div class="admin-card">
-        <div class="admin-filters">
-            <div class="filter-group">
-                {% block search %}{% search_form cl %}{% endblock %}
-                {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
-                {% block filters %}
-                    {% if cl.has_filters %}
-                        <div class="filter-item">
-                            <label class="form-label">{% translate 'Filter' %}</label>
-                            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+<div class="admin-wrapper">
+
+    {% include "admin/villagrande/_sidebar.html" %}
+
+    <div class="admin-main">
+
+        {# ── Top bar ── #}
+        <div class="admin-topbar">
+            <div class="topbar-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()"><i class="fas fa-bars"></i></button>
+                <nav class="vg-breadcrumb" aria-label="breadcrumb">
+                    <a href="{% url 'admin:index' %}"><i class="fas fa-home"></i></a>
+                    <span class="vg-bc-sep">/</span>
+                    <span class="vg-bc-current">{{ cl.opts.verbose_name_plural|capfirst }}</span>
+                </nav>
+            </div>
+            <div class="topbar-right">
+                <div class="theme-toggle">
+                    <button class="theme-btn" data-theme="light" onclick="setTheme('light')"><i class="fas fa-sun"></i></button>
+                    <button class="theme-btn" data-theme="dark"  onclick="setTheme('dark')"><i class="fas fa-moon"></i></button>
+                </div>
+                <div class="dropdown">
+                    <div class="admin-profile" data-bs-toggle="dropdown">
+                        <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                        <div class="profile-info">
+                            <div class="profile-name">{{ request.user.username }}</div>
+                            <div class="profile-role">Administrator</div>
                         </div>
-                    {% endif %}
-                {% endblock %}
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-        
-        <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
-            {% csrf_token %}
-            {% if cl.formset %}
-                <div>{{ cl.formset.management_form }}</div>
-            {% endif %}
-            
-            {% block result_list %}
-                <div class="admin-table-container">
-                    {% if action_form and actions_on_top and cl.show_admin_actions %}
-                        <div style="margin-bottom: 15px;">
-                            {% admin_actions %}
-                        </div>
-                    {% endif %}
-                    
-                    {% result_list cl %}
-                    
-                    {% if action_form and actions_on_bottom and cl.show_admin_actions %}
-                        <div style="margin-top: 15px;">
-                            {% admin_actions %}
-                        </div>
-                    {% endif %}
+
+        <div class="admin-content vg-cl-content">
+
+            {# ── Page header ── #}
+            <div class="vg-cl-header">
+                <div>
+                    <h1 class="vg-cl-title">{{ cl.opts.verbose_name_plural|capfirst }}</h1>
+                    <p class="vg-cl-subtitle">
+                        {% blocktrans with count=cl.result_count name=cl.opts.verbose_name_plural %}
+                            {{ count }} {{ name }}
+                        {% endblocktrans %}
+                        {% if cl.result_count != cl.full_result_count %}
+                            ({% blocktrans with full=cl.full_result_count %}{{ full }} total{% endblocktrans %})
+                        {% endif %}
+                    </p>
                 </div>
-            {% endblock %}
-            
-            {% block pagination %}{% pagination cl %}{% endblock %}
-        </form>
+                {% if has_add_permission %}
+                <a href="{% url cl.opts|admin_urlname:'add' %}" class="btn-admin btn-admin-primary">
+                    <i class="fas fa-plus"></i>
+                    {% blocktrans with name=cl.opts.verbose_name %}Add {{ name }}{% endblocktrans %}
+                </a>
+                {% endif %}
+            </div>
+
+            {# ── Django renders search + filters + table + pagination here ── #}
+            {# We call super() to get Django's full change_list content block  #}
+            <div class="vg-cl-django-content">
+                {{ block.super }}
+            </div>
+
+        </div>
     </div>
-  </div>
-{% endblock %}
+</div>
+{% endblock content %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* ── Villa Grande Change List overrides ─────────────────────────────── */
+
+/* Hide default Django chrome we don't need */
+#header, #footer, .breadcrumbs, #content-main > h1,
+#content > h1, .object-tools { display: none !important; }
+
+/* Reset Django's default content padding so our shell controls it */
+#content { padding: 0 !important; background: transparent !important; }
+#content-main { padding: 0 !important; }
+
+/* Breadcrumb */
+.vg-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.vg-breadcrumb a { color: var(--gold); text-decoration: none; }
+.vg-bc-sep { color: var(--body-text); opacity: 0.5; }
+.vg-bc-current { color: var(--body-text); }
+
+/* Page header */
+.vg-cl-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+.vg-cl-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0 0 4px;
+}
+[data-bs-theme="dark"] .vg-cl-title { color: var(--gold-light); }
+.vg-cl-subtitle { font-size: 0.82rem; color: var(--body-text); margin: 0; }
+
+/* ── Search form ── */
+#changelist-search { margin-bottom: 20px; }
+#changelist-search input[type="search"],
+#changelist-search input[type="text"] {
+    padding: 10px 14px 10px 38px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 12px center;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.88rem;
+    color: var(--body-text);
+    width: 320px;
+    max-width: 100%;
+    transition: var(--transition);
+}
+#changelist-search input:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+}
+#changelist-search input[type="submit"] {
+    padding: 10px 18px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 5px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: var(--transition);
+}
+#changelist-search input[type="submit"]:hover { background: var(--gold-dark); }
+
+/* ── Action bar ── */
+.actions {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px 8px 0 0;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: none;
+}
+.actions select {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    background: var(--cream);
+    color: var(--body-text);
+    cursor: pointer;
+}
+.actions select:focus { border-color: var(--gold); outline: none; }
+.actions button[type="submit"],
+.actions input[type="submit"] {
+    padding: 8px 16px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 5px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.actions button[type="submit"]:hover { background: var(--gold-dark); }
+.action-counter { font-size: 0.8rem; color: var(--body-text); margin-left: auto; }
+
+/* ── Main results table ── */
+#result_list {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+/* When no action bar, give full rounded corners */
+.vg-cl-django-content > #changelist-form:not(:has(.actions)) #result_list,
+.vg-cl-django-content > #result_list {
+    border-radius: 8px;
+}
+#result_list thead th {
+    background: var(--cream);
+    padding: 13px 15px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    color: var(--navy);
+    border-bottom: 2px solid var(--gold);
+    white-space: nowrap;
+}
+[data-bs-theme="dark"] #result_list thead th { background: var(--navy-mid); color: var(--gold-light); }
+
+#result_list thead th a,
+#result_list thead th.sorted a {
+    color: var(--navy);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+[data-bs-theme="dark"] #result_list thead th a { color: var(--gold-light); }
+#result_list thead th a:hover { color: var(--gold); }
+#result_list thead th.sorted { border-bottom-color: var(--gold-dark); }
+#result_list thead th .text span.sortedASC::after  { content: ' ↑'; color: var(--gold); }
+#result_list thead th .text span.sortedDESC::after { content: ' ↓'; color: var(--gold); }
+
+#result_list tbody td {
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.86rem;
+    color: var(--body-text);
+    vertical-align: middle;
+}
+#result_list tbody tr:last-child td { border-bottom: none; }
+#result_list tbody tr:hover { background: rgba(201,168,76,0.05); }
+#result_list tbody tr.row2 { background: rgba(201,168,76,0.018); }
+#result_list tbody tr.row2:hover { background: rgba(201,168,76,0.05); }
+
+/* All links inside result table */
+#result_list td a { color: var(--gold); text-decoration: none; font-weight: 500; }
+#result_list td a:hover { color: var(--gold-dark); text-decoration: underline; }
+
+/* Checkboxes */
+#result_list td.action-checkbox,
+#result_list th.action-checkbox-column {
+    width: 40px;
+    text-align: center;
+}
+.action-select, #action-toggle { accent-color: var(--gold); width: 16px; height: 16px; cursor: pointer; }
+
+/* Empty state */
+#changelist-form p.paginator,
+.paginator { display: none; } /* we re-show below */
+#result_list tbody tr.empty td {
+    text-align: center;
+    padding: 50px;
+    color: var(--body-text);
+    opacity: 0.5;
+}
+
+/* ── Filter sidebar ── */
+#changelist-filter {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+#changelist-filter h2 {
+    background: var(--navy);
+    color: var(--gold);
+    padding: 12px 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0;
+    border-bottom: 2px solid var(--gold);
+}
+#changelist-filter h3 {
+    padding: 10px 16px 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--navy);
+    opacity: 0.55;
+    margin: 0;
+}
+[data-bs-theme="dark"] #changelist-filter h3 { color: var(--gold-light); }
+#changelist-filter ul { list-style: none; margin: 0; padding: 0 0 8px; }
+#changelist-filter ul li a {
+    display: block;
+    padding: 7px 16px;
+    font-size: 0.83rem;
+    color: var(--body-text);
+    text-decoration: none;
+    transition: var(--transition);
+}
+#changelist-filter ul li a:hover { background: rgba(201,168,76,0.1); color: var(--gold); }
+#changelist-filter ul li.selected a {
+    color: var(--gold);
+    font-weight: 600;
+    border-left: 3px solid var(--gold);
+    padding-left: 13px;
+}
+
+/* Django wraps table+filter in .changelist-container (or inline) */
+/* Force them side by side */
+#changelist .changelist-container,
+#changelist > .results {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+#changelist-filter { order: 2; }
+#changelist-form  { order: 1; flex: 1; min-width: 0; }
+/* When no filter sidebar, full width */
+#changelist-form:only-child { flex: 1; }
+
+/* ── Pagination ── */
+.paginator {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 16px 0 4px;
+    font-size: 0.82rem;
+    color: var(--body-text);
+}
+.paginator a, .paginator span.this-page {
+    padding: 6px 11px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--body-text);
+    transition: var(--transition);
+    font-size: 0.8rem;
+}
+.paginator a:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+.paginator span.this-page {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+    font-weight: 700;
+}
+.paginator .showall a { padding: 6px 14px; }
+
+/* ── Status badges (for booking status column etc.) ── */
+.field-status .text-success, .field-get_status_display { }
+/* Django renders the field value as plain text; style with generic approach */
+#result_list td:has([class*="CONFIRMED"]),
+#result_list td .badge-confirmed { background: #d4edda; color: #155724; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+#result_list td .badge-pending   { background: #fff3cd; color: #856404; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+#result_list td .badge-cancelled { background: #f8d7da; color: #721c24; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+
+/* ── Boolean icons ── */
+#result_list td img[src*="icon-yes"]  { filter: hue-rotate(30deg) saturate(2); }
+#result_list td img[src*="icon-no"]   { opacity: 0.4; }
+
+/* ── Inline list_editable inputs ── */
+#result_list td input[type="text"],
+#result_list td input[type="number"],
+#result_list td select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    background: var(--white);
+    color: var(--body-text);
+}
+#result_list td input:focus, #result_list td select:focus {
+    border-color: var(--gold);
+    outline: none;
+}
+#result_list td input[type="checkbox"] { accent-color: var(--gold); }
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    #changelist .changelist-container,
+    #changelist > .results { flex-direction: column; }
+    #changelist-filter { order: -1; width: 100%; min-width: 0; }
+}
+</style>
+{% endblock extrastyle %}

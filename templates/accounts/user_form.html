@@ -1,0 +1,105 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit User{% else %}Create User{% endif %}{% endblock %}
+
+{% block content %}
+<div class="pagetitle" data-aos="fade-up">
+    <h1>{% if form.instance.pk %}Edit User{% else %}Create User{% endif %}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'accounts:user_list' %}">Users</a></li>
+            <li class="breadcrumb-item active">{% if form.instance.pk %}Edit{% else %}Create{% endif %}</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body">
+                    <h5 class="card-title">User Information</h5>
+                    <form method="post" class="row g-3 needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ field }}
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-save me-2"></i>Save User
+                            </button>
+                            <a href="{% url 'accounts:user_list' %}" class="btn btn-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Floating label overrides */
+    .form-floating > input,
+    .form-floating > select,
+    .form-floating > textarea {
+        border-radius: var(--vg-border-radius-md);
+        background: var(--vg-glass-bg);
+        border: 1px solid var(--vg-glass-border);
+        color: var(--vg-dark);
+        transition: all var(--vg-transition-fast);
+    }
+    .form-floating > input:focus,
+    .form-floating > select:focus,
+    .form-floating > textarea:focus {
+        border-color: var(--vg-gold);
+        box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+        transform: translateY(-2px);
+    }
+    .form-floating > label {
+        color: var(--vg-dark);
+        opacity: 0.7;
+    }
+    /* Dark mode adjustment */
+    body.dark-mode .form-floating > label {
+        color: #e0e0e0;
+    }
+    /* Ensure selects have proper arrow */
+    select.form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23C9A84C' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
+</style>
+
+<script>
+    // Bootstrap form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

@@ -1,36 +1,35 @@
 {% load static %}
-<nav class="navbar-vg navbar navbar-expand-lg navbar-dark" id="mainNav">
+<nav class="navbar-vg navbar navbar-expand-lg navbar-dark" id="mainNav" aria-label="Main navigation">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'lodge:home' %}">
-            <svg class="brand-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-label="Villa Grande Logo">
-                <polyline points="8,14 40,66 72,14" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                <polyline points="16,14 40,54 64,14" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 68,38 A 28,28 0 1,0 40,66 L 40,54 L 54,54" fill="none" stroke="#C9A84C" stroke-width="4" stroke-linecap="round"/>
-                <path d="M 62,40 A 20,20 0 1,0 42,62" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
-            </svg>
+        <a class="navbar-brand" href="{% url 'lodge:home' %}" aria-label="Home">
+            {% if site_settings.logo %}
+                <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" height="50" width="auto" loading="lazy">
+            {% else %}
+                <img src="{% static 'img/VG_Blue.png' %}" alt="Villa Grande Logo" height="50" width="auto" loading="lazy">
+            {% endif %}
             <div class="brand-text">
-                <span>Villa Grande</span>
-                <span>Luxury Lodge</span>
+                <span>{{ site_settings.site_name|default:"Villa Grande" }}</span>
+                <span>{{ site_settings.tagline|default:"Luxury Lodge" }}</span>
             </div>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navMenu">
             <ul class="navbar-nav align-items-lg-center">
-                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'lodge:home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'lodge:about' %}">About</a></li>
-                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'lodge:services' %}">Services</a></li>
-                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'rooms' %}active{% endif %}" href="{% url 'lodge:rooms' %}">Rooms</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'lodge:home' %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Home</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'lodge:about' %}" {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>About</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'lodge:services' %}" {% if request.resolver_match.url_name == 'services' %}aria-current="page"{% endif %}>Services</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'rooms' %}active{% endif %}" href="{% url 'lodge:rooms' %}" {% if request.resolver_match.url_name == 'rooms' %}aria-current="page"{% endif %}>Rooms</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Pages</a>
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
                     <div class="dropdown-menu">
                         <a href="{% url 'lodge:booking' %}" class="dropdown-item">Booking</a>
-                        <a href="{% url 'lodge:about' %}" class="dropdown-item">About Us</a>
+                        <a href="{% url 'lodge:check_booking' %}" class="dropdown-item">Check Booking</a>
                         <a href="{% url 'lodge:services' %}" class="dropdown-item">Services</a>
                     </div>
                 </li>
-                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'lodge:contact' %}">Contact</a></li>
+                <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'lodge:contact' %}" {% if request.resolver_match.url_name == 'contact' %}aria-current="page"{% endif %}>Contact</a></li>
                 <li class="nav-item">
                     <a class="nav-link btn-book" href="{% url 'lodge:booking' %}">Reserve Now</a>
                 </li>

@@ -1,12 +1,12 @@
 {% extends 'lodge/base.html' %}
 {% load static %}
 
-{% block title %}About Us - Villa Grande{% endblock %}
+{% block title %}{{ about.title|default:'About Us' }} - Villa Grande{% endblock %}
 
 {% block content %}
 <section class="page-header" style="background: linear-gradient(rgba(10,35,66,0.7), rgba(10,35,66,0.7)), url('{% static 'img/about-header.jpg' %}') center/cover; min-height: 300px; display: flex; align-items: center;">
     <div class="container text-center text-white">
-        <h1 class="display-4">About Villa Grande</h1>
+        <h1 class="display-4">{{ about.title|default:'About Villa Grande'|safe }}</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center">
                 <li class="breadcrumb-item"><a href="{% url 'lodge:home' %}">Home</a></li>
@@ -20,14 +20,44 @@
     <div class="container">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
-                <img src="{% static 'img/about-1.jpg' %}" alt="Villa Grande" class="img-fluid rounded shadow">
+                {% if about and about.image_main %}
+                    <img src="{{ about.image_main.url }}" alt="{{ about.title }}" class="img-fluid rounded shadow">
+                {% else %}
+                    <img src="{% static 'img/about-1.jpg' %}" alt="Villa Grande" class="img-fluid rounded shadow">
+                {% endif %}
+                {% if about and about.image_accent %}
+                    <div class="mt-3 text-center">
+                        <img src="{{ about.image_accent.url }}" alt="Accent" class="img-fluid rounded" style="max-width: 80%;">
+                    </div>
+                {% endif %}
             </div>
             <div class="col-lg-6">
-                <h2 class="section-heading">A Legacy of <em>Luxury</em></h2>
+                <h2 class="section-heading">{{ about.title|default:'A Legacy of <em>Luxury</em>'|safe }}</h2>
                 <div class="divider-gold"></div>
-                <p>Founded in 2010, Villa Grande Lodge has been a beacon of luxury and hospitality in the heart of Malawi. Our commitment to excellence has made us the preferred destination for discerning travelers from around the globe.</p>
-                <p>We believe that every stay should be a story worth telling. From our meticulously designed rooms to our world-class amenities, every detail is crafted to provide an unforgettable experience.</p>
-                <p>Our team of dedicated professionals is passionate about creating moments of joy and relaxation for our guests. Whether you're here for a romantic getaway, a family vacation, or a corporate retreat, we ensure that your time with us is nothing short of extraordinary.</p>
+                <p>{{ about.description|default:'Founded in 2010, Villa Grande Lodge has been a beacon of luxury and hospitality in the heart of Malawi...' }}</p>
+                {% if about.subtitle %}
+                    <p class="lead">{{ about.subtitle }}</p>
+                {% endif %}
+                {% if statistics %}
+                    <div class="row mt-4">
+                        {% for stat in statistics %}
+                            <div class="col-md-4 text-center">
+                                <div class="stat-counter">
+                                    <span class="counter-number">{{ stat.value }}</span><span>{{ stat.suffix }}</span>
+                                    <div class="stat-label">{{ stat.label }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if about and about.years_of_excellence %}
+                    <div class="mt-3">
+                        <span class="badge bg-gold">{{ about.years_of_excellence }} Years of Excellence</span>
+                    </div>
+                {% endif %}
+                {% if about and about.button_text %}
+                    <a href="{{ about.button_link }}" class="btn btn-gold mt-4">{{ about.button_text }}</a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,0 +1,149 @@
+{% extends "admin/base.html" %}
+{% load static admin_stats %}
+
+{% block content %}
+<div class="pagetitle" data-aos="fade-up">
+  <h1>Dashboard</h1>
+  <nav><ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">Home</a></li>
+    <li class="breadcrumb-item active">Dashboard</li>
+  </ol></nav>
+</div>
+
+<section class="section dashboard">
+  <div class="row">
+    {% get_admin_stats as stats %}
+
+    <!-- Stats Cards (glassmorphic) -->
+    <div class="col-lg-12">
+      <div class="row g-4">
+        <div class="col-xxl-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><span class="stat-label">Total Rooms</span><div class="stat-number" data-stat="total_rooms" data-target="{{ stats.total_rooms }}">{{ stats.total_rooms }}</div></div>
+              <div class="stat-icon"><i class="bi bi-door-closed fs-1" style="color: var(--vg-gold);"></i></div>
+            </div>
+            <div class="progress mt-3" style="height:4px"><div class="progress-bar bg-gold" style="width:100%"></div></div>
+            <small class="text-muted">Total available rooms</small>
+          </div>
+        </div>
+        <div class="col-xxl-4 col-md-6" data-aos="fade-up" data-aos-delay="150">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><span class="stat-label">Active Rooms</span><div class="stat-number" data-stat="active_rooms" data-target="{{ stats.active_rooms }}">{{ stats.active_rooms }}</div></div>
+              <div class="stat-icon"><i class="bi bi-check-circle-fill fs-1" style="color:#10B981;"></i></div>
+            </div>
+            <div class="progress mt-3" style="height:4px"><div class="progress-bar bg-success" style="width:{{ stats.active_percent|default:0 }}%"></div></div>
+            <small class="text-muted">Ready for booking</small>
+          </div>
+        </div>
+        <div class="col-xxl-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><span class="stat-label">Pending Bookings</span><div class="stat-number" data-stat="pending_bookings" data-target="{{ stats.pending_bookings }}">{{ stats.pending_bookings }}</div></div>
+              <div class="stat-icon"><i class="bi bi-clock-history fs-1" style="color:#F59E0B;"></i></div>
+            </div>
+            <div class="progress mt-3" style="height:4px"><div class="progress-bar bg-warning" style="width:{{ stats.pending_percent|default:0 }}%"></div></div>
+            <small class="text-muted">Awaiting confirmation</small>
+          </div>
+        </div>
+        <div class="col-xxl-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><span class="stat-label">Confirmed Bookings</span><div class="stat-number" data-stat="confirmed_bookings" data-target="{{ stats.confirmed_bookings }}">{{ stats.confirmed_bookings }}</div></div>
+              <div class="stat-icon"><i class="bi bi-calendar-check-fill fs-1" style="color:#C9A84C;"></i></div>
+            </div>
+            <div class="progress mt-3" style="height:4px"><div class="progress-bar bg-gold" style="width:{{ stats.confirmed_percent|default:0 }}%"></div></div>
+            <small class="text-muted">Confirmed stays</small>
+          </div>
+        </div>
+        <div class="col-xxl-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><span class="stat-label">Total Customers</span><div class="stat-number" data-stat="total_customers" data-target="{{ stats.total_customers }}">{{ stats.total_customers }}</div></div>
+              <div class="stat-icon"><i class="bi bi-people-fill fs-1" style="color:#3B82F6;"></i></div>
+            </div>
+            <div class="progress mt-3" style="height:4px"><div class="progress-bar bg-info" style="width:100%"></div></div>
+            <small class="text-muted">Registered guests</small>
+          </div>
+        </div>
+        <div class="col-xxl-4 col-md-6" data-aos="fade-up" data-aos-delay="350">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><span class="stat-label">Monthly Revenue</span><div class="stat-number" data-stat="monthly_revenue" data-target="{{ stats.monthly_revenue|floatformat:0 }}">MWK{{ stats.monthly_revenue|floatformat:0 }}</div></div>
+              <div class="stat-icon"><i class="bi bi-currency-dollar fs-1" style="color:#10B981;"></i></div>
+            </div>
+            <div class="progress mt-3" style="height:4px"><div class="progress-bar bg-success" style="width:{{ stats.revenue_percent|default:0 }}%"></div></div>
+            <small class="text-muted">This month</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="col-lg-8 mt-4" data-aos="fade-right" data-aos-delay="100">
+      <div class="card gradient-border"><div class="card-body">
+        <h5 class="card-title">Booking Trends <span>| Last 7 days</span></h5>
+        <canvas id="bookingTrendsChart" style="max-height:400px; width:100%;"></canvas>
+      </div></div>
+    </div>
+    <div class="col-lg-4 mt-4" data-aos="fade-left" data-aos-delay="100">
+      <div class="card gradient-border"><div class="card-body">
+        <h5 class="card-title">Room Type Distribution</h5>
+        <canvas id="roomTypeChart" style="max-height:380px; width:100%;"></canvas>
+      </div></div>
+    </div>
+
+    <!-- Recent Bookings Table -->
+    <div class="col-12 mt-4" data-aos="fade-up" data-aos-delay="200">
+      <div class="card"><div class="card-body">
+        <h5 class="card-title">Recent Bookings</h5>
+        <div class="table-responsive">
+          <table class="table table-hover datatable">
+            <thead><tr><th>#</th><th>Customer</th><th>Room</th><th>Check In</th><th>Check Out</th><th>Status</th></tr></thead>
+            <tbody id="recent-bookings-tbody">
+              {% for booking in stats.recent_bookings %}
+              <tr><th scope="row"><a href="{% url 'admin:lodge_booking_change' booking.id %}">{{ booking.id }}</a></th>
+                <td>{{ booking.customer.name }}</td><td>{{ booking.room.room_number }}</td>
+                <td>{{ booking.check_in }}</td><td>{{ booking.check_out }}</td>
+                <td><span class="badge bg-{% if booking.status == 'CONFIRMED' %}success{% elif booking.status == 'PENDING' %}warning{% else %}danger{% endif %}">{{ booking.get_status_display }}</span></td>
+              </tr>{% empty %}
+              <tr><td colspan="6" class="text-center">No recent bookings</td></tr>{% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let bookingTrendsChart, roomTypeChart;
+  function initCharts() {
+    const ctxLine = document.getElementById('bookingTrendsChart').getContext('2d');
+    const gradientLine = ctxLine.createLinearGradient(0,0,0,400);
+    gradientLine.addColorStop(0,'rgba(201,168,76,0.4)'); gradientLine.addColorStop(1,'rgba(201,168,76,0.05)');
+    bookingTrendsChart = new Chart(ctxLine, {
+      type:'line', data:{ labels:{{ stats.booking_trend_labels|safe }}, datasets:[{ label:'Bookings', data:{{ stats.booking_trends|safe }}, borderColor:'#C9A84C', backgroundColor:gradientLine, tension:0.3, fill:true, pointBackgroundColor:'#C9A84C', pointBorderColor:'#fff', pointRadius:4, pointHoverRadius:6 }] },
+      options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ usePointStyle:true } }, tooltip:{ backgroundColor:'rgba(0,0,0,0.7)', titleColor:'#C9A84C' } }, scales:{ y:{ beginAtZero:true, grid:{ color:'rgba(201,168,76,0.1)' } }, x:{ grid:{ display:false } } } }
+    });
+    const ctxDoughnut = document.getElementById('roomTypeChart').getContext('2d');
+    roomTypeChart = new Chart(ctxDoughnut, {
+      type:'doughnut', data:{ labels:{{ stats.room_type_labels|safe }}, datasets:[{ data:{{ stats.room_type_counts|safe }}, backgroundColor:['#0A2342','#1F4A6E','#C9A84C','#A8873A','#E6D792'], borderWidth:0, hoverOffset:8 }] },
+      options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true } }, tooltip:{ callbacks:{ label:(ctx)=>`${ctx.label}: ${ctx.raw} rooms` } } }, cutout:'65%' }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', initCharts);
+</script>
+
+<style>
+  .stat-card { background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); border-radius: var(--vg-border-radius-xl); padding: 1.5rem; transition: all var(--vg-transition-base); border: 1px solid var(--vg-glass-border); }
+  .stat-card:hover { transform: translateY(-5px); box-shadow: var(--vg-shadow-lg); }
+  .stat-icon i { opacity: 0.7; transition: opacity 0.3s; }
+  .stat-card:hover .stat-icon i { opacity: 1; }
+  .progress-bar.bg-gold { background-color: var(--vg-gold) !important; }
+  .gradient-border { background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); border: 1px solid var(--vg-glass-border); border-radius: var(--vg-border-radius-lg); }
+  .table-hover tbody tr:hover { background: linear-gradient(90deg, rgba(201,168,76,0.05), transparent); transform: scale(1.01); }
+</style>
+{% endblock %}

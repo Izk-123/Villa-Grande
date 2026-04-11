@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .profile-card img { max-width: 120px; border-radius: 50%; border: 3px solid var(--vg-gold); padding: 2px; }
+        .profile-card h2 { font-size: 24px; font-weight: 700; color: var(--vg-navy); }
+        .profile-card h3 { font-size: 18px; color: var(--vg-gold); }
+        .profile-card .social-links a { font-size: 20px; display: inline-block; color: var(--vg-gold); margin-right: 10px; transition: var(--vg-transition); }
+        .profile-card .social-links a:hover { color: var(--vg-navy); transform: translateY(-2px); }
+        .profile-overview .row { margin-bottom: 20px; font-size: 15px; }
+        .profile-overview .label { font-weight: 600; color: var(--vg-gold); }
+        .profile-edit label { font-weight: 600; color: var(--vg-gold); }
+        .nav-tabs-bordered .nav-link.active { color: var(--vg-gold); border-bottom: 2px solid var(--vg-gold); background: transparent; }
+        .nav-tabs-bordered .nav-link:hover { color: var(--vg-gold); }
+        .tab-content { padding-top: 1rem; }
+        .card { background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); border: 1px solid var(--vg-glass-border); border-radius: var(--vg-border-radius-lg); }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="pagetitle" data-aos="fade-up">
+    <h1>Profile</h1>
+    <nav><ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'admin:users_user_changelist' %}">Users</a></li>
+        <li class="breadcrumb-item active">{{ original.username }}</li>
+    </ol></nav>
+</div>
+
+<section class="section profile" data-aos="fade-up" data-aos-delay="100">
+    <div class="row">
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                    <img src="{% static 'admin/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+                    <h2>{{ original.get_full_name|default:original.username }}</h2>
+                    <h3>{% if original.is_superuser %}Superuser{% else %}Staff{% endif %}</h3>
+                    <div class="social-links mt-2">
+                        <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-body pt-3">
+                    <ul class="nav nav-tabs nav-tabs-bordered" id="profileTab" role="tablist">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button></li>
+                    </ul>
+
+                    <div class="tab-content pt-2">
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                            <h5 class="card-title">About</h5>
+                            <p class="small fst-italic">{% if original.get_full_name %}{{ original.get_full_name }}{% else %}{{ original.username }}{% endif %} is a registered user on Villa Grande.</p>
+                            <h5 class="card-title">Profile Details</h5>
+                            <div class="row"><div class="col-lg-3 col-md-4 label">Username</div><div class="col-lg-9 col-md-8">{{ original.username }}</div></div>
+                            <div class="row"><div class="col-lg-3 col-md-4 label">Full Name</div><div class="col-lg-9 col-md-8">{{ original.get_full_name|default:"Not set" }}</div></div>
+                            <div class="row"><div class="col-lg-3 col-md-4 label">Email</div><div class="col-lg-9 col-md-8">{{ original.email }}</div></div>
+                            <div class="row"><div class="col-lg-3 col-md-4 label">Last Login</div><div class="col-lg-9 col-md-8">{{ original.last_login|date:"Y-m-d H:i" }}</div></div>
+                            <div class="row"><div class="col-lg-3 col-md-4 label">Date Joined</div><div class="col-lg-9 col-md-8">{{ original.date_joined|date:"Y-m-d H:i" }}</div></div>
+                        </div>
+
+                        <!-- Edit Profile Tab -->
+                        <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="_changelist_filters" value="{{ changelist_filters }}">
+                                {% for field in adminform.form %}
+                                    <div class="row mb-3">
+                                        <label for="{{ field.id_for_label }}" class="col-md-4 col-lg-3 col-form-label">{{ field.label }}</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            {{ field }}
+                                            {% if field.help_text %}<div class="form-text text-muted">{{ field.help_text|safe }}</div>{% endif %}
+                                            {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors|striptags }}</div>{% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="text-center"><button type="submit" name="_continue" class="btn btn-primary">Save Changes</button></div>
+                            </form>
+                        </div>
+
+                        <!-- Change Password Tab -->
+                        <div class="tab-pane fade pt-3" id="profile-change-password">
+                            <form method="post" action="{% url 'admin:auth_user_password_change' original.pk %}" id="password-change-form">
+                                {% csrf_token %}
+                                <div class="row mb-3"><label for="id_password1" class="col-md-4 col-lg-3 col-form-label">New Password</label><div class="col-md-8 col-lg-9"><input type="password" name="password1" class="form-control" id="id_password1" required></div></div>
+                                <div class="row mb-3"><label for="id_password2" class="col-md-4 col-lg-3 col-form-label">Confirm Password</label><div class="col-md-8 col-lg-9"><input type="password" name="password2" class="form-control" id="id_password2" required></div></div>
+                                <div class="text-center"><button type="submit" class="btn btn-primary">Change Password</button></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Bootstrap tabs are already active via data-bs-toggle; no extra JS needed.
+        // Optional: add form validation if required
+    });
+</script>
+{% endblock %}

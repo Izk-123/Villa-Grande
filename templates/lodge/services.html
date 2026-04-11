@@ -19,33 +19,42 @@
 <section class="services-list py-5">
     <div class="container">
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-hotel"></i>
+            {% if services %}
+                {% for service in services %}
+                    <div class="col-md-4">
+                        <div class="service-card">
+                            <div class="service-icon-wrap">
+                                <i class="fas {{ service.icon }}"></i>
+                            </div>
+                            <h5>{{ service.title }}</h5>
+                            <p>{{ service.description }}</p>
+                        </div>
                     </div>
-                    <h5>Luxury Accommodation</h5>
-                    <p>Experience unparalleled comfort in our elegantly appointed rooms and suites.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-utensils"></i>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback static services if none exist -->
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="service-icon-wrap"><i class="fas fa-hotel"></i></div>
+                        <h5>Luxury Accommodation</h5>
+                        <p>Experience unparalleled comfort in our elegantly appointed rooms and suites.</p>
                     </div>
-                    <h5>Fine Dining</h5>
-                    <p>Savor exquisite cuisine prepared by our world-class chefs using the freshest local ingredients.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="service-card">
-                    <div class="service-icon-wrap">
-                        <i class="fas fa-spa"></i>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="service-icon-wrap"><i class="fas fa-utensils"></i></div>
+                        <h5>Fine Dining</h5>
+                        <p>Savor exquisite cuisine prepared by our world-class chefs using the freshest local ingredients.</p>
                     </div>
-                    <h5>Spa & Wellness</h5>
-                    <p>Rejuvenate your mind and body with our range of spa treatments and wellness programs.</p>
                 </div>
-            </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="service-icon-wrap"><i class="fas fa-spa"></i></div>
+                        <h5>Spa & Wellness</h5>
+                        <p>Rejuvenate your mind and body with our range of spa treatments and wellness programs.</p>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>
