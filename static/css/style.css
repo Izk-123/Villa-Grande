@@ -27,7 +27,13 @@
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+    /* --- Prevent horizontal scrolling on all devices --- */
+    overflow-x: hidden;
+    max-width: 100vw;
+}
 
 body {
     font-family: 'Jost', sans-serif;
@@ -36,6 +42,10 @@ body {
     background: var(--white);
     overflow-x: hidden;
     line-height: 1.7;
+    /* Lock to vertical scroll on touch devices */
+    position: relative;
+    max-width: 100vw;
+    touch-action: pan-y pinch-zoom;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -59,6 +69,17 @@ img { max-width: 100%; display: block; }
 
 .fw-medium    { font-weight: 500 !important; }
 .fw-semi-bold { font-weight: 600 !important; }
+
+/* ============================================================
+   PREVENT HORIZONTAL SCROLL ON MAIN CONTAINERS
+   ============================================================ */
+#main-content,
+main,
+.navbar-vg,
+.hero-section,
+.footer-vg {
+    overflow-x: hidden;
+}
 
 /* ============================================================
    LOADING SCREEN
@@ -192,6 +213,7 @@ img { max-width: 100%; display: block; }
     position: sticky;
     top: 0;
     z-index: 1000;
+    /* Already has overflow-x: hidden from the global list */
 }
 
 .navbar-vg.scrolled {
@@ -321,6 +343,7 @@ img { max-width: 100%; display: block; }
 .hero-section {
     position: relative;
     height: 100vh;
+    height: 100dvh;  /* dynamic viewport height – respects Safari chrome */
     min-height: 680px;
     overflow: hidden;
 }
@@ -1235,51 +1258,8 @@ img { max-width: 100%; display: block; }
 .delay-5 { transition-delay: 0.58s; }
 
 /* ============================================================
-   RESPONSIVE
+   QUICK BOOKING BAR ENHANCEMENT
    ============================================================ */
-@media (max-width: 991.98px) {
-    .navbar-vg .nav-link { padding: 10px 16px !important; }
-    .navbar-vg .nav-link::after { display: none; }
-    .booking-bar-inner { flex-direction: column; }
-    .booking-field { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.06); }
-    .booking-submit { padding: 18px 28px; justify-content: center; }
-    .experience-section { grid-template-columns: 1fr; }
-    .experience-text { padding: 60px 30px; }
-    .hero-dots { display: none; }
-}
-
-@media (max-width: 767.98px) {
-    .hero-section { height: 85vh; }
-    .hero-cta-group { flex-direction: column; align-items: flex-start; }
-    .about-img-grid .img-accent { display: none; }
-    .about-img-grid .img-main { width: 100%; }
-    .about-img-grid::after { display: none; }
-    .experience-badge { display: none; }
-    .footer-vg .footer-brand p { max-width: 100%; }
-}
-
-/* ============================================================
-   MICRO ANIMATIONS & CURSOR
-   ============================================================ */
-a, button { cursor: pointer; }
-
-.btn-vg-primary:active, .btn-vg-outline:active { transform: scale(0.97); }
-
-img { transition: opacity 0.3s ease; }
-
-.room-card, .service-card, .testimonial-card { will-change: transform; }
-
-/* Focus styles for accessibility */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline: 2px solid var(--gold);
-    outline-offset: 2px;
-}
-
-/* Quick Booking Bar Enhancement */
 .quick-booking-bar {
     background: white;
     border-radius: 60px;
@@ -1393,36 +1373,8 @@ textarea:focus-visible {
     font-size: 1rem;
 }
 
-@media (max-width: 991px) {
-    .quick-booking-bar {
-        border-radius: 30px;
-        margin-top: -20px;
-    }
-    
-    .quick-booking-form {
-        flex-direction: column;
-        padding: 15px;
-    }
-    
-    .quick-field {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid rgba(10,35,66,0.1);
-        padding: 15px 0;
-    }
-    
-    .quick-field:last-of-type {
-        border-bottom: none;
-    }
-    
-    .quick-submit-btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
 /* ============================================================
-   RESPONSIVE FIXES — ADD BELOW EXISTING CSS
+   RESPONSIVE FIXES
    ============================================================ */
 
 /* --- Reduced Motion (Accessibility) --- */
@@ -1439,13 +1391,6 @@ textarea:focus-visible {
         opacity: 1;
         transform: none;
     }
-}
-
-/* --- iOS Safari 100vh Fix --- */
-.hero-section {
-    height: 100vh;
-    height: 100dvh;  /* dynamic viewport height – respects Safari chrome */
-    min-height: 600px;
 }
 
 /* --- Navbar Mobile Improvements --- */
@@ -1854,4 +1799,25 @@ textarea:focus-visible {
         width: 40px;
         height: 40px;
     }
+}
+
+/* ============================================================
+   MICRO ANIMATIONS & CURSOR
+   ============================================================ */
+a, button { cursor: pointer; }
+
+.btn-vg-primary:active, .btn-vg-outline:active { transform: scale(0.97); }
+
+img { transition: opacity 0.3s ease; }
+
+.room-card, .service-card, .testimonial-card { will-change: transform; }
+
+/* Focus styles for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
 }
