@@ -1420,3 +1420,438 @@ textarea:focus-visible {
         justify-content: center;
     }
 }
+
+/* ============================================================
+   RESPONSIVE FIXES — ADD BELOW EXISTING CSS
+   ============================================================ */
+
+/* --- Reduced Motion (Accessibility) --- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    html { scroll-behavior: auto; }
+    .hero-slide { transform: none !important; }
+    .room-card:hover .room-card-image img { transform: none; }
+    .reveal, .reveal-left, .reveal-right, .reveal-scale {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* --- iOS Safari 100vh Fix --- */
+.hero-section {
+    height: 100vh;
+    height: 100dvh;  /* dynamic viewport height – respects Safari chrome */
+    min-height: 600px;
+}
+
+/* --- Navbar Mobile Improvements --- */
+@media (max-width: 991.98px) {
+    .navbar-vg {
+        position: sticky;
+        top: 0;
+        z-index: 1050;
+    }
+
+    .navbar-vg .navbar-collapse {
+        background: var(--navy);
+        padding: 16px 20px 24px;
+        border-top: 1px solid rgba(201, 168, 76, 0.15);
+        max-height: calc(100dvh - 72px);
+        overflow-y: auto;
+    }
+
+    .navbar-vg .nav-link {
+        padding: 14px 8px !important;
+        font-size: 0.8rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar-vg .nav-link:last-child {
+        border-bottom: none;
+    }
+
+    .navbar-vg .btn-book {
+        margin: 12px 0 0 0;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .navbar-vg .dropdown-menu {
+        background: rgba(255, 255, 255, 0.03);
+        border: none;
+        padding: 0 0 0 16px;
+    }
+
+    .navbar-vg .dropdown-item {
+        color: rgba(255, 255, 255, 0.7);
+        padding: 10px 16px;
+    }
+}
+
+/* --- Hero Content Overflow on Small Screens --- */
+@media (max-width: 767.98px) {
+    .hero-section {
+        height: auto;
+        min-height: 100dvh;
+    }
+
+    .hero-content {
+        padding: 100px 20px 80px;
+    }
+
+    .hero-eyebrow {
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        gap: 8px;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+        width: 24px;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+        margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 28px;
+        max-width: 100%;
+    }
+
+    .hero-cta-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-vg-primary,
+    .btn-vg-outline {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+        font-size: 0.7rem;
+    }
+
+    .hero-scroll {
+        bottom: 24px;
+        font-size: 0.6rem;
+    }
+    .scroll-mouse {
+        width: 18px;
+        height: 28px;
+    }
+
+    /* Show dot indicators on mobile as horizontal row */
+    .hero-dots {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        top: auto;
+        bottom: 100px;
+        right: 50%;
+        transform: translateX(50%);
+    }
+    .hero-dot {
+        width: 24px;
+        height: 4px;
+        border-radius: 2px;
+    }
+    .hero-dot.active {
+        width: 36px;
+        height: 4px;
+    }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 374.98px) {
+    .hero-title {
+        font-size: 1.7rem;
+    }
+    .hero-eyebrow {
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+    }
+    .hero-subtitle {
+        font-size: 0.78rem;
+    }
+}
+
+/* --- Quick Booking Bar Responsive --- */
+@media (max-width: 991.98px) {
+    .quick-booking-bar {
+        border-radius: 20px;
+        margin-top: -30px;
+        padding: 4px;
+    }
+
+    .quick-booking-form {
+        flex-direction: column;
+        gap: 0;
+        padding: 10px;
+    }
+
+    .quick-field {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(10, 35, 66, 0.08);
+        padding: 14px 16px;
+    }
+    .quick-field:last-of-type {
+        border-bottom: none;
+    }
+
+    .quick-submit-btn {
+        width: 100%;
+        justify-content: center;
+        border-radius: 40px;
+        margin-top: 8px;
+        padding: 16px 28px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .quick-booking-bar {
+        margin-top: -24px;
+        border-radius: 16px;
+    }
+    .quick-field label {
+        font-size: 0.6rem;
+    }
+    .quick-field input,
+    .quick-field select {
+        font-size: 0.82rem;
+    }
+}
+
+/* --- About Section — Stat Cards & Image Grid --- */
+@media (max-width: 767.98px) {
+    .about-section {
+        padding: 60px 0;
+    }
+
+    .stat-card {
+        padding: 20px 16px;
+    }
+    .stat-card .stat-number {
+        font-size: 2.2rem;
+    }
+    .stat-card .stat-label {
+        font-size: 0.65rem;
+    }
+
+    .about-img-grid .img-main {
+        width: 100%;
+        aspect-ratio: 3/4;
+    }
+    .about-img-grid .img-accent {
+        display: none;
+    }
+    .about-img-grid::after {
+        display: none;
+    }
+    .experience-badge {
+        display: none;
+    }
+}
+
+/* --- Rooms Section --- */
+@media (max-width: 767.98px) {
+    .rooms-section {
+        padding: 60px 0;
+    }
+
+    .room-card-body {
+        padding: 20px;
+    }
+    .room-card-footer {
+        flex-direction: column;
+        gap: 8px;
+        padding: 0 20px 20px;
+    }
+    .room-card-footer .btn-vg-primary,
+    .room-card-footer .btn-vg-outline {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .room-price-badge {
+        top: 12px;
+        left: 12px;
+        font-size: 0.7rem;
+        padding: 6px 12px;
+    }
+}
+
+/* --- Services Section --- */
+@media (max-width: 767.98px) {
+    .services-section {
+        padding: 60px 0;
+    }
+    .service-card {
+        padding: 28px 20px;
+    }
+    .service-icon-wrap {
+        width: 56px;
+        height: 56px;
+    }
+    .service-icon-wrap i {
+        font-size: 1.2rem;
+    }
+    .service-card h5 {
+        font-size: 1.1rem;
+    }
+    .service-card p {
+        font-size: 0.8rem;
+    }
+}
+
+/* --- Experience Section --- */
+@media (max-width: 991.98px) {
+    .experience-section {
+        grid-template-columns: 1fr;
+    }
+    .experience-visual {
+        min-height: 320px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .experience-text {
+        padding: 40px 22px;
+    }
+    .experience-visual {
+        min-height: 260px;
+    }
+    .btn-play-vg {
+        width: 60px;
+        height: 60px;
+    }
+    .btn-play-vg i {
+        font-size: 1.1rem;
+    }
+}
+
+/* --- Testimonials --- */
+@media (max-width: 767.98px) {
+    .testimonials-section {
+        padding: 60px 0;
+    }
+    .testimonial-card {
+        padding: 24px 20px;
+    }
+    .testimonial-quote {
+        font-size: 2.2rem;
+    }
+    .testimonial-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* --- Newsletter — Stack on Small Screens --- */
+@media (max-width: 575.98px) {
+    .newsletter-section {
+        padding: 50px 0;
+    }
+    .newsletter-input-wrap {
+        flex-direction: column;
+        max-width: 100%;
+        border: none;
+        gap: 10px;
+    }
+    .newsletter-input-wrap input {
+        border: 1px solid rgba(201, 168, 76, 0.3);
+        padding: 14px 18px;
+    }
+    .newsletter-input-wrap button {
+        width: 100%;
+        padding: 14px 20px;
+    }
+}
+
+/* --- Footer --- */
+@media (max-width: 767.98px) {
+    .footer-vg {
+        padding: 50px 0 0;
+    }
+    .footer-brand h3 {
+        font-size: 1.6rem;
+    }
+    .footer-brand p {
+        max-width: 100%;
+    }
+    .footer-heading {
+        margin-top: 28px;
+        margin-bottom: 16px;
+    }
+    .footer-bottom {
+        margin-top: 40px;
+        text-align: center;
+    }
+    .footer-bottom .text-md-end {
+        text-align: center !important;
+        margin-top: 6px;
+    }
+}
+
+/* --- Back to Top — Adjust for Mobile --- */
+@media (max-width: 767.98px) {
+    .back-to-top-vg {
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        font-size: 0.85rem;
+    }
+}
+
+/* --- General Spacing for All Sections on Mobile --- */
+@media (max-width: 767.98px) {
+    .section-heading {
+        font-size: 1.6rem;
+    }
+    .section-tag {
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        gap: 8px;
+    }
+    .section-tag::before,
+    .section-tag::after {
+        width: 20px;
+    }
+    .divider-gold {
+        margin: 14px 0;
+    }
+}
+
+/* --- Touch Target Minimum Size (WCAG) --- */
+@media (pointer: coarse) {
+    .navbar-vg .nav-link,
+    .navbar-vg .dropdown-item,
+    .footer-link,
+    .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-dot {
+        min-width: 28px;
+        min-height: 28px;
+    }
+
+    .top-bar .social-links a {
+        width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+
+    .footer-social-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
