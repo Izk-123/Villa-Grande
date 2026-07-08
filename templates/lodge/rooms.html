@@ -31,12 +31,17 @@
                             <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:var(--navy);">{{ room.get_room_type_display }} - {{ room.room_number }}</h4>
                             <div class="room-stars" aria-label="5 stars">★★★★★</div>
                         </div>
+                        
+                        <!-- DYNAMIC AMENITIES START -->
                         <div class="room-amenities">
-                            <span class="room-amenity"><i class="fas fa-bed" aria-hidden="true"></i> King Bed</span>
-                            <span class="room-amenity"><i class="fas fa-bath" aria-hidden="true"></i> En Suite</span>
-                            <span class="room-amenity"><i class="fas fa-wifi" aria-hidden="true"></i> Wi-Fi</span>
-                            <span class="room-amenity"><i class="fas fa-snowflake" aria-hidden="true"></i> AC</span>
+                            {% for amenity in room.amenities.all|slice:":4" %}
+                            <span class="room-amenity"><i class="{{ amenity.icon_class }}" aria-hidden="true"></i> {{ amenity.name }}</span>
+                            {% empty %}
+                            <span class="room-amenity text-muted">No amenities</span>
+                            {% endfor %}
                         </div>
+                        <!-- DYNAMIC AMENITIES END -->
+
                         <p style="font-size:0.83rem; line-height:1.75; color:var(--body-text);">{{ room.description|truncatewords:20 }}</p>
                     </div>
                     <div class="room-card-footer">

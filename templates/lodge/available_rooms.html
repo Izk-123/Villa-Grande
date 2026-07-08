@@ -27,6 +27,17 @@
                     </div>
                     <div class="room-card-body">
                         <h5 class="room-title">Room {{ room.room_number }}</h5>
+                        
+                        <!-- DYNAMIC AMENITIES START -->
+                        <div class="room-amenities mb-2">
+                            {% for amenity in room.amenities.all|slice:":4" %}
+                            <span class="room-amenity"><i class="{{ amenity.icon_class }}" aria-hidden="true"></i> {{ amenity.name }}</span>
+                            {% empty %}
+                            <span class="room-amenity text-muted">No amenities</span>
+                            {% endfor %}
+                        </div>
+                        <!-- DYNAMIC AMENITIES END -->
+
                         <p class="room-desc">{{ room.description|truncatechars:100 }}</p>
                         <div class="room-footer">
                             <span class="room-price">

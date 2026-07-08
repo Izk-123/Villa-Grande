@@ -23,15 +23,16 @@
                 <div class="room-price-badge mb-4" style="position: static; display: inline-block;">${{ room.price_per_night }} / night</div>
                 <p class="lead">{{ room.description }}</p>
                 
+                <!-- DYNAMIC AMENITIES START -->
                 <h5 class="mt-4">Amenities</h5>
                 <ul class="list-unstyled row g-3">
-                    <li class="col-6"><i class="fas fa-bed text-gold me-2"></i> King Bed</li>
-                    <li class="col-6"><i class="fas fa-bath text-gold me-2"></i> En Suite</li>
-                    <li class="col-6"><i class="fas fa-wifi text-gold me-2"></i> Free Wi-Fi</li>
-                    <li class="col-6"><i class="fas fa-snowflake text-gold me-2"></i> Air Conditioning</li>
-                    <li class="col-6"><i class="fas fa-tv text-gold me-2"></i> Smart TV</li>
-                    <li class="col-6"><i class="fas fa-coffee text-gold me-2"></i> Coffee Machine</li>
+                    {% for amenity in room.amenities.all %}
+                    <li class="col-6"><i class="{{ amenity.icon_class }} text-gold me-2"></i> {{ amenity.name }}</li>
+                    {% empty %}
+                    <li class="col-12 text-muted">No amenities listed for this room.</li>
+                    {% endfor %}
                 </ul>
+                <!-- DYNAMIC AMENITIES END -->
                 
                 <div class="d-flex gap-3 mt-4">
                     <a href="{% url 'lodge:booking' %}?room={{ room.pk }}" class="btn-vg-primary">Book This Room</a>
