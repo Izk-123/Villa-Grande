@@ -4,6 +4,14 @@ from django.utils import timezone
 import random
 import string
 
+class Amenity(models.Model):
+    name = models.CharField(max_length=100)
+    icon_class = models.CharField(max_length=50, help_text='Font Awesome class, e.g., fas fa-wifi')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
 class Room(models.Model):
     ROOM_TYPES = [
         ('STD', 'Standard'),
@@ -17,6 +25,7 @@ class Room(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='rooms/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    amenities = models.ManyToManyField(Amenity, blank=True)
 
     def __str__(self):
         return f"{self.room_number} - {self.get_room_type_display()}"

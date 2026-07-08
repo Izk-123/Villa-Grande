@@ -4,7 +4,7 @@ from .models import (
     Room, Customer, Booking,
     ContactMessage, HeroSlide, AboutSection, Statistic,
     Service, ExperienceSection, Testimonial,
-    NewsletterSection, NewsletterSubscriber, SiteSettings
+    NewsletterSection, NewsletterSubscriber, SiteSettings, Amenity
 )
 
 from django.contrib.auth import get_user_model
@@ -30,10 +30,15 @@ class RoomAdmin(admin.ModelAdmin):
     list_filter = ['room_type', 'is_active']
     search_fields = ['room_number', 'description']
     list_editable = ['price_per_night', 'is_active']
+    filter_horizontal = ['amenities']
     fieldsets = (
         (None, {'fields': ('room_number', 'room_type', 'price_per_night', 'is_active')}),
         ('Details', {'fields': ('description', 'image'), 'classes': ('wide',)}),
     )
+
+class AmenityAdmin(admin.ModelAdmin):
+    list_display = ['name', 'icon_class', 'is_active']
+    list_editable = ['is_active']
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['name', 'phone', 'email', 'created_at']
@@ -159,3 +164,4 @@ admin.site.register(NewsletterSection, NewsletterSectionAdmin)
 admin.site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)
 admin.site.register(SiteSettings, SiteSettingsAdmin)
 admin.site.register(ContactMessage, ContactMessageAdmin)
+admin.site.register(Amenity, AmenityAdmin)
