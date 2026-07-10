@@ -1,8 +1,24 @@
 from django import forms
-from .models import Booking, ContactMessage, Customer, Room, NewsletterSubscriber
+from .models import Booking, ContactMessage, Customer, Room, NewsletterSubscriber, Amenity
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 from datetime import date, datetime, timedelta
 import re
+
+
+class AmenityMultipleChoiceField(forms.ModelMultipleChoiceField):
+    """
+    Renders each amenity checkbox label with its Font Awesome icon so the
+    icon set on the Amenity model (icon_class) is actually visible to staff,
+    instead of just a plain text name.
+    """
+    def label_from_instance(self, obj):
+        icon = obj.icon_class or 'fas fa-check'
+        return mark_safe(
+            f'<i class="{icon}" aria-hidden="true"></i>'
+            f'<span class="amenity-chip-text">{obj.name}</span>'
+        )
+
 
 # Keep the original BookingForm for backward compatibility
 class BookingForm(forms.Form):
@@ -286,12 +302,23 @@ class QuickBookingForm(forms.Form):
 
 
 class RoomForm(forms.ModelForm):
+    amenities = AmenityMultipleChoiceField(
+        queryset=Amenity.objects.filter(is_active=True).order_by('name'),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'amenity-checkbox'}),
+        required=False,
+        label='Amenities',
+    )
+
     class Meta:
         model = Room
         fields = '__all__'
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'room_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 101'}),
+            'room_type': forms.Select(attrs={'class': 'form-select'}),
+            'price_per_night': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe the room...'}),
+            'image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
 

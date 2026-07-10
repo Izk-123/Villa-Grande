@@ -16,10 +16,11 @@ from django.utils.dateparse import parse_date
 from django.db.models import Q
 from django.shortcuts import redirect
 from django.db import transaction
+from django.db.models import Count
 from .models import (
     Room, Booking, Customer,
     HeroSlide, AboutSection, Service,
-    ExperienceSection, Testimonial, NewsletterSection, NewsletterSubscriber, SiteSettings
+    ExperienceSection, Testimonial, NewsletterSection, NewsletterSubscriber, SiteSettings, Amenity
 )
 from .forms import BookingStatusForm, ModernBookingForm, RoomForm, QuickBookingForm, NewsletterForm, ContactForm  # Updated import
 
@@ -367,11 +368,30 @@ def custom_404(request, exception):
     return render(request, '404.html', status=404)
 
 # ---------- Admin Views (Login Required) ----------
+# ---------------------------------------------------------------------------
+# PATCH for lodge/views.py
+# Replace the existing AdminRoomListView with this version.
+# It prefetches amenities (avoids N+1 queries for the amenity badges) and
+# adds the small stat numbers used in the new room_list.html header cards.
+# ---------------------------------------------------------------------------
+
+
 class AdminRoomListView(LoginRequiredMixin, ListView):
     model = Room
     template_name = 'lodge/admin/room_list.html'
     context_object_name = 'rooms'
     login_url = '/accounts/login/'
+
+    def get_queryset(self):
+        return Room.objects.prefetch_related('amenities').order_by('room_number')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rooms = context['rooms']
+        context['active_count'] = rooms.filter(is_active=True).count() if hasattr(rooms, 'filter') else sum(1 for r in rooms if r.is_active)
+        context['inactive_count'] = rooms.filter(is_active=False).count() if hasattr(rooms, 'filter') else sum(1 for r in rooms if not r.is_active)
+        context['amenity_count'] = Amenity.objects.filter(is_active=True).count()
+        return context
 
 
 class AdminRoomCreateView(LoginRequiredMixin, CreateView):
