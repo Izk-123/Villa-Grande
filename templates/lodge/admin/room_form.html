@@ -18,50 +18,163 @@
 <section class="section">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card" data-aos="fade-up" data-aos-delay="100">
-                <div class="card-body">
-                    <h5 class="card-title">Room Information</h5>
 
-                    <form method="post" enctype="multipart/form-data" class="row g-4 needs-validation" novalidate>
-                        {% csrf_token %}
-                        
-                        {% for field in form %}
-                        <div class="col-md-6">
-                            <div class="form-floating mb-2">
-                                {{ field }}
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {% if field.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ field.errors|join:", " }}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger d-flex align-items-center gap-2" data-aos="fade-up">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>{{ form.non_field_errors }}</div>
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="roomForm">
+                {% csrf_token %}
+
+                <!-- ======== Basic Information ======== -->
+                <div class="card form-section" data-aos="fade-up" data-aos-delay="50">
+                    <div class="card-body">
+                        <h5 class="section-title"><i class="bi bi-door-open"></i> Basic Information</h5>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.room_number }}
+                                    <label for="{{ form.room_number.id_for_label }}">Room Number</label>
                                 </div>
-                                {% endif %}
-                                {% if field.help_text %}
-                                <small class="text-muted">{{ field.help_text }}</small>
+                                {% if form.room_number.errors %}
+                                <div class="invalid-feedback d-block">{{ form.room_number.errors|join:", " }}</div>
                                 {% endif %}
                             </div>
-                        </div>
-                        {% endfor %}
 
-                        {% if form.instance.pk and form.instance.image %}
-                        <div class="col-12">
-                            <label class="form-label">Current Image</label>
-                            <div class="mt-2">
-                                <img src="{{ form.instance.image.url }}" alt="Room image" style="max-height: 150px; border-radius: var(--vg-border-radius-md);" class="img-thumbnail">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.room_type }}
+                                    <label for="{{ form.room_type.id_for_label }}">Room Type</label>
+                                </div>
+                                {% if form.room_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.room_type.errors|join:", " }}</div>
+                                {% endif %}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ======== Pricing & Availability ======== -->
+                <div class="card form-section" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h5 class="section-title"><i class="bi bi-cash-coin"></i> Pricing &amp; Availability</h5>
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.price_per_night }}
+                                    <label for="{{ form.price_per_night.id_for_label }}">Price per Night (MWK)</label>
+                                </div>
+                                {% if form.price_per_night.errors %}
+                                <div class="invalid-feedback d-block">{{ form.price_per_night.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label d-block fw-semibold mb-2">Room Status</label>
+                                <div class="status-toggle">
+                                    {{ form.is_active }}
+                                    <label for="{{ form.is_active.id_for_label }}" class="status-toggle-label">
+                                        <span class="status-dot"></span>
+                                        <span class="status-text">Active &mdash; visible &amp; bookable on the site</span>
+                                    </label>
+                                </div>
+                                {% if form.is_active.errors %}
+                                <div class="invalid-feedback d-block">{{ form.is_active.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======== Description ======== -->
+                <div class="card form-section" data-aos="fade-up" data-aos-delay="150">
+                    <div class="card-body">
+                        <h5 class="section-title"><i class="bi bi-card-text"></i> Description</h5>
+                        <div class="form-floating">
+                            {{ form.description }}
+                            <label for="{{ form.description.id_for_label }}">Describe the room</label>
+                        </div>
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">{{ form.description.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ======== Room Image ======== -->
+                <div class="card form-section" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h5 class="section-title"><i class="bi bi-image"></i> Room Image</h5>
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-5">
+                                <div class="image-preview-box" id="imagePreviewBox">
+                                    {% if form.instance.pk and form.instance.image %}
+                                        <img src="{{ form.instance.image.url }}" alt="Room image" id="imagePreview">
+                                    {% else %}
+                                        <img src="" alt="" id="imagePreview" style="display:none;">
+                                        <div class="image-preview-placeholder" id="imagePlaceholder">
+                                            <i class="bi bi-image"></i>
+                                            <span>No image selected</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <label for="{{ form.image.id_for_label }}" class="form-label fw-semibold">Upload a photo</label>
+                                {{ form.image }}
+                                <small class="text-muted d-block mt-2">JPG or PNG recommended, at least 1200px wide.</small>
+                                {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">{{ form.image.errors|join:", " }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======== Amenities ======== -->
+                <div class="card form-section" data-aos="fade-up" data-aos-delay="250">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
+                            <h5 class="section-title mb-0"><i class="bi bi-stars"></i> Amenities</h5>
+                            <span class="amenity-count-badge" id="amenityCount">
+                                {{ form.amenities.value|length|default:0 }} selected
+                            </span>
+                        </div>
+                        <small class="text-muted d-block mb-3">Guests will see these badges on the room listing and detail pages.</small>
+
+                        {% if form.amenities.field.queryset.exists %}
+                        <div class="amenity-grid">
+                            {% for checkbox in form.amenities %}
+                            <div class="amenity-chip">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}" class="amenity-chip-label">
+                                    {{ checkbox.choice_label }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-muted fst-italic">No amenities have been added yet. Add some in the Amenities section first.</div>
                         {% endif %}
 
-                        <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="bi bi-save me-2"></i>{% if form.instance.pk %}Update Room{% else %}Create Room{% endif %}
-                            </button>
-                            <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary btn-lg px-4">
-                                <i class="bi bi-x-circle me-2"></i>Cancel
-                            </a>
-                        </div>
-                    </form>
+                        {% if form.amenities.errors %}
+                        <div class="invalid-feedback d-block mt-2">{{ form.amenities.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+
+                <!-- ======== Sticky Submit Bar ======== -->
+                <div class="submit-bar" data-aos="fade-up">
+                    <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary btn-lg px-4">
+                        <i class="bi bi-x-circle me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <i class="bi bi-save me-2"></i>{% if form.instance.pk %}Update Room{% else %}Create Room{% endif %}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </section>
@@ -81,34 +194,185 @@
             }, false)
         })
     })()
+
+    // Live image preview
+    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
+    if (imageInput) {
+        imageInput.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                if (imagePlaceholder) imagePlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Live amenity counter
+    const amenityCheckboxes = document.querySelectorAll('.amenity-chip input[type="checkbox"]');
+    const amenityCount = document.getElementById('amenityCount');
+    function updateAmenityCount() {
+        const checked = document.querySelectorAll('.amenity-chip input[type="checkbox"]:checked').length;
+        if (amenityCount) amenityCount.textContent = checked + ' selected';
+    }
+    amenityCheckboxes.forEach(cb => cb.addEventListener('change', updateAmenityCount));
+    updateAmenityCount();
 </script>
 
 <style>
-    .form-floating > input,
-    .form-floating > select,
+    /* ---- Section cards ---- */
+    .form-section {
+        margin-bottom: 1.5rem;
+        border-radius: var(--vg-border-radius-lg);
+        background: var(--vg-glass-bg);
+        backdrop-filter: var(--vg-glass-blur);
+        border: 1px solid var(--vg-glass-border);
+        transition: box-shadow var(--vg-transition-fast);
+    }
+    .form-section:hover { box-shadow: var(--vg-shadow-lg); }
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 600;
+        color: var(--vg-navy);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--vg-glass-border);
+    }
+    .section-title i { color: var(--vg-gold); font-size: 1.1rem; }
+    body.dark-mode .section-title { color: #e0e0e0; }
+
+    /* ---- Inputs ---- */
+    .form-floating > .form-control,
+    .form-floating > .form-select,
     .form-floating > textarea {
         border-radius: var(--vg-border-radius-md);
         background: var(--vg-glass-bg);
         border: 1px solid var(--vg-glass-border);
-        color: var(--vg-dark);
         transition: all var(--vg-transition-fast);
     }
-    .form-floating > input:focus,
-    .form-floating > select:focus,
+    .form-floating > .form-control:focus,
+    .form-floating > .form-select:focus,
     .form-floating > textarea:focus {
         border-color: var(--vg-gold);
         box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
         transform: translateY(-2px);
     }
-    .form-floating > label {
-        color: var(--vg-dark);
-        opacity: 0.7;
+    textarea.form-control { min-height: 120px; }
+    input[type="file"].form-control { padding: 0.6rem 0.75rem; }
+
+    /* ---- Status toggle ---- */
+    .status-toggle { position: relative; }
+    .status-toggle input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .status-toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--vg-border-radius-md);
+        border: 1px solid var(--vg-glass-border);
+        cursor: pointer;
+        transition: all var(--vg-transition-fast);
     }
-    body.dark-mode .form-floating > label {
-        color: #e0e0e0;
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #adb5bd; transition: background var(--vg-transition-fast); flex-shrink: 0; }
+    .status-toggle input[type="checkbox"]:checked + .status-toggle-label { border-color: var(--vg-gold); background: rgba(201,168,76,0.08); }
+    .status-toggle input[type="checkbox"]:checked + .status-toggle-label .status-dot { background: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,0.15); }
+    .status-toggle input[type="checkbox"]:focus-visible + .status-toggle-label { box-shadow: 0 0 0 3px rgba(201,168,76,0.3); }
+
+    /* ---- Image preview ---- */
+    .image-preview-box {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        border-radius: var(--vg-border-radius-md);
+        border: 2px dashed var(--vg-glass-border);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.02);
     }
-    textarea {
-        min-height: 100px;
+    .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    .image-preview-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: #adb5bd; }
+    .image-preview-placeholder i { font-size: 2.5rem; }
+
+    /* ---- Amenity chips ---- */
+    .amenity-count-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--vg-navy);
+        background: rgba(201,168,76,0.15);
+        border: 1px solid rgba(201,168,76,0.4);
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+    body.dark-mode .amenity-count-badge { color: #e0e0e0; }
+
+    .amenity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.75rem;
+    }
+    .amenity-chip { position: relative; }
+    .amenity-chip input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        cursor: pointer;
+    }
+    .amenity-chip-label {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.7rem 0.9rem;
+        border: 1.5px solid var(--vg-glass-border);
+        border-radius: var(--vg-border-radius-md);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all var(--vg-transition-fast);
+        background: var(--vg-glass-bg);
+        user-select: none;
+        margin: 0;
+    }
+    .amenity-chip-label i { color: var(--vg-gold); font-size: 1rem; width: 18px; text-align: center; flex-shrink: 0; }
+    .amenity-chip-label:hover { border-color: var(--vg-gold); transform: translateY(-2px); }
+    .amenity-chip input[type="checkbox"]:checked + .amenity-chip-label {
+        background: linear-gradient(135deg, var(--vg-gold), #e6d792);
+        border-color: var(--vg-gold);
+        color: var(--vg-navy);
+        box-shadow: var(--vg-shadow-lg);
+    }
+    .amenity-chip input[type="checkbox"]:checked + .amenity-chip-label i { color: var(--vg-navy); }
+    .amenity-chip input[type="checkbox"]:focus-visible + .amenity-chip-label { box-shadow: 0 0 0 3px rgba(201,168,76,0.3); }
+
+    /* ---- Sticky submit bar ---- */
+    .submit-bar {
+        position: sticky;
+        bottom: 1rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--vg-glass-bg);
+        backdrop-filter: var(--vg-glass-blur);
+        border: 1px solid var(--vg-glass-border);
+        border-radius: var(--vg-border-radius-lg);
+        box-shadow: var(--vg-shadow-lg);
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 576px) {
+        .submit-bar { flex-direction: column-reverse; position: static; }
+        .submit-bar .btn { width: 100%; }
     }
 </style>
 {% endblock %}

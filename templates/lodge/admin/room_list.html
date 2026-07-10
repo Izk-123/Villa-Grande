@@ -15,31 +15,71 @@
 </div>
 
 <section class="section">
+    <!-- Quick stats -->
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="50">
+            <div class="mini-stat">
+                <i class="bi bi-door-closed"></i>
+                <div><span class="mini-stat-number">{{ rooms|length }}</span><span class="mini-stat-label">Total Rooms</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="mini-stat">
+                <i class="bi bi-check-circle-fill" style="color:#10B981;"></i>
+                <div><span class="mini-stat-number">{{ active_count|default:0 }}</span><span class="mini-stat-label">Active</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="150">
+            <div class="mini-stat">
+                <i class="bi bi-pause-circle-fill" style="color:#F59E0B;"></i>
+                <div><span class="mini-stat-number">{{ inactive_count|default:0 }}</span><span class="mini-stat-label">Inactive</span></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="mini-stat">
+                <i class="bi bi-stars" style="color: var(--vg-gold);"></i>
+                <div><span class="mini-stat-number">{{ amenity_count|default:0 }}</span><span class="mini-stat-label">Amenities Tracked</span></div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card" data-aos="fade-up" data-aos-delay="100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-                        <h5 class="card-title mb-0">Rooms</h5>
+                        <div>
+                            <h5 class="card-title mb-1">Rooms</h5>
+                            <small class="text-muted">Manage room details, pricing, and amenities</small>
+                        </div>
                         <a href="{% url 'lodge:admin_room_create' %}" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-2"></i>Add New Room
                         </a>
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover datatable">
+                        <table class="table table-hover align-middle datatable">
                             <thead>
                                 <tr>
+                                    <th style="width:70px;">Photo</th>
                                     <th>Room Number</th>
                                     <th>Type</th>
                                     <th>Price / Night</th>
+                                    <th>Amenities</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for room in rooms %}
                                 <tr data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                                    <td>
+                                        {% if room.image %}
+                                        <img src="{{ room.image.url }}" alt="{{ room.room_number }}" class="room-thumb">
+                                        {% else %}
+                                        <div class="room-thumb room-thumb-placeholder"><i class="bi bi-image"></i></div>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         <i class="bi bi-door-closed me-2 text-gold"></i>
                                         {{ room.room_number }}
@@ -47,13 +87,27 @@
                                     <td>{{ room.get_room_type_display }}</td>
                                     <td>MWK {{ room.price_per_night|floatformat:0 }}</td>
                                     <td>
+                                        <div class="amenity-badges">
+                                            {% for amenity in room.amenities.all|slice:":4" %}
+                                            <span class="amenity-badge" title="{{ amenity.name }}">
+                                                <i class="{{ amenity.icon_class }}"></i> {{ amenity.name }}
+                                            </span>
+                                            {% empty %}
+                                            <span class="text-muted small fst-italic">None set</span>
+                                            {% endfor %}
+                                            {% if room.amenities.count > 4 %}
+                                            <span class="amenity-badge amenity-badge-more">+{{ room.amenities.count|add:"-4" }} more</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
                                         {% if room.is_active %}
                                             <span class="badge bg-success">Active</span>
                                         {% else %}
                                             <span class="badge bg-danger">Inactive</span>
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td class="text-end">
                                         <div class="btn-group" role="group">
                                             <a href="{% url 'lodge:admin_room_edit' room.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
                                                 <i class="bi bi-pencil"></i>
@@ -66,7 +120,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="5" class="text-center py-4">No rooms found. <a href="{% url 'lodge:admin_room_create' %}">Create one</a></td>
+                                    <td colspan="7" class="text-center py-4">No rooms found. <a href="{% url 'lodge:admin_room_create' %}">Create one</a></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -91,18 +145,50 @@
 
 <style>
     .text-gold { color: var(--vg-gold); }
-    .table-hover tbody tr {
-        transition: all var(--vg-transition-fast);
+    .table-hover tbody tr { transition: all var(--vg-transition-fast); }
+    .table-hover tbody tr:hover { background: linear-gradient(90deg, rgba(201,168,76,0.05), transparent); transform: scale(1.01); }
+    .btn-group .btn { transition: all var(--vg-transition-fast); }
+    .btn-group .btn:hover { transform: translateY(-2px); }
+
+    /* Mini stat cards */
+    .mini-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 1.1rem;
+        border-radius: var(--vg-border-radius-lg);
+        background: var(--vg-glass-bg);
+        backdrop-filter: var(--vg-glass-blur);
+        border: 1px solid var(--vg-glass-border);
+        height: 100%;
+        transition: transform var(--vg-transition-fast);
     }
-    .table-hover tbody tr:hover {
-        background: linear-gradient(90deg, rgba(201,168,76,0.05), transparent);
-        transform: scale(1.01);
+    .mini-stat:hover { transform: translateY(-3px); }
+    .mini-stat i { font-size: 1.6rem; opacity: 0.85; }
+    .mini-stat-number { display: block; font-size: 1.3rem; font-weight: 700; line-height: 1.1; }
+    .mini-stat-label { display: block; font-size: 0.75rem; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* Room thumbnail */
+    .room-thumb { width: 52px; height: 52px; object-fit: cover; border-radius: var(--vg-border-radius-md); }
+    .room-thumb-placeholder { display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); color: #adb5bd; }
+
+    /* Amenity badges */
+    .amenity-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; max-width: 320px; }
+    .amenity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(201,168,76,0.12);
+        border: 1px solid rgba(201,168,76,0.35);
+        color: var(--vg-navy);
+        white-space: nowrap;
     }
-    .btn-group .btn {
-        transition: all var(--vg-transition-fast);
-    }
-    .btn-group .btn:hover {
-        transform: translateY(-2px);
-    }
+    .amenity-badge i { color: var(--vg-gold); font-size: 0.8rem; }
+    .amenity-badge-more { background: rgba(0,0,0,0.05); border-color: var(--vg-glass-border); color: #6c757d; }
+    body.dark-mode .amenity-badge { color: #e0e0e0; }
 </style>
 {% endblock %}

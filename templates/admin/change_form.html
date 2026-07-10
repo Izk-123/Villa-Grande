@@ -9,15 +9,252 @@
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
 <style>
-  /* Glassmorphic form styling */
-  .card { background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); border: 1px solid var(--vg-glass-border); border-radius: var(--vg-border-radius-lg); }
-  .form-row { margin-bottom: 1rem; }
-  .form-row label { font-weight: 600; color: var(--vg-gold); }
-  input, select, textarea { background: var(--vg-glass-bg); border: 1px solid var(--vg-glass-border); border-radius: var(--vg-border-radius-md); padding: 0.5rem 0.75rem; transition: all var(--vg-transition-fast); }
-  input:focus, select:focus, textarea:focus { border-color: var(--vg-gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.2); transform: translateY(-1px); }
-  .submit-row { display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap; }
-  .alert { border-radius: var(--vg-border-radius-md); background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); }
-  body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #2d2d3a; color: #e0e0e0; }
+  /* Defined locally so this page looks right even if the theme's own
+     custom_admin.css hasn't loaded these variables in this scope. */
+  :root {
+    --vgf-gold: #C9A84C;
+    --vgf-gold-dark: #A8873A;
+    --vgf-navy: #0A2342;
+    --vgf-navy-light: #12315F;
+    --vgf-bg: #F4F6FA;
+    --vgf-border: #E3E7EF;
+    --vgf-radius: 14px;
+  }
+
+  .section { background: var(--vgf-bg); padding-top: 0.5rem; }
+
+  .required-note {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--vgf-navy);
+    background: #fff; border: 1px solid var(--vgf-border);
+    padding: 0.4rem 0.8rem; border-radius: 999px; margin-bottom: 1.25rem;
+  }
+  .required-note .text-danger { color: #E4572E; font-weight: 800; }
+
+  /* ---- Fieldset = section card ---- */
+  .section form > div { counter-reset: vgf-section; }
+  fieldset.module.aligned {
+    background: #fff;
+    border: 1px solid var(--vgf-border);
+    border-radius: var(--vgf-radius);
+    padding: 1.75rem 1.75rem 1rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 2px 10px rgba(10,35,66,0.05);
+    border-top: 4px solid var(--vgf-gold);
+    counter-increment: vgf-section;
+    transition: box-shadow 0.25s ease;
+    position: relative;
+  }
+  fieldset.module.aligned:hover { box-shadow: 0 10px 28px rgba(10,35,66,0.12); }
+
+  fieldset.module.aligned .card-title {
+    display: flex; align-items: center; gap: 0.65rem;
+    font-weight: 800; font-size: 1.05rem; letter-spacing: 0.2px;
+    color: var(--vgf-navy);
+    padding-bottom: 0.9rem; margin-bottom: 1.4rem;
+    border-bottom: 2px solid var(--vgf-bg);
+  }
+  fieldset.module.aligned .card-title::before {
+    content: counter(vgf-section);
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--vgf-gold), var(--vgf-gold-dark));
+    color: #fff; font-size: 0.8rem; font-weight: 800;
+    box-shadow: 0 2px 6px rgba(201,168,76,0.5);
+  }
+  /* Unnamed fieldsets (no h5.card-title rendered) still get a numbered badge */
+  fieldset.module.aligned:not(:has(.card-title))::after {
+    counter-increment: vgf-section;
+    content: counter(vgf-section);
+    position: absolute; top: -14px; left: 1.5rem;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--vgf-navy), var(--vgf-navy-light));
+    color: #fff; font-size: 0.85rem; font-weight: 800;
+    box-shadow: 0 3px 8px rgba(10,35,66,0.35);
+  }
+
+  /* ---- Responsive field grid: short fields sit side by side, long ones span full width ---- */
+  fieldset.module.aligned > div {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.1rem 1.5rem;
+    align-items: start;
+  }
+  fieldset.module.aligned .form-row { margin-bottom: 0 !important; }
+  fieldset.module.aligned .form-row:has(textarea),
+  fieldset.module.aligned .form-row:has(input[type="file"]),
+  fieldset.module.aligned .form-row:has(.checkbox-row),
+  fieldset.module.aligned .form-row:has(select[multiple]) {
+    grid-column: 1 / -1;
+  }
+
+  /* ---- Labels ---- */
+  .form-row label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--vgf-navy);
+    margin-bottom: 0.4rem;
+  }
+  .form-row label .text-danger { color: #E4572E; font-size: 0.9rem; }
+
+  /* ---- Inputs ---- */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    background: var(--vgf-bg);
+    border: 1.5px solid var(--vgf-border);
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    width: 100%;
+    font-size: 0.95rem;
+    color: var(--vgf-navy);
+    transition: all 0.15s ease;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  select:focus,
+  textarea:focus {
+    background: #fff;
+    border-color: var(--vgf-gold);
+    box-shadow: 0 0 0 4px rgba(201,168,76,0.25);
+    outline: none;
+    transform: translateY(-1px);
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  input[type="file"] {
+    background: #fff;
+    border: 1.5px dashed var(--vgf-gold);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  /* ---- Boolean fields as a bold switch ---- */
+  .checkbox-row .form-check {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: var(--vgf-bg);
+    padding: 0.7rem 1rem;
+    border: 1.5px solid var(--vgf-border);
+    border-radius: 10px;
+    width: fit-content;
+  }
+  .checkbox-row .form-check input[type="checkbox"] {
+    width: 2.4rem; height: 1.3rem; appearance: none; -webkit-appearance: none;
+    background: #c9ced9; border-radius: 999px; position: relative; cursor: pointer;
+    transition: background 0.2s ease; flex-shrink: 0; margin: 0;
+  }
+  .checkbox-row .form-check input[type="checkbox"]::before {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 1.05rem; height: 1.05rem; background: #fff; border-radius: 50%;
+    transition: transform 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  }
+  .checkbox-row .form-check input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, var(--vgf-gold), var(--vgf-gold-dark));
+  }
+  .checkbox-row .form-check input[type="checkbox"]:checked::before { transform: translateX(1.1rem); }
+  .checkbox-row .form-check-label {
+    font-weight: 700; font-size: 0.85rem; color: var(--vgf-navy);
+    text-transform: none; margin: 0; cursor: pointer;
+  }
+
+  .help { color: #8891a5; font-size: 0.78rem; margin-top: 0.35rem; }
+  .errorlist { color: #E4572E; font-size: 0.78rem; margin-top: 0.3rem; list-style: none; padding: 0; font-weight: 600; }
+
+  /* ---- Submit bar ---- */
+  .submit-row {
+    position: sticky; bottom: 1rem; z-index: 5;
+    display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center;
+    margin-top: 1.5rem; padding: 1.1rem 1.3rem;
+    background: #fff;
+    border: 1px solid var(--vgf-border);
+    border-radius: var(--vgf-radius);
+    box-shadow: 0 8px 24px rgba(10,35,66,0.15);
+  }
+  .submit-row input[type="submit"] {
+    border: none; border-radius: 10px; padding: 0.65rem 1.4rem;
+    font-weight: 700; font-size: 0.85rem; cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .submit-row input[name="_save"] {
+    background: linear-gradient(135deg, var(--vgf-gold), var(--vgf-gold-dark));
+    color: #fff; box-shadow: 0 4px 12px rgba(201,168,76,0.4);
+  }
+  .submit-row input[name="_addanother"],
+  .submit-row input[name="_continue"] {
+    background: #fff; color: var(--vgf-navy); border: 1.5px solid var(--vgf-border) !important;
+  }
+  .submit-row a.btn { border-radius: 10px; font-weight: 700; font-size: 0.85rem; }
+  .submit-row input[type="submit"]:hover, .submit-row a.btn:hover { transform: translateY(-2px); }
+  .submit-row .btn-danger,
+  .submit-row a[href*="delete"] { margin-left: auto; }
+
+  .alert { border-radius: 10px; }
+  .pagetitle h1 { color: var(--vgf-navy); font-weight: 800; }
+
+  body.dark-mode .section { background: transparent; }
+  body.dark-mode fieldset.module.aligned,
+  body.dark-mode .submit-row,
+  body.dark-mode .required-note { background: rgba(30,32,45,0.9); border-color: rgba(255,255,255,0.08); }
+  body.dark-mode .form-row label,
+  body.dark-mode fieldset.module.aligned .card-title,
+  body.dark-mode .checkbox-row .form-check-label,
+  body.dark-mode .pagetitle h1 { color: #f1f1f4; }
+  body.dark-mode input:not([type="checkbox"]):not([type="radio"]),
+  body.dark-mode select, body.dark-mode textarea,
+  body.dark-mode .checkbox-row .form-check {
+    background: #23253a; color: #e6e6e6; border-color: rgba(255,255,255,0.12);
+  }
+  body.dark-mode input:focus, body.dark-mode select:focus, body.dark-mode textarea:focus { background: #2c2f47; }
+  body.dark-mode .submit-row input[name="_addanother"],
+  body.dark-mode .submit-row input[name="_continue"] { background: #23253a; color: #e6e6e6; }
+
+  /* ---- Drag & drop file upload zones ---- */
+  [class*="field-"] > a { color: var(--vgf-gold-dark); font-weight: 600; text-decoration: underline; }
+  [class*="field-"] > a:hover { color: var(--vgf-navy); }
+  [class*="field-"] > input[type="checkbox"] { width: auto; appearance: auto; -webkit-appearance: auto; background: none; margin-right: 0.3rem; }
+  [class*="field-"] > label { display: inline; text-transform: none; font-weight: 500; font-size: 0.8rem; color: #6c757d; }
+
+  .vg-dropzone {
+    position: relative;
+    border: 2px dashed var(--vgf-gold);
+    border-radius: 12px;
+    padding: 1.6rem 1rem;
+    text-align: center;
+    background: #fffdf7;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.6rem;
+  }
+  .vg-dropzone:hover { background: rgba(201,168,76,0.08); }
+  .vg-dropzone.vg-dragover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--vgf-gold-dark);
+    transform: scale(1.01);
+    box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+  }
+  .vg-dropzone input[type="file"] {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer; margin: 0; padding: 0; border: none;
+  }
+  .vg-dropzone-icon { font-size: 1.9rem; color: var(--vgf-gold); margin-bottom: 0.3rem; transition: transform 0.2s ease; }
+  .vg-dropzone.vg-dragover .vg-dropzone-icon { transform: translateY(-4px); }
+  .vg-dropzone-text { font-weight: 700; font-size: 0.82rem; color: var(--vgf-navy); text-transform: none; }
+  .vg-dropzone-text em { color: var(--vgf-gold-dark); font-style: normal; text-decoration: underline; }
+  .vg-dropzone-hint { font-size: 0.72rem; color: #8891a5; margin-top: 0.2rem; }
+  .vg-dropzone-filename {
+    display: none; margin-top: 0.65rem; font-size: 0.78rem; font-weight: 700;
+    color: #fff; background: var(--vgf-gold-dark); padding: 0.3rem 0.7rem;
+    border-radius: 999px; word-break: break-all;
+  }
+  .vg-dropzone-preview { display: none; margin: 0.75rem auto 0; max-height: 150px; border-radius: 8px; box-shadow: 0 4px 12px rgba(10,35,66,0.15); }
+
+  body.dark-mode .vg-dropzone { background: rgba(201,168,76,0.06); }
+  body.dark-mode .vg-dropzone-text { color: #f1f1f4; }
+  body.dark-mode [class*="field-"] > label { color: #b8bcc8; }
 </style>
 {% endblock %}
 
@@ -38,47 +275,130 @@
 <section class="section" data-aos="fade-up" data-aos-delay="100">
   <div class="row">
     <div class="col-lg-12">
-      <div class="card">
-        <div class="card-body">
-          <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
-            <div>
-              {% if is_popup %}<input type="hidden" name="_popup" value="1">{% endif %}
-              {% if errors %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                  {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
-                  {{ adminform.form.non_field_errors }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endif %}
+      <div class="required-note"><span class="text-danger">*</span> {% trans "Required fields" %}</div>
 
-              {% block field_sets %}
-                {% for fieldset in adminform %}
-                  {% include "admin/includes/fieldset.html" %}
-                {% endfor %}
-              {% endblock %}
-
-              {% block after_field_sets %}{% endblock %}
-
-              {% block inline_field_sets %}
-                {% for inline_admin_formset in inline_admin_formsets %}
-                  {% include inline_admin_formset.opts.template %}
-                {% endfor %}
-              {% endblock %}
-
-              {% block after_related_objects %}{% endblock %}
-
-              {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
-
-              {% block admin_change_form_document_ready %}
-                <script id="django-admin-form-add-constants" src="{% static 'admin/js/change_form.js' %}" {% if adminform and add %}data-model-name="{{ opts.model_name }}"{% endif %} async></script>
-              {% endblock %}
-
-              {% prepopulated_fields_js %}
+      <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+        <div>
+          {% if is_popup %}<input type="hidden" name="_popup" value="1">{% endif %}
+          {% if errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+              {{ adminform.form.non_field_errors }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-          </form>
+          {% endif %}
+
+          {% block field_sets %}
+            {% for fieldset in adminform %}
+              {% include "admin/includes/fieldset.html" %}
+            {% endfor %}
+          {% endblock %}
+
+          {% block after_field_sets %}{% endblock %}
+
+          {% block inline_field_sets %}
+            {% for inline_admin_formset in inline_admin_formsets %}
+              <fieldset class="module aligned">
+                {% include inline_admin_formset.opts.template %}
+              </fieldset>
+            {% endfor %}
+          {% endblock %}
+
+          {% block after_related_objects %}{% endblock %}
+
+          {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+          {% block admin_change_form_document_ready %}
+            <script id="django-admin-form-add-constants" src="{% static 'admin/js/change_form.js' %}" {% if adminform and add %}data-model-name="{{ opts.model_name }}"{% endif %} async></script>
+          {% endblock %}
+
+          {% prepopulated_fields_js %}
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('input[type="file"]').forEach(function (input) {
+    if (input.dataset.vgEnhanced) return;
+    input.dataset.vgEnhanced = '1';
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'vg-dropzone';
+
+    var icon = document.createElement('div');
+    icon.className = 'vg-dropzone-icon';
+    icon.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i>';
+
+    var text = document.createElement('div');
+    text.className = 'vg-dropzone-text';
+    text.innerHTML = 'Drag &amp; drop a file, or <em>click to browse</em>';
+
+    var hint = document.createElement('div');
+    hint.className = 'vg-dropzone-hint';
+    hint.textContent = 'JPG or PNG recommended';
+
+    var filename = document.createElement('div');
+    filename.className = 'vg-dropzone-filename';
+
+    var preview = document.createElement('img');
+    preview.className = 'vg-dropzone-preview';
+    preview.alt = 'Selected file preview';
+
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(icon);
+    wrapper.appendChild(text);
+    wrapper.appendChild(hint);
+    wrapper.appendChild(filename);
+    wrapper.appendChild(preview);
+    wrapper.appendChild(input); // input now overlays the whole zone (see CSS), keeping native click/drag behaviour
+
+    function showSelectedFile(files) {
+      if (!files || !files.length) return;
+      var file = files[0];
+      filename.textContent = file.name;
+      filename.style.display = 'inline-block';
+      if (file.type && file.type.indexOf('image/') === 0 && window.FileReader) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    input.addEventListener('change', function () { showSelectedFile(input.files); });
+
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      wrapper.addEventListener(evt, function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        wrapper.classList.add('vg-dragover');
+      });
+    });
+    ['dragleave', 'dragend'].forEach(function (evt) {
+      wrapper.addEventListener(evt, function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        wrapper.classList.remove('vg-dragover');
+      });
+    });
+    wrapper.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      wrapper.classList.remove('vg-dragover');
+      var dt = e.dataTransfer;
+      if (dt && dt.files && dt.files.length) {
+        input.files = dt.files;
+        showSelectedFile(input.files);
+      }
+    });
+  });
+});
+</script>
 {% endblock %}
