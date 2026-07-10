@@ -90,7 +90,6 @@
         navLinks.forEach(function (link) {
             link.addEventListener("click", function () {
                 if (window.innerWidth < 992 && navbarCollapse.classList.contains("show")) {
-                    // Use Bootstrap collapse API if available, else manual toggle
                     if (window.bootstrap && window.bootstrap.Collapse) {
                         const bsCollapse = window.bootstrap.Collapse.getInstance(navbarCollapse);
                         if (bsCollapse) bsCollapse.hide();
@@ -103,62 +102,113 @@
     }
 
     // ============================================================
-    //  HERO SLIDER
+    //  HERO SLIDER — FIXED with debug logs and content handling
     // ============================================================
-    let heroSlideIndex = 0;
-    let heroTimer = null;
-    const slides = document.querySelectorAll(".hero-slide");
-    const dots = document.querySelectorAll(".hero-dot");
-
     function initHeroSlider() {
-        if (!slides.length) return;
+        const slides = document.querySelectorAll(".hero-slide");
+        const dots = document.querySelectorAll(".hero-dot");
+        const contents = document.querySelectorAll(".hero-slide-content");
+
+        if (!slides.length) {
+            console.warn("No hero slides found");
+            return;
+        }
+
+        console.log(`Found ${slides.length} hero slides`);
+
+        let heroSlideIndex = 0;
+        let heroTimer = null;
 
         function showSlide(n) {
-            slides[heroSlideIndex].classList.remove("active");
-            if (dots[heroSlideIndex]) dots[heroSlideIndex].classList.remove("active");
-            heroSlideIndex = (n + slides.length) % slides.length;
-            slides[heroSlideIndex].classList.add("active");
-            if (dots[heroSlideIndex]) dots[heroSlideIndex].classList.add("active");
-        }
+            // Remove active from all slides and dots
+            slides.forEach(function (s) { s.classList.remove("active"); });
+            dots.forEach(function (d) { d.classList.remove("active"); });
+            // Hide all content blocks
+            contents.forEach(function (c) { c.style.display = "none"; });
 
-        window.goToSlide = function (n) {
-            clearInterval(heroTimer);
-            showSlide(n);
-            startTimer();
-        };
+            // Calculate new index
+            heroSlideIndex = (n + slides.length) % slides.length;
+
+            // Activate current slide and dot
+            slides[heroSlideIndex].classList.add("active");
+            if (dots[heroSlideIndex]) {
+                dots[heroSlideIndex].classList.add("active");
+            }
+
+            // Show the matching content block (if it exists)
+            var content = document.querySelector('.hero-slide-content[data-slide="' + heroSlideIndex + '"]');
+            if (content) {
+                content.style.display = "block";
+            } else {
+                // Fallback: if no content matches, show the first content (or none)
+                // In your HTML, each content has data-slide attribute
+                console.warn("No content block found for slide index", heroSlideIndex);
+            }
+
+            console.log("Showing slide", heroSlideIndex);
+        }
 
         function startTimer() {
-            heroTimer = setInterval(function () { showSlide(heroSlideIndex + 1); }, 6000);
+            if (heroTimer) clearInterval(heroTimer);
+            heroTimer = setInterval(function () {
+                console.log("Timer tick – moving to next slide");
+                showSlide(heroSlideIndex + 1);
+            }, 6000);
+            console.log("Timer started");
         }
+
+        // Initialise: show first slide
+        showSlide(0);
         startTimer();
 
-        dots.forEach((dot, index) => {
-            dot.addEventListener("click", () => window.goToSlide(index));
+        // Dot clicks
+        dots.forEach(function (dot, index) {
+            dot.addEventListener("click", function () {
+                clearInterval(heroTimer);
+                showSlide(index);
+                startTimer();
+            });
         });
 
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowLeft") window.goToSlide(heroSlideIndex - 1);
-            else if (e.key === "ArrowRight") window.goToSlide(heroSlideIndex + 1);
+        // Keyboard arrows
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowLeft") {
+                clearInterval(heroTimer);
+                showSlide(heroSlideIndex - 1);
+                startTimer();
+            } else if (e.key === "ArrowRight") {
+                clearInterval(heroTimer);
+                showSlide(heroSlideIndex + 1);
+                startTimer();
+            }
         });
 
-        // Touch swipe — improved with passive listeners
-        const heroEl = document.querySelector(".hero-section");
+        // Touch swipe
+        var heroEl = document.querySelector(".hero-section");
         if (heroEl) {
-            let touchStartX = 0;
-            heroEl.addEventListener("touchstart", (e) => {
+            var touchStartX = 0;
+            heroEl.addEventListener("touchstart", function (e) {
                 touchStartX = e.changedTouches[0].screenX;
             }, { passive: true });
-            heroEl.addEventListener("touchend", (e) => {
-                const diff = touchStartX - e.changedTouches[0].screenX;
+            heroEl.addEventListener("touchend", function (e) {
+                var diff = touchStartX - e.changedTouches[0].screenX;
                 if (Math.abs(diff) > 50) {
-                    window.goToSlide(heroSlideIndex + (diff > 0 ? 1 : -1));
+                    clearInterval(heroTimer);
+                    showSlide(heroSlideIndex + (diff > 0 ? 1 : -1));
+                    startTimer();
                 }
             }, { passive: true });
         }
 
-        document.addEventListener("visibilitychange", () => {
-            if (document.hidden) clearInterval(heroTimer);
-            else startTimer();
+        // Pause on visibility change
+        document.addEventListener("visibilitychange", function () {
+            if (document.hidden) {
+                clearInterval(heroTimer);
+                console.log("Timer paused");
+            } else {
+                startTimer();
+                console.log("Timer resumed");
+            }
         });
     }
 
@@ -167,9 +217,9 @@
     // ============================================================
     function initCounters() {
         if (!("IntersectionObserver" in window)) return;
-        const counters = document.querySelectorAll("[data-target]");
+        var counters = document.querySelectorAll("[data-target]");
         if (!counters.length) return;
-        const observer = new IntersectionObserver(
+        var observer = new IntersectionObserver(
             function (entries) {
                 entries.forEach(function (entry) {
                     if (entry.isIntersecting) {
@@ -184,16 +234,16 @@
     }
 
     function animateCounter(el) {
-        const target = parseInt(el.getAttribute("data-target"), 10);
-        const duration = 2200;
-        const frameRate = 16;
-        const totalFrames = Math.round(duration / frameRate);
-        let frame = 0;
+        var target = parseInt(el.getAttribute("data-target"), 10);
+        var duration = 2200;
+        var frameRate = 16;
+        var totalFrames = Math.round(duration / frameRate);
+        var frame = 0;
         function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-        const timer = setInterval(function () {
+        var timer = setInterval(function () {
             frame++;
-            const progress = easeOutCubic(frame / totalFrames);
-            const current = Math.round(progress * target);
+            var progress = easeOutCubic(frame / totalFrames);
+            var current = Math.round(progress * target);
             el.textContent = current.toLocaleString() + "+";
             if (frame >= totalFrames) {
                 el.textContent = target.toLocaleString() + "+";
@@ -206,7 +256,7 @@
     //  BACK TO TOP
     // ============================================================
     function initBackToTop() {
-        const btt = document.getElementById("backToTop") || document.querySelector(".back-to-top-vg, .back-to-top");
+        var btt = document.getElementById("backToTop") || document.querySelector(".back-to-top-vg, .back-to-top");
         if (!btt) return;
         window.addEventListener("scroll", function () {
             if (window.scrollY > 400) btt.classList.add("visible");
@@ -222,16 +272,16 @@
     //  VIDEO MODAL
     // ============================================================
     function initVideoModal() {
-        const modalEl = document.getElementById("videoModal");
+        var modalEl = document.getElementById("videoModal");
         if (!modalEl) return;
         modalEl.addEventListener("show.bs.modal", function (e) {
-            const btn = e.relatedTarget;
-            const src = btn.getAttribute("data-src") || "https://www.youtube.com/embed/DWRcNpR6Kdc";
-            const iframe = document.getElementById("videoFrame");
+            var btn = e.relatedTarget;
+            var src = btn.getAttribute("data-src") || "https://www.youtube.com/embed/DWRcNpR6Kdc";
+            var iframe = document.getElementById("videoFrame");
             if (iframe) iframe.src = src + "?autoplay=1&modestbranding=1&showinfo=0";
         });
         modalEl.addEventListener("hide.bs.modal", function () {
-            const iframe = document.getElementById("videoFrame");
+            var iframe = document.getElementById("videoFrame");
             if (iframe) iframe.src = "";
         });
     }
@@ -244,14 +294,14 @@
             if (window.innerWidth < 992) return;
             document.querySelectorAll(".navbar .dropdown").forEach(function (dropdown) {
                 dropdown.addEventListener("mouseenter", function () {
-                    const menu = this.querySelector(".dropdown-menu");
-                    const toggle = this.querySelector(".dropdown-toggle");
+                    var menu = this.querySelector(".dropdown-menu");
+                    var toggle = this.querySelector(".dropdown-toggle");
                     if (menu) menu.classList.add("show");
                     if (toggle) toggle.setAttribute("aria-expanded", "true");
                 });
                 dropdown.addEventListener("mouseleave", function () {
-                    const menu = this.querySelector(".dropdown-menu");
-                    const toggle = this.querySelector(".dropdown-toggle");
+                    var menu = this.querySelector(".dropdown-menu");
+                    var toggle = this.querySelector(".dropdown-toggle");
                     if (menu) menu.classList.remove("show");
                     if (toggle) toggle.setAttribute("aria-expanded", "false");
                 });
@@ -265,11 +315,11 @@
     //  BOOKING BAR — smart date defaults
     // ============================================================
     function initBookingDateDefaults() {
-        const checkin = document.getElementById("checkin");
-        const checkout = document.getElementById("checkout");
+        var checkin = document.getElementById("checkin");
+        var checkout = document.getElementById("checkout");
         if (!checkin || !checkout) return;
-        const today = new Date();
-        const tomorrow = new Date(today);
+        var today = new Date();
+        var tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
         function fmt(d) { return d.toISOString().split("T")[0]; }
         checkin.value = fmt(today);
@@ -277,8 +327,8 @@
         checkin.min = fmt(today);
         checkout.min = fmt(tomorrow);
         checkin.addEventListener("change", function () {
-            const ci = new Date(this.value);
-            const co = new Date(ci);
+            var ci = new Date(this.value);
+            var co = new Date(ci);
             co.setDate(ci.getDate() + 1);
             checkout.min = fmt(co);
             if (new Date(checkout.value) <= ci) checkout.value = fmt(co);
@@ -286,13 +336,13 @@
     }
 
     // ============================================================
-    //  PARALLAX — now with resize + rAF
+    //  PARALLAX — with resize + rAF
     // ============================================================
-    let parallaxEnabled = window.innerWidth >= 992;
-    let parallaxTicking = false;
+    var parallaxEnabled = window.innerWidth >= 992;
+    var parallaxTicking = false;
 
     function initParallax() {
-        const heroSlides = document.querySelectorAll(".hero-slide");
+        var heroSlides = document.querySelectorAll(".hero-slide");
         if (!heroSlides.length) return;
 
         function onResize() {
@@ -303,7 +353,7 @@
             if (!parallaxTicking) {
                 requestAnimationFrame(function () {
                     if (!parallaxEnabled) return;
-                    const y = window.scrollY * 0.3;
+                    var y = window.scrollY * 0.3;
                     heroSlides.forEach(function (slide) {
                         slide.style.transform =
                             "scale(" +
@@ -324,9 +374,9 @@
     //  ACTIVE NAV LINK
     // ============================================================
     function setActiveNavLink() {
-        const path = window.location.pathname.split("/").pop() || "index.html";
+        var path = window.location.pathname.split("/").pop() || "index.html";
         document.querySelectorAll(".navbar .nav-link").forEach(function (link) {
-            const href = (link.getAttribute("href") || "").split("/").pop();
+            var href = (link.getAttribute("href") || "").split("/").pop();
             if (href === path || (path === "" && href === "index.html")) {
                 link.classList.add("active");
             }
@@ -338,11 +388,11 @@
     // ============================================================
     function initRippleEffect() {
         document.addEventListener("click", function (e) {
-            const btn = e.target.closest(".btn-vg-primary, .btn-vg-outline, .btn-primary, .btn-secondary");
+            var btn = e.target.closest(".btn-vg-primary, .btn-vg-outline, .btn-primary, .btn-secondary");
             if (!btn) return;
-            const ripple = document.createElement("span");
-            const rect = btn.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
+            var ripple = document.createElement("span");
+            var rect = btn.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
             ripple.style.cssText =
                 "position:absolute;border-radius:50%;pointer-events:none;" +
                 "width:" + size + "px;height:" + size + "px;" +
@@ -360,7 +410,7 @@
     }
 
     if (!document.getElementById("ripple-style")) {
-        const style = document.createElement("style");
+        var style = document.createElement("style");
         style.id = "ripple-style";
         style.textContent = "@keyframes rippleEffect{to{transform:scale(2.5);opacity:0;}}";
         document.head.appendChild(style);
