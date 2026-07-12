@@ -2,7 +2,8 @@
 # ------------------------------------------------------------------------------
 # This file customizes the Django admin interface to provide a polished,
 # user-friendly experience for the lodge staff. It includes custom widgets,
-# refined layouts, and curated selections for non-technical users.
+# refined layouts, curated selections, and now supports multiple room images
+# via an inline formset and a custom IconPickerWidget for amenities.
 # ------------------------------------------------------------------------------
 
 from django import forms
@@ -16,7 +17,8 @@ from .models import (
     Room, Customer, Booking, ContactMessage,
     HeroSlide, AboutSection, Statistic, Service,
     ExperienceSection, Testimonial, NewsletterSection,
-    NewsletterSubscriber, SiteSettings, Amenity
+    NewsletterSubscriber, SiteSettings, Amenity,
+    RoomImage  # <-- Import the new RoomImage model for gallery
 )
 
 # ------------------------------------------------------------------------------
@@ -28,7 +30,7 @@ User = get_user_model()
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     """
-    Extends the default Django User Admin. 
+    Extends the default Django User Admin.
     Keeps default fieldsets for full flexibility; can be overridden if needed.
     """
     pass
@@ -38,27 +40,41 @@ class CustomUserAdmin(UserAdmin):
 # 2. Room, Customer, and Booking Admins
 # ------------------------------------------------------------------------------
 
+class RoomImageInline(admin.TabularInline):
+    """
+    Inline admin for RoomImage. Allows staff to upload, reorder, and delete
+    multiple gallery images directly inside the Room add/change page.
+    """
+    model = RoomImage
+    extra = 1                     # Show one empty row by default
+    fields = ['image', 'order']   # Order field controls the sort order for the carousel
+    show_change_link = True       # Optional: link to the individual image admin if needed
+    verbose_name = "Gallery Image"
+    verbose_name_plural = "Gallery Images"
+
+
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     """
     Admin configuration for Rooms.
-    Uses a dual-list selector (filter_horizontal) for ManyToMany amenities 
-    and explicitly includes 'amenities' in the Details fieldset.
+    Uses a dual-list selector (filter_horizontal) for ManyToMany amenities
+    and now includes an inline tabular formset for multiple gallery images.
     """
+    inlines = [RoomImageInline]   # <-- Add the inline for gallery images
+
     list_display = ['room_number', 'room_type', 'price_per_night', 'is_active']
     list_filter = ['room_type', 'is_active']
     search_fields = ['room_number', 'description']
     list_editable = ['price_per_night', 'is_active']
-    
+
     # Renders a user-friendly horizontal two-pane selector for amenities
     filter_horizontal = ['amenities']
-    
+
     fieldsets = (
         (None, {
             'fields': ('room_number', 'room_type', 'price_per_night', 'is_active')
         }),
         ('Details', {
-            # FIXED: Added 'amenities' here so it appears on the admin form
             'fields': ('description', 'image', 'amenities'),
             'classes': ('wide',)
         }),
@@ -81,12 +97,12 @@ class BookingAdmin(admin.ModelAdmin):
     Includes the unique booking_reference field (readonly) and bulk actions.
     """
     list_display = [
-        'booking_reference', 'id', 'customer', 'room', 
+        'booking_reference', 'id', 'customer', 'room',
         'check_in', 'check_out', 'status', 'created_at'
     ]
     list_filter = ['status', 'check_in', 'check_out']
     search_fields = [
-        'booking_reference', 'customer__name', 
+        'booking_reference', 'customer__name',
         'customer__phone', 'room__room_number'
     ]
     date_hierarchy = 'check_in'
@@ -119,7 +135,7 @@ class BookingAdmin(admin.ModelAdmin):
 # 3. Amenity Admin with Custom Icon Picker Widget
 # ------------------------------------------------------------------------------
 
-# Curated list of Font Awesome icons that are relevant for a lodge.
+# Curated list of Font Awesome icons relevant for a lodge.
 # Staff can click a visual chip rather than memorizing CSS class names.
 AMENITY_ICON_SUGGESTIONS = [
     ('fas fa-wifi', 'Free WiFi'),
@@ -157,9 +173,9 @@ AMENITY_ICON_SUGGESTIONS = [
 
 class IconPickerWidget(forms.TextInput):
     """
-    A custom widget that renders a live icon preview and a clickable grid 
-    of curated icons. Staff click the chip -> the input field auto-fills 
-    with the correct Font Awesome class name. 
+    A custom widget that renders a live icon preview and a clickable grid
+    of curated icons. Staff click the chip -> the input field auto-fills
+    with the correct Font Awesome class name.
     It also includes a fallback text input with datalist for custom icons.
     """
     def render(self, name, value, attrs=None, renderer=None):
@@ -372,7 +388,7 @@ class NewsletterSubscriberAdmin(admin.ModelAdmin):
 class SiteSettingsAdmin(admin.ModelAdmin):
     """
     Admin for global site settings (contact info, branding, social links).
-    Since there should only be one instance, the model's save() method 
+    Since there should only be one instance, the model's save() method
     handles enforcing that logic.
     """
     fieldsets = (

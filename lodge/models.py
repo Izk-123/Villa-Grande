@@ -29,6 +29,20 @@ class Room(models.Model):
 
     def __str__(self):
         return f"{self.room_number} - {self.get_room_type_display()}"
+    
+
+class RoomImage(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='gallery_images')
+    image = models.ImageField(upload_to='rooms/gallery/')
+    order = models.PositiveIntegerField(default=0, help_text='Lower numbers appear first')
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Room Gallery Image'
+        verbose_name_plural = 'Room Gallery Images'
+
+    def __str__(self):
+        return f"Image for {self.room.room_number} (Order {self.order})"
 
 
 class Customer(models.Model):
