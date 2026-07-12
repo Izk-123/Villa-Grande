@@ -29,7 +29,7 @@
             <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="roomForm">
                 {% csrf_token %}
 
-                <!-- ======== Basic Information ======== -->
+                <!-- Basic Information -->
                 <div class="card form-section" data-aos="fade-up" data-aos-delay="50">
                     <div class="card-body">
                         <h5 class="section-title"><i class="bi bi-door-open"></i> Basic Information</h5>
@@ -39,25 +39,20 @@
                                     {{ form.room_number }}
                                     <label for="{{ form.room_number.id_for_label }}">Room Number</label>
                                 </div>
-                                {% if form.room_number.errors %}
-                                <div class="invalid-feedback d-block">{{ form.room_number.errors|join:", " }}</div>
-                                {% endif %}
+                                {% if form.room_number.errors %}<div class="invalid-feedback d-block">{{ form.room_number.errors|join:", " }}</div>{% endif %}
                             </div>
-
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     {{ form.room_type }}
                                     <label for="{{ form.room_type.id_for_label }}">Room Type</label>
                                 </div>
-                                {% if form.room_type.errors %}
-                                <div class="invalid-feedback d-block">{{ form.room_type.errors|join:", " }}</div>
-                                {% endif %}
+                                {% if form.room_type.errors %}<div class="invalid-feedback d-block">{{ form.room_type.errors|join:", " }}</div>{% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ======== Pricing & Availability ======== -->
+                <!-- Pricing & Availability -->
                 <div class="card form-section" data-aos="fade-up" data-aos-delay="100">
                     <div class="card-body">
                         <h5 class="section-title"><i class="bi bi-cash-coin"></i> Pricing &amp; Availability</h5>
@@ -67,29 +62,23 @@
                                     {{ form.price_per_night }}
                                     <label for="{{ form.price_per_night.id_for_label }}">Price per Night (MWK)</label>
                                 </div>
-                                {% if form.price_per_night.errors %}
-                                <div class="invalid-feedback d-block">{{ form.price_per_night.errors|join:", " }}</div>
-                                {% endif %}
+                                {% if form.price_per_night.errors %}<div class="invalid-feedback d-block">{{ form.price_per_night.errors|join:", " }}</div>{% endif %}
                             </div>
-
                             <div class="col-md-6">
                                 <label class="form-label d-block fw-semibold mb-2">Room Status</label>
                                 <div class="status-toggle">
                                     {{ form.is_active }}
                                     <label for="{{ form.is_active.id_for_label }}" class="status-toggle-label">
                                         <span class="status-dot"></span>
-                                        <span class="status-text">Active &mdash; visible &amp; bookable on the site</span>
+                                        <span class="status-text">Active &mdash; visible &amp; bookable</span>
                                     </label>
                                 </div>
-                                {% if form.is_active.errors %}
-                                <div class="invalid-feedback d-block">{{ form.is_active.errors|join:", " }}</div>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ======== Description ======== -->
+                <!-- Description -->
                 <div class="card form-section" data-aos="fade-up" data-aos-delay="150">
                     <div class="card-body">
                         <h5 class="section-title"><i class="bi bi-card-text"></i> Description</h5>
@@ -97,16 +86,14 @@
                             {{ form.description }}
                             <label for="{{ form.description.id_for_label }}">Describe the room</label>
                         </div>
-                        {% if form.description.errors %}
-                        <div class="invalid-feedback d-block">{{ form.description.errors|join:", " }}</div>
-                        {% endif %}
+                        {% if form.description.errors %}<div class="invalid-feedback d-block">{{ form.description.errors|join:", " }}</div>{% endif %}
                     </div>
                 </div>
 
-                <!-- ======== Room Image ======== -->
+                <!-- Main Cover Image -->
                 <div class="card form-section" data-aos="fade-up" data-aos-delay="200">
                     <div class="card-body">
-                        <h5 class="section-title"><i class="bi bi-image"></i> Room Image</h5>
+                        <h5 class="section-title"><i class="bi bi-image"></i> Main Cover Image</h5>
                         <div class="row g-4 align-items-center">
                             <div class="col-md-5">
                                 <div class="image-preview-box" id="imagePreviewBox">
@@ -115,8 +102,7 @@
                                     {% else %}
                                         <img src="" alt="" id="imagePreview" style="display:none;">
                                         <div class="image-preview-placeholder" id="imagePlaceholder">
-                                            <i class="bi bi-image"></i>
-                                            <span>No image selected</span>
+                                            <i class="bi bi-image"></i><span>No image selected</span>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -125,254 +111,301 @@
                                 <label for="{{ form.image.id_for_label }}" class="form-label fw-semibold">Upload a photo</label>
                                 {{ form.image }}
                                 <small class="text-muted d-block mt-2">JPG or PNG recommended, at least 1200px wide.</small>
-                                {% if form.image.errors %}
-                                <div class="invalid-feedback d-block">{{ form.image.errors|join:", " }}</div>
-                                {% endif %}
+                                {% if form.image.errors %}<div class="invalid-feedback d-block">{{ form.image.errors|join:", " }}</div>{% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ======== Amenities ======== -->
+                <!-- =============================================================== -->
+                <!-- GALLERY IMAGES – DRAG & DROP (FIXED ASYNC WARNING)              -->
+                <!-- =============================================================== -->
                 <div class="card form-section" data-aos="fade-up" data-aos-delay="250">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
-                            <h5 class="section-title mb-0"><i class="bi bi-stars"></i> Amenities</h5>
-                            <span class="amenity-count-badge" id="amenityCount">
-                                {{ form.amenities.value|length|default:0 }} selected
-                            </span>
-                        </div>
-                        <small class="text-muted d-block mb-3">Guests will see these badges on the room listing and detail pages.</small>
+                        <h5 class="section-title"><i class="bi bi-images"></i> Gallery Images</h5>
+                        <small class="text-muted d-block mb-3">
+                            Drag &amp; drop images here, or click to browse. Drag thumbnails to reorder.
+                            (Existing images are automatically loaded from the database – this is intended.)
+                        </small>
 
+                        <!-- Warning alert container -->
+                        <div id="gallery-warning-alert" class="alert alert-warning d-none d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span id="gallery-warning-text"></span>
+                        </div>
+
+                        <!-- Django Formset Global Errors -->
+                        {% if image_formset.non_form_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in image_formset.non_form_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div id="gallery-formset-data" style="display:none;">
+                            {{ image_formset.management_form }}
+                            <div id="gallery-empty-form" data-prefix="{{ image_formset.prefix }}">
+                                <input type="file" name="{{ image_formset.prefix }}-__INDEX__-image" accept="image/*">
+                                <input type="number" name="{{ image_formset.prefix }}-__INDEX__-order" value="0">
+                                <input type="checkbox" name="{{ image_formset.prefix }}-__INDEX__-DELETE" value="on">
+                                <input type="hidden" name="{{ image_formset.prefix }}-__INDEX__-id" value="">
+                            </div>
+                        </div>
+
+                        <!-- Drop Zone -->
+                        <div id="gallery-drop-zone" class="drop-zone mb-4">
+                            <i class="bi bi-cloud-upload drop-zone-icon"></i>
+                            <p class="drop-zone-text">Drag &amp; drop images here</p>
+                            <p class="drop-zone-subtext">or click to browse (JPEG, PNG, WEBP - Max 10MB)</p>
+                            <input type="file" id="gallery-file-input" multiple accept="image/*" style="display:none;">
+                        </div>
+
+                        <!-- Sortable Gallery Grid -->
+                        <div id="gallery-sortable-grid" class="row g-3 sortable-gallery">
+                            {% for f in image_formset %}
+                            <div class="col-md-3 gallery-item" data-form-index="{{ forloop.counter0 }}">
+                                <div class="gallery-card">
+                                    <div class="gallery-preview">
+                                        {% if f.instance.pk and f.instance.image %}
+                                            <img src="{{ f.instance.image.url }}" alt="Gallery">
+                                        {% else %}
+                                            <div class="gallery-placeholder"><i class="bi bi-image"></i></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="gallery-actions">
+                                        <span class="gallery-order-badge">#<span class="order-value">{{ f.order.value|default:0 }}</span></span>
+                                        <button type="button" class="gallery-delete-btn" title="Remove"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+                                <div class="gallery-hidden-fields" style="display:none;">
+                                    {{ f.id }}
+                                    {{ f.image }}
+                                    {{ f.order }}
+                                    {{ f.DELETE }}
+                                </div>
+                                {% if f.non_field_errors %}<div class="text-danger small mt-1">{{ f.non_field_errors|join:", " }}</div>{% endif %}
+                                {% if f.image.errors %}<div class="text-danger small mt-1">{{ f.image.errors|join:", " }}</div>{% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!-- =============================================================== -->
+
+                <!-- Amenities -->
+                <div class="card form-section" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-body">
+                        <h5 class="section-title"><i class="bi bi-stars"></i> Amenities</h5>
                         {% if form.amenities.field.queryset.exists %}
                         <div class="amenity-grid">
                             {% for checkbox in form.amenities %}
                             <div class="amenity-chip">
                                 {{ checkbox.tag }}
-                                <label for="{{ checkbox.id_for_label }}" class="amenity-chip-label">
-                                    {{ checkbox.choice_label }}
-                                </label>
+                                <label for="{{ checkbox.id_for_label }}" class="amenity-chip-label">{{ checkbox.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
-                        {% else %}
-                        <div class="text-muted fst-italic">No amenities have been added yet. Add some in the Amenities section first.</div>
-                        {% endif %}
-
-                        {% if form.amenities.errors %}
-                        <div class="invalid-feedback d-block mt-2">{{ form.amenities.errors|join:", " }}</div>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- ======== Sticky Submit Bar ======== -->
+                <!-- Sticky Submit Bar -->
                 <div class="submit-bar" data-aos="fade-up">
-                    <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary btn-lg px-4">
-                        <i class="bi bi-x-circle me-2"></i>Cancel
-                    </a>
-                    <button type="submit" class="btn btn-primary btn-lg px-5">
-                        <i class="bi bi-save me-2"></i>{% if form.instance.pk %}Update Room{% else %}Create Room{% endif %}
-                    </button>
+                    <a href="{% url 'lodge:admin_room_list' %}" class="btn btn-secondary btn-lg px-4"><i class="bi bi-x-circle me-2"></i>Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-lg px-5"><i class="bi bi-save me-2"></i>{% if form.instance.pk %}Update{% else %}Create{% endif %} Room</button>
                 </div>
             </form>
         </div>
     </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
-    // Bootstrap custom validation
-    (function () {
-        'use strict'
-        const forms = document.querySelectorAll('.needs-validation')
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-    })()
+(function() {
+    'use strict';
 
-    // Live image preview
-    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
-    const imagePreview = document.getElementById('imagePreview');
-    const imagePlaceholder = document.getElementById('imagePlaceholder');
-    if (imageInput) {
-        imageInput.addEventListener('change', function () {
-            const file = this.files && this.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-                if (imagePlaceholder) imagePlaceholder.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+    // ---- DOM References ----
+    const dropZone = document.getElementById('gallery-drop-zone');
+    const fileInput = document.getElementById('gallery-file-input');
+    const sortableGrid = document.getElementById('gallery-sortable-grid');
+    const warningAlert = document.getElementById('gallery-warning-alert');
+    const warningText = document.getElementById('gallery-warning-text');
+
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+    function showWarning(message) {
+        if (warningAlert && warningText) {
+            warningText.textContent = message;
+            warningAlert.classList.remove('d-none');
+            clearTimeout(window.warningTimeout);
+            window.warningTimeout = setTimeout(() => {
+                warningAlert.classList.add('d-none');
+            }, 6000);
+        }
+    }
+
+    // ---- Formset Management ----
+    const managementForm = document.querySelector('#gallery-formset-data [name$="-TOTAL_FORMS"]');
+    const emptyTemplate = document.getElementById('gallery-empty-form');
+    const prefix = emptyTemplate.dataset.prefix;
+    let totalForms = parseInt(managementForm ? managementForm.value : 0);
+
+    // ---- Sortable ----
+    const sortable = new Sortable(sortableGrid, {
+        animation: 200,
+        handle: '.gallery-card',
+        onEnd: function() { updateOrderFields(); }
+    });
+
+    function updateOrderFields() {
+        const items = sortableGrid.querySelectorAll('.gallery-item');
+        items.forEach((item, idx) => {
+            const orderInput = item.querySelector('.gallery-hidden-fields input[name$="-order"]');
+            if (orderInput) {
+                orderInput.value = idx;
+                const badge = item.querySelector('.order-value');
+                if (badge) badge.textContent = idx;
+            }
         });
     }
 
-    // Live amenity counter
-    const amenityCheckboxes = document.querySelectorAll('.amenity-chip input[type="checkbox"]');
-    const amenityCount = document.getElementById('amenityCount');
-    function updateAmenityCount() {
-        const checked = document.querySelectorAll('.amenity-chip input[type="checkbox"]:checked').length;
-        if (amenityCount) amenityCount.textContent = checked + ' selected';
+    function deleteGalleryItem(item) {
+        const deleteCheckbox = item.querySelector('.gallery-hidden-fields input[name$="-DELETE"]');
+        if (deleteCheckbox) {
+            deleteCheckbox.checked = true;
+            item.style.transition = 'all 0.3s ease';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.9)';
+            setTimeout(() => { item.style.display = 'none'; }, 300);
+        }
     }
-    amenityCheckboxes.forEach(cb => cb.addEventListener('change', updateAmenityCount));
-    updateAmenityCount();
+
+    // ---- FIXED: Correctly track valid files synchronously ----
+    function addFiles(files) {
+        let validCount = 0;
+        Array.from(files).forEach(file => {
+            // Client-side validation
+            if (!file.type.startsWith('image/')) {
+                showWarning(`"${file.name}" is not a valid image file. Skipped.`);
+                return;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                showWarning(`"${file.name}" exceeds the 10MB size limit. Skipped.`);
+                return;
+            }
+            validCount++; // Increment synchronously before async read
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // 1. Increment TOTAL_FORMS
+                totalForms += 1;
+                if (managementForm) managementForm.value = totalForms;
+                const newIndex = totalForms - 1;
+
+                // 2. Build hidden form HTML
+                const html = emptyTemplate.innerHTML
+                    .replace(/__INDEX__/g, newIndex)
+                    .replace(/__prefix__/g, prefix);
+
+                // 3. Create gallery item
+                const item = document.createElement('div');
+                item.className = 'col-md-3 gallery-item';
+                item.dataset.formIndex = newIndex;
+                item.innerHTML = `
+                    <div class="gallery-card">
+                        <div class="gallery-preview">
+                            <img src="${e.target.result}" alt="Preview">
+                        </div>
+                        <div class="gallery-actions">
+                            <span class="gallery-order-badge">#<span class="order-value">0</span></span>
+                            <button type="button" class="gallery-delete-btn" title="Remove"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="gallery-hidden-fields" style="display:none;">${html}</div>
+                `;
+                sortableGrid.appendChild(item);
+                updateOrderFields();
+
+                // 4. CRITICAL: Attach the actual File object to the input element
+                const hiddenInput = item.querySelector('.gallery-hidden-fields input[type="file"]');
+                if (hiddenInput) {
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    hiddenInput.files = dt.files;
+                }
+
+                // 5. Bind delete button
+                item.querySelector('.gallery-delete-btn').addEventListener('click', function() {
+                    deleteGalleryItem(item);
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Now safely check if *any* file passed validation
+        if (validCount === 0 && files.length > 0) {
+            showWarning('No valid images were added. Please check file types and sizes.');
+        }
+    }
+
+    // ---- Drop zone events ----
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+    });
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', function() {
+        if (this.files.length) { addFiles(this.files); this.value = ''; }
+    });
+
+    // ---- Bind delete for existing images ----
+    document.querySelectorAll('.gallery-delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() { deleteGalleryItem(this.closest('.gallery-item')); });
+    });
+
+    // ---- Clean up empty forms on submit ----
+    document.getElementById('roomForm').addEventListener('submit', function(e) {
+        const items = sortableGrid.querySelectorAll('.gallery-item');
+        items.forEach(item => {
+            const fileInput = item.querySelector('.gallery-hidden-fields input[type="file"]');
+            const idInput = item.querySelector('.gallery-hidden-fields input[name$="-id"]');
+            const deleteCheckbox = item.querySelector('.gallery-hidden-fields input[name$="-DELETE"]');
+            // If this form is empty (no ID, no file), mark it for deletion
+            if (!idInput.value && (!fileInput || fileInput.files.length === 0)) {
+                if (deleteCheckbox) {
+                    deleteCheckbox.checked = true;
+                    item.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    // ---- Initial order update ----
+    updateOrderFields();
+
+})();
 </script>
 
 <style>
-    /* ---- Section cards ---- */
-    .form-section {
-        margin-bottom: 1.5rem;
-        border-radius: var(--vg-border-radius-lg);
-        background: var(--vg-glass-bg);
-        backdrop-filter: var(--vg-glass-blur);
-        border: 1px solid var(--vg-glass-border);
-        transition: box-shadow var(--vg-transition-fast);
-    }
-    .form-section:hover { box-shadow: var(--vg-shadow-lg); }
-    .section-title {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        font-weight: 600;
-        color: var(--vg-navy);
-        margin-bottom: 1.25rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--vg-glass-border);
-    }
-    .section-title i { color: var(--vg-gold); font-size: 1.1rem; }
-    body.dark-mode .section-title { color: #e0e0e0; }
-
-    /* ---- Inputs ---- */
-    .form-floating > .form-control,
-    .form-floating > .form-select,
-    .form-floating > textarea {
-        border-radius: var(--vg-border-radius-md);
-        background: var(--vg-glass-bg);
-        border: 1px solid var(--vg-glass-border);
-        transition: all var(--vg-transition-fast);
-    }
-    .form-floating > .form-control:focus,
-    .form-floating > .form-select:focus,
-    .form-floating > textarea:focus {
-        border-color: var(--vg-gold);
-        box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
-        transform: translateY(-2px);
-    }
-    textarea.form-control { min-height: 120px; }
-    input[type="file"].form-control { padding: 0.6rem 0.75rem; }
-
-    /* ---- Status toggle ---- */
-    .status-toggle { position: relative; }
-    .status-toggle input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
-    .status-toggle-label {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1rem;
-        border-radius: var(--vg-border-radius-md);
-        border: 1px solid var(--vg-glass-border);
-        cursor: pointer;
-        transition: all var(--vg-transition-fast);
-    }
-    .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #adb5bd; transition: background var(--vg-transition-fast); flex-shrink: 0; }
-    .status-toggle input[type="checkbox"]:checked + .status-toggle-label { border-color: var(--vg-gold); background: rgba(201,168,76,0.08); }
-    .status-toggle input[type="checkbox"]:checked + .status-toggle-label .status-dot { background: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,0.15); }
-    .status-toggle input[type="checkbox"]:focus-visible + .status-toggle-label { box-shadow: 0 0 0 3px rgba(201,168,76,0.3); }
-
-    /* ---- Image preview ---- */
-    .image-preview-box {
-        width: 100%;
-        aspect-ratio: 4 / 3;
-        border-radius: var(--vg-border-radius-md);
-        border: 2px dashed var(--vg-glass-border);
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.02);
-    }
-    .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
-    .image-preview-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: #adb5bd; }
-    .image-preview-placeholder i { font-size: 2.5rem; }
-
-    /* ---- Amenity chips ---- */
-    .amenity-count-badge {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--vg-navy);
-        background: rgba(201,168,76,0.15);
-        border: 1px solid rgba(201,168,76,0.4);
-        padding: 0.3rem 0.7rem;
-        border-radius: 999px;
-        white-space: nowrap;
-    }
-    body.dark-mode .amenity-count-badge { color: #e0e0e0; }
-
-    .amenity-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 0.75rem;
-    }
-    .amenity-chip { position: relative; }
-    .amenity-chip input[type="checkbox"] {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        cursor: pointer;
-    }
-    .amenity-chip-label {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.7rem 0.9rem;
-        border: 1.5px solid var(--vg-glass-border);
-        border-radius: var(--vg-border-radius-md);
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all var(--vg-transition-fast);
-        background: var(--vg-glass-bg);
-        user-select: none;
-        margin: 0;
-    }
-    .amenity-chip-label i { color: var(--vg-gold); font-size: 1rem; width: 18px; text-align: center; flex-shrink: 0; }
-    .amenity-chip-label:hover { border-color: var(--vg-gold); transform: translateY(-2px); }
-    .amenity-chip input[type="checkbox"]:checked + .amenity-chip-label {
-        background: linear-gradient(135deg, var(--vg-gold), #e6d792);
-        border-color: var(--vg-gold);
-        color: var(--vg-navy);
-        box-shadow: var(--vg-shadow-lg);
-    }
-    .amenity-chip input[type="checkbox"]:checked + .amenity-chip-label i { color: var(--vg-navy); }
-    .amenity-chip input[type="checkbox"]:focus-visible + .amenity-chip-label { box-shadow: 0 0 0 3px rgba(201,168,76,0.3); }
-
-    /* ---- Sticky submit bar ---- */
-    .submit-bar {
-        position: sticky;
-        bottom: 1rem;
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-        padding: 1rem;
-        background: var(--vg-glass-bg);
-        backdrop-filter: var(--vg-glass-blur);
-        border: 1px solid var(--vg-glass-border);
-        border-radius: var(--vg-border-radius-lg);
-        box-shadow: var(--vg-shadow-lg);
-        flex-wrap: wrap;
-    }
-
-    @media (max-width: 576px) {
-        .submit-bar { flex-direction: column-reverse; position: static; }
-        .submit-bar .btn { width: 100%; }
-    }
+    .drop-zone { border: 2px dashed #ced4da; border-radius: var(--vg-border-radius-lg); padding: 40px 20px; text-align: center; background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); transition: all var(--vg-transition-fast); cursor: pointer; color: #6c757d; }
+    .drop-zone:hover { border-color: var(--vg-gold); background: rgba(201, 168, 76, 0.05); }
+    .drop-zone.dragover { border-color: var(--vg-gold); background: rgba(201, 168, 76, 0.15); transform: scale(1.01); }
+    .drop-zone-icon { font-size: 2.5rem; color: var(--vg-gold); display: block; margin-bottom: 10px; }
+    .drop-zone-text { font-size: 0.95rem; font-weight: 500; color: var(--vg-navy); }
+    .gallery-card { position: relative; border-radius: var(--vg-border-radius-md); overflow: hidden; box-shadow: var(--vg-shadow-sm); background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); border: 1px solid var(--vg-glass-border); transition: all var(--vg-transition-fast); cursor: grab; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
+    .gallery-card:hover { box-shadow: var(--vg-shadow-md); transform: translateY(-2px); }
+    .gallery-preview { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8f9fa; }
+    .gallery-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-actions { position: absolute; bottom: 6px; left: 6px; right: 6px; display: flex; justify-content: space-between; align-items: center; opacity: 0; transition: opacity var(--vg-transition-fast); }
+    .gallery-card:hover .gallery-actions { opacity: 1; }
+    .gallery-order-badge { background: rgba(10, 35, 66, 0.85); color: var(--vg-gold); font-size: 0.65rem; font-weight: 600; padding: 2px 10px; border-radius: 12px; backdrop-filter: blur(4px); border: 1px solid rgba(201, 168, 76, 0.3); }
+    .gallery-delete-btn { background: rgba(239, 68, 68, 0.85); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--vg-transition-fast); backdrop-filter: blur(4px); }
+    .gallery-delete-btn:hover { background: #dc2626; transform: scale(1.1); }
+    .gallery-delete-btn i { font-size: 0.75rem; }
+    .submit-bar { position: sticky; bottom: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1rem; background: var(--vg-glass-bg); backdrop-filter: var(--vg-glass-blur); border: 1px solid var(--vg-glass-border); border-radius: var(--vg-border-radius-lg); box-shadow: var(--vg-shadow-lg); flex-wrap: wrap; }
 </style>
 {% endblock %}

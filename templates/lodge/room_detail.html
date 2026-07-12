@@ -7,22 +7,79 @@
 <section class="room-detail-section py-5">
     <div class="container">
         <div class="row g-5">
+            <!--
+              ==========================================================
+              LEFT COLUMN: Image Gallery (Carousel + Thumbnail Strip)
+              ==========================================================
+            -->
             <div class="col-lg-7">
                 <div class="room-gallery">
-                    {% if room.image %}
-                        <img src="{{ room.image.url }}" alt="{{ room.room_number }}" class="img-fluid w-100" style="object-fit: cover; max-height: 500px;">
-                    {% else %}
-                        <img src="{% static 'img/default-room.jpg' %}" alt="Default room image" class="img-fluid w-100">
-                    {% endif %}
+                    <div id="roomCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <!-- 1. Main Cover Image (slide index 0) -->
+                            <div class="carousel-item active">
+                                {% if room.image %}
+                                    <img src="{{ room.image.url }}" class="d-block w-100" alt="Main view" style="object-fit: cover; max-height: 500px;">
+                                {% else %}
+                                    <img src="{% static 'img/default-room.jpg' %}" class="d-block w-100" alt="Default" style="object-fit: cover; max-height: 500px;">
+                                {% endif %}
+                            </div>
+
+                            <!-- 2. Gallery Images (slides 1, 2, 3, ...) -->
+                            {% for img in room.gallery_images.all %}
+                            <div class="carousel-item">
+                                <img src="{{ img.image.url }}" class="d-block w-100" alt="Gallery {{ forloop.counter }}" style="object-fit: cover; max-height: 500px;">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Carousel Controls -->
+                        {% if room.gallery_images.count > 0 or room.image %}
+                        <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Thumbnail Strip -->
+                    <div class="row g-2 mt-3" style="max-height: 100px; overflow-y: hidden;">
+                        <!-- Thumb for main image (slide 0) -->
+                        <div class="col-2">
+                            <img src="{% if room.image %}{{ room.image.url }}{% else %}{% static 'img/default-room.jpg' %}{% endif %}" 
+                                 class="img-fluid rounded cursor-pointer active-thumb" 
+                                 data-bs-target="#roomCarousel" data-bs-slide-to="0" 
+                                 style="height: 80px; object-fit: cover; cursor: pointer; opacity: 0.7; border: 2px solid var(--gold);">
+                        </div>
+                        <!-- Thumbs for gallery images (slides 1, 2, ...) -->
+                        {% for img in room.gallery_images.all %}
+                        <div class="col-2">
+                            <img src="{{ img.image.url }}" 
+                                 class="img-fluid rounded cursor-pointer" 
+                                 data-bs-target="#roomCarousel" data-bs-slide-to="{{ forloop.counter }}" 
+                                 style="height: 80px; object-fit: cover; cursor: pointer; opacity: 0.6; transition: all 0.3s;">
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
+
+            <!--
+              ==========================================================
+              RIGHT COLUMN: Room Details & Booking Action
+              ==========================================================
+            -->
             <div class="col-lg-5">
                 <div class="section-tag left">Room Details</div>
                 <h2 class="section-heading">{{ room.get_room_type_display }} <em>{{ room.room_number }}</em></h2>
                 <div class="divider-gold"></div>
                 <div class="room-price-badge mb-4" style="position: static; display: inline-block;">${{ room.price_per_night }} / night</div>
                 <p class="lead">{{ room.description }}</p>
-                
+
                 <!-- DYNAMIC AMENITIES START -->
                 <h5 class="mt-4">Amenities</h5>
                 <ul class="list-unstyled row g-3">
@@ -33,7 +90,7 @@
                     {% endfor %}
                 </ul>
                 <!-- DYNAMIC AMENITIES END -->
-                
+
                 <div class="d-flex gap-3 mt-4">
                     <a href="{% url 'lodge:booking' %}?room={{ room.pk }}" class="btn-vg-primary">Book This Room</a>
                     <a href="{% url 'lodge:rooms' %}" class="btn-vg-outline">Back to Rooms</a>
@@ -42,4 +99,28 @@
         </div>
     </div>
 </section>
+{% endblock %}  <!-- <-- FIX: CLOSING THE CONTENT BLOCK HERE -->
+
+<!-- Extra JS for the thumbnail carousel interaction -->
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.getElementById('roomCarousel');
+    const thumbs = document.querySelectorAll('.row.g-2 .cursor-pointer');
+    
+    if (carousel && thumbs.length) {
+        carousel.addEventListener('slid.bs.carousel', function (e) {
+            thumbs.forEach((thumb, index) => {
+                if (index === e.to) {
+                    thumb.style.opacity = '0.9';
+                    thumb.style.border = '2px solid var(--gold)';
+                } else {
+                    thumb.style.opacity = '0.6';
+                    thumb.style.border = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
 {% endblock %}
